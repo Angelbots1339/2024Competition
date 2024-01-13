@@ -5,6 +5,24 @@ import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class ErrorCheckUtil {
+
+
+
+    public static class CommonErrorNames{
+        public static String ConfiguringTalon(int id) {
+            return "Problem configuring Talon " + id;
+        }
+        
+        public static String OptimizeBusUtilization(int id) {
+            return "Problem optimizing can utilization on Talon " + id;
+        }
+
+        public static String UpdateFrequency(int id) {
+            return "Problem setting update frequency on Talon " + id;
+        }
+    }
+
+
     /**
      * checks the specified error code for issues
      *

@@ -14,6 +14,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 // import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
+
 
 /**
  * Creates CANTalon objects and configures all the parameters we care about to factory defaults. Closed-loop and sensor
@@ -100,7 +102,7 @@ public class TalonFXFactory {
         
 
         // talon.optimizeBusUtilization();
-        ErrorCheckUtil.checkError(talon.getConfigurator().apply(motorConfig), "Problem configuring Talon " + id);
+        ErrorCheckUtil.checkError(talon.getConfigurator().apply(motorConfig), CommonErrorNames.ConfiguringTalon(id));
 
         return talon;
     }

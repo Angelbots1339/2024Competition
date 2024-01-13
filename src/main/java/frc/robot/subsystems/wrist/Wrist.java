@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.shooter;
+package frc.robot.subsystems.wrist;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -12,23 +12,23 @@ import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.TalonFXFactory;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.WristConstants;
 
-public class Shooter extends SubsystemBase {
+public class Wrist extends SubsystemBase {
 
-  private TalonFX shooterMotor = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorID,
-      ShooterConstants.shooterMotorCANBus, ShooterConstants.kShooterConfiguration));
+    private TalonFX wristMotor = configWristMotor(TalonFXFactory.createTalon(WristConstants.wristMotorID,
+      WristConstants.wristMotorCANBus, WristConstants.kWristConfiguration));
 
-  /** Creates a new Shooter. */
-  public Shooter() {
+  /** Creates a new Wrist. */
+  public Wrist() {}
 
-  }
-
-  public void shooterToRMP(double rpm) {
-    shooterToVelocity(rpm / 60);
-  }
-
-  public void shooterToVelocity(double speed) {
-    shooterMotor.setControl(ShooterConstants.shooterControl.withVelocity(speed));
+  /**
+   * PID Wrist to position
+   * 
+   * @param position in rotations
+   */
+  public void wristToPosition(double position) {
+    
   }
 
   @Override
@@ -36,9 +36,10 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  private TalonFX configShooterMotor(TalonFX motor) {
+
+  private TalonFX configWristMotor(TalonFX motor) {
     ErrorCheckUtil.checkError(
-        motor.getVelocity().setUpdateFrequency(ShooterConstants.kShooterVelocityUpdateFrequency,
+        motor.getPosition().setUpdateFrequency(WristConstants.kWristPositionUpdateFrequency,
             Constants.kConfigTimeoutSeconds),
             CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
 

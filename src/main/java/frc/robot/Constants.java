@@ -1,12 +1,19 @@
 package frc.robot;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
@@ -62,7 +69,7 @@ public class Constants {
 
                 private static final double kDriveGearRatio = 5.142857142857142;
                 private static final double kSteerGearRatio = 12.8;
-                private static final double kWheelRadiusInches = 2;
+                public static final double kWheelRadiusInches = 2;
 
                 private static final boolean kSteerMotorReversed = false;
                 private static final boolean kInvertLeftSide = false;
@@ -107,7 +114,7 @@ public class Constants {
                 private static final double kFrontLeftEncoderOffset = -0.995361328125;
 
                 private static final double kFrontLeftXPosInches = 10.75;
-                private static final double kFrontLeftYPosInches = 11.75; 
+                private static final double kFrontLeftYPosInches = 11.75;
 
                 // Front Right
                 private static final int kFrontRightDriveMotorId = 12;
@@ -166,7 +173,7 @@ public class Constants {
                                 new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                                 SwerveConstants.kSpeedAt12VoltsMps, // Max module speed, in m/s
                                 0.40451045104, // Drive base radius in meters. Distance from robot center to furthest
-                                                // module.
+                                               // module.
                                 new ReplanningConfig() // Default path replanning config. See the API for the options
                                                        // here
                 );
@@ -185,9 +192,75 @@ public class Constants {
                                                 .withSupplyCurrentLimitEnable(true))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
+                                                .withInverted(InvertedValue.Clockwise_Positive))
+                                .withSlot0(new Slot0Configs()
+                                                .withKP(0)
+                                                .withKI(0)
+                                                .withKD(0));
+
+                public static final VelocityVoltage shooterControl = new VelocityVoltage(0, 0, false, 0, 0, false,
+                                false, false);
+
+                public static final double kShooterVelocityUpdateFrequency = 10; // Hertz
+        }
+
+        public static final class IntakeConstants {
+                public static final int intakeMotorID = 17; // TODO Set these
+                public static final String intakeMotorCANBus = "canivore";
+
+                private static final double intakeMaxSpeed = 0.5;
+
+                public static final TalonFXConfiguration kIntakeConfiguration = new TalonFXConfiguration()
+                                .withCurrentLimits(new CurrentLimitsConfigs()
+                                                .withStatorCurrentLimit(80)
+                                                .withSupplyCurrentLimit(40)
+                                                .withStatorCurrentLimitEnable(true)
+                                                .withSupplyCurrentLimitEnable(true))
+                                .withMotorOutput(new MotorOutputConfigs()
+                                                .withNeutralMode(NeutralModeValue.Coast)
                                                 .withInverted(InvertedValue.Clockwise_Positive));
 
-                public static final double kShooterVelocityUpdateFrequency = 0;
+                public static final DutyCycleOut intakeDutyCycle = new DutyCycleOut(0, true, false,
+                                false, false);
+
+                public static final TorqueCurrentFOC intakeTorqueControl = new TorqueCurrentFOC(0, 0.5, 0, false, false,
+                                false);
+
+        }
+
+        public static final class WristConstants {
+                public static final int wristMotorID = 18; // TODO Set these
+                public static final String wristMotorCANBus = "canivore";
+
+                private static final double wristMaxSpeed = 0.5;
+
+                public static final TalonFXConfiguration kWristConfiguration = new TalonFXConfiguration()
+                                .withCurrentLimits(new CurrentLimitsConfigs()
+                                                .withStatorCurrentLimit(80)
+                                                .withSupplyCurrentLimit(40)
+                                                .withStatorCurrentLimitEnable(true)
+                                                .withSupplyCurrentLimitEnable(true))
+                                .withMotorOutput(new MotorOutputConfigs()
+                                                .withNeutralMode(NeutralModeValue.Coast)
+                                                .withInverted(InvertedValue.Clockwise_Positive))
+                                .withSlot0(new Slot0Configs()
+                                                .withKP(0)
+                                                .withKI(0)
+                                                .withKD(0)
+                                                .withGravityType(GravityTypeValue.Arm_Cosine)
+                                                .withKG(0))
+                                .withMotionMagic(new MotionMagicConfigs()
+                                                .withMotionMagicCruiseVelocity(0) // TODO Tune
+                                                .withMotionMagicAcceleration(0)
+                                                .withMotionMagicJerk(0));
+
+                public static final MotionMagicVoltage wristPositionControl = new MotionMagicVoltage(0, true, 0, 0, false,
+                                false, false);
+
+
+                public static final double kWristPositionUpdateFrequency = 10; // Hertz
+                public static final String Constants = null;
+
         }
 
         public static final class VisionConstants {
