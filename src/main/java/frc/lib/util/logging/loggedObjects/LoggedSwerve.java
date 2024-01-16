@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.util.logging.LoggedContainer;
 import frc.lib.util.logging.loggedPrimitives.LoggedDoubleArray;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.Swerve;
 
 /** Add your docs here. */
 public class LoggedSwerve extends LoggedObject<Swerve> {

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swerve;
+package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
@@ -15,6 +15,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.lib.util.LimelightHelpers;
+import frc.lib.util.PoseEstimation;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.VisionConstants;
 
@@ -47,6 +49,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             startSimThread();
         }
         CommandScheduler.getInstance().registerSubsystem(this);
+        registerTelemetry((SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(pose.Pose));
     }
 
     public Swerve(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
@@ -54,12 +57,13 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        CommandScheduler.getInstance().registerSubsystem(this);
+        registerTelemetry((SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(pose.Pose));
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
     }
-
 
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
@@ -75,7 +79,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
-
 
     public void updateVision() {
 
@@ -95,14 +98,12 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
 
     }
-    
 
     public void periodic() {
 
         updateVision();
 
     }
-
 
     public void configPathPlanner() {
 
@@ -113,7 +114,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 AutoConstants.autoConfig,
                 () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // Boolean supplier that controls when the path will be mirrored for the red
+                    // alliance
                     // This will flip the path being followed to the red side of the field.
                     // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
