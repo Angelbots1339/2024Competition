@@ -14,7 +14,7 @@ import frc.lib.util.math.PolynomialRegression;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.WristConstants;
-import frc.robot.regressions.CompRegression;
+import frc.robot.regressions.SpeakerShotRegression;
 
 public class Wrist extends SubsystemBase {
 

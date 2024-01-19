@@ -9,21 +9,26 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
+import frc.lib.util.logging.LoggedSubsystem;
+import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.lib.util.math.PolynomialRegression;
 import frc.lib.util.TalonFXFactory;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.regressions.CompRegression;
+import frc.robot.LoggingConstants.ShooterLogging;
+import frc.robot.regressions.SpeakerShotRegression;
 
 public class Shooter extends SubsystemBase {
 
   private TalonFX shooterMotor = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorID,
       ShooterConstants.shooterMotorCANBus, ShooterConstants.kShooterConfiguration));
 
+  private LoggedSubsystem logger;
 
   /** Creates a new Shooter. */
   public Shooter() {
 
+    initializeLogging();
   }
 
   public void shooterToRMP(double rpm) {
@@ -51,4 +56,15 @@ public class Shooter extends SubsystemBase {
 
     return motor;
   }
+
+  private void initializeLogging() {
+
+    logger = new LoggedSubsystem("Shooter");
+
+    logger.add(new LoggedFalcon("ShooterMotor", logger, shooterMotor, ShooterLogging.Motor));
+    
+  }
+
 }
+
+

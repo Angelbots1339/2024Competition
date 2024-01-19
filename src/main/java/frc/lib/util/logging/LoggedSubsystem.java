@@ -9,13 +9,14 @@ import java.util.Map;
 
 import frc.lib.util.logging.Logger.LoggingLevel;
 import frc.lib.util.logging.loggedObjects.LoggedObject;
+import frc.robot.subsystems.Swerve;
 
 /** Add your docs here. */
 public class LoggedSubsystem extends LoggedContainer{
     private Map<String, LoggedObject<?>> loggedObjects = new HashMap<String, LoggedObject<?>>();
 
-    public LoggedSubsystem(String name, Map<String, LoggingLevel> logPriorities) {
-        super(name, logPriorities);
+    public LoggedSubsystem(String name) {
+        super(name);
     }
 
     @Override

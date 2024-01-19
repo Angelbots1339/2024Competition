@@ -22,6 +22,8 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.Swerve;
 
@@ -29,7 +31,7 @@ public class Constants {
 
         public static final double kConfigTimeoutSeconds = 0.05;
 
-        public static final class SwerveConstants {
+        public static final class GeneratedSwerveConstants {
 
                 // Both sets of gains need to be tuned to your individual robot.
 
@@ -165,13 +167,46 @@ public class Constants {
                                 FrontRight, BackLeft, BackRight);
         }
 
+        public static final class DriverConstants {
+
+                public static final double maxTranslationSpeed = GeneratedSwerveConstants.maxSpeed;
+                public static final double maxRotationSpeed = GeneratedSwerveConstants.maxAngularRate;
+
+                public static final double joystickDeadband = 0.1;
+
+                public static final Boolean skewReduction = true;
+                public static final Boolean openLoopDrive = true;
+
+                /**
+                 * 
+                 * @param val The joystick value
+                 * @param squareInputs Whether or not to square the inputs (x^2)
+                 * @return Desired robot speed from the joystick value
+                 */
+                public static double fixTranslationJoystickValues(double val, boolean squareInputs) {
+                        return MathUtil.applyDeadband(Math.pow(val, squareInputs ? 2 : 1), joystickDeadband) * maxTranslationSpeed;
+                }
+
+                /**
+                 * 
+                 * @param val The joystick value
+                 * @param squareInputs Whether or not to square the inputs (x^2)
+                 * @return Desired robot speed from the joystick value
+                 */
+                public static double fixRotationJoystickValues(double val, boolean squareInputs) {
+                        return MathUtil.applyDeadband(Math.pow(val, squareInputs ? 2 : 1), joystickDeadband) * maxRotationSpeed;
+                }
+
+                
+        }
+
         public static final class AutoConstants {
 
                 public static final HolonomicPathFollowerConfig autoConfig = new HolonomicPathFollowerConfig(
                                 // HolonomicPathFollowerConfig, this should likely live in your Constants class
                                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                                 new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                                SwerveConstants.kSpeedAt12VoltsMps, // Max module speed, in m/s
+                                GeneratedSwerveConstants.kSpeedAt12VoltsMps, // Max module speed, in m/s
                                 0.40451045104, // Drive base radius in meters. Distance from robot center to furthest
                                                // module.
                                 new ReplanningConfig() // Default path replanning config. See the API for the options
@@ -202,6 +237,9 @@ public class Constants {
                                 false, false);
 
                 public static final double kShooterVelocityUpdateFrequency = 10; // Hertz
+
+
+                public static final double gamePieceSpeedLeavingShooter = 2; // Meters/second
         }
 
         public static final class IntakeConstants {
@@ -265,7 +303,9 @@ public class Constants {
 
         public static final class VisionConstants {
 
-                public static final String kLimelightName = "";
+                public static final String limelight1Name = "";
+
+                public static final Translation3d limelight1Offset = new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0));
         }
 
 }

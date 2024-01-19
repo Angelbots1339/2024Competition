@@ -23,6 +23,7 @@ public class Logger implements Iloggable {
     public void addContainer(LoggedContainer subsystemLogger) {
         subsystems.add(subsystemLogger);
     }
+
     public void removeContainer(LoggedContainer subsystemLogger) {
         subsystems.remove(subsystemLogger);
     }
@@ -34,7 +35,8 @@ public class Logger implements Iloggable {
 
     public enum LoggingLevel {
         SHUFFLEBOARD,
-        ONBOARD_ONLY,
+        ONBOARD,
+        BOTH,
         NONE
     }
 

@@ -33,8 +33,8 @@ public abstract class LoggedObject<T> implements Iloggable {
     private final String tabName;
 
 
-    public LoggedObject(String name, LoggedContainer subsystemLogger, String logType, String tabName){
-        this.level = subsystemLogger.getLoggingLevel(logType);
+    public LoggedObject(String name, LoggedContainer subsystemLogger, LoggingLevel logType, String tabName){
+        this.level = logType;
         this.name   = name;
         this.prefix = subsystemLogger.getName();
         this.tabName = subsystemLogger.getName() + ":" + logType;
@@ -47,23 +47,27 @@ public abstract class LoggedObject<T> implements Iloggable {
         this.prefix = prefix;
         this.object = object;
 
-        if (level == LoggingLevel.SHUFFLEBOARD)
+        if (level == LoggingLevel.BOTH){
+            initializeDataLog();
             initializeShuffleboard();
-        else if(level == LoggingLevel.ONBOARD_ONLY)
+        }
+        else if(level == LoggingLevel.SHUFFLEBOARD)
+            initializeShuffleboard();
+        else if(level == LoggingLevel.ONBOARD)
             initializeDataLog();
     }
 
-    public LoggedObject(String name, LoggedContainer subsystemLogger, T object, String logType, String tabName) {
-        this(name, subsystemLogger.getLoggingLevel(logType), subsystemLogger.getName(), object, tabName);
+    public LoggedObject(String name, LoggedContainer subsystemLogger, T object, LoggingLevel logType, String tabName) {
+        this(name, logType, subsystemLogger.getName(), object, tabName);
     }
 
-    public LoggedObject(String name, LoggedContainer subsystemLogger, T object, String logType, Boolean SeptateTab) {
+    public LoggedObject(String name, LoggedContainer subsystemLogger, T object, LoggingLevel logType, Boolean SeptateTab) {
         this(name, subsystemLogger, object, logType,
                 SeptateTab? subsystemLogger.getName() + ":" + logType
                         : subsystemLogger.getName());
     }
 
-    public LoggedObject(String name, LoggedContainer subsystemLogger, T object, String logType) {
+    public LoggedObject(String name, LoggedContainer subsystemLogger, T object, LoggingLevel logType) {
         this(name, subsystemLogger, object, logType, false);
     }
 

@@ -11,6 +11,12 @@ public class FieldUtil {
     public static final Translation2d BlueSpeakerPose = new Translation2d(0, 0);
     public static final Translation2d RedSpeakerPose = new Translation2d(0, 0);
 
+
+    /**
+     * Get the position of whichever alliance you are on
+     * 
+     * @return the speaker position
+     */
     public static Translation2d getAllianceSpeakerPosition() {
 
         Optional<Alliance> alliance = DriverStation.getAlliance();

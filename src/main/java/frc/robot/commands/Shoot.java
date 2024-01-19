@@ -7,7 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.PoseEstimation;
-import frc.robot.regressions.CompRegression;
+import frc.robot.regressions.SpeakerShotRegression;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Wrist;
 
@@ -30,16 +30,17 @@ public class Shoot extends Command {
   @Override
   public void initialize() {
 
-    double targetDistance = PoseEstimation.estimatedPose.getTranslation().getDistance(PoseEstimation.calculateSpeakerOffset());
+    double targetDistance = PoseEstimation.getEstimatedPose().getTranslation().getDistance(PoseEstimation.calculateVirtualSpeakerOffset());
 
-    wrist.wristToPosition(CompRegression.wristRegression.predict(targetDistance));
-    shooter.shooterToRMP(CompRegression.flywheelRegression.predict(targetDistance));
+    wrist.wristToPosition(SpeakerShotRegression.wristRegression.predict(targetDistance));
+    shooter.shooterToRMP(SpeakerShotRegression.flywheelRegression.predict(targetDistance));
     
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
   }
 
   // Called once the command ends or is interrupted.

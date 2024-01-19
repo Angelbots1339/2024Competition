@@ -13,12 +13,13 @@ import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.util.logging.LoggedContainer;
+import frc.lib.util.logging.Logger.LoggingLevel;
 import frc.lib.util.logging.loggedPrimitives.LoggedDoubleArray;
-import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.GeneratedSwerveConstants;
 import frc.robot.subsystems.Swerve;
 
 /** Add your docs here. */
-public class LoggedSwerve extends LoggedObject<Swerve> {
+public class LoggedSweveModules extends LoggedObject<Swerve> {
 
     private SwerveDriveState currentState = new SwerveDriveState();
 
@@ -26,26 +27,26 @@ public class LoggedSwerve extends LoggedObject<Swerve> {
         currentState = newState;
     }
 
-    public LoggedSwerve(String name, LoggedContainer subsystemLogger, Swerve object, String logType,
+    public LoggedSweveModules(String name, LoggedContainer subsystemLogger, Swerve object, LoggingLevel logType,
             String tabName) {
         super(name, subsystemLogger, object, logType, tabName);
         object.registerTelemetry(this::setCurrentState);
     }
 
-    public LoggedSwerve(String name, LoggedContainer subsystemLogger, Swerve object, String logType,
+    public LoggedSweveModules(String name, LoggedContainer subsystemLogger, Swerve object, LoggingLevel logType,
             Boolean SeparateTab) {
         super(name, subsystemLogger, object, logType, SeparateTab);
         object.registerTelemetry(this::setCurrentState);
     }
 
-    public LoggedSwerve(String name, LoggedContainer subsystemLogger, Swerve object, String logType) {
+    public LoggedSweveModules(String name, LoggedContainer subsystemLogger, Swerve object, LoggingLevel logType) {
         super(name, subsystemLogger, object, logType);
         object.registerTelemetry(this::setCurrentState);
     }
 
     
     public double driveRotsToMeters(double rots) {
-        return rots * 2 * Math.PI * SwerveConstants.kWheelRadiusInches;
+        return rots * 2 * Math.PI * GeneratedSwerveConstants.kWheelRadiusInches;
     }
 
     @Override
@@ -80,27 +81,30 @@ public class LoggedSwerve extends LoggedObject<Swerve> {
         addDoubleToShuffleboard("TotalDistance", () -> driveRotsToMeters(object.getModule(3).getDriveMotor().getPosition().getValue()), layout3);
         addDoubleToShuffleboard("TotalRotations", () -> object.getModule(3).getDriveMotor().getPosition().getValue(), layout3);
 
+
+        // TODO Test both of these and remove one of them
+        
         // FL, FR, BL, BR
-        ShuffleboardLayout trueStatesLayout = getTab().getLayout("TrueModuleStates", BuiltInLayouts.kList).withSize(2,
-                3);
-        addDoubleArrayToShuffleboard(name, () -> new double[] {
-                currentState.ModuleStates[0].angle.getDegrees(), currentState.ModuleStates[0].speedMetersPerSecond,
-                currentState.ModuleStates[1].angle.getDegrees(), currentState.ModuleStates[1].speedMetersPerSecond,
-                currentState.ModuleStates[2].angle.getDegrees(), currentState.ModuleStates[2].speedMetersPerSecond,
-                currentState.ModuleStates[3].angle.getDegrees(), currentState.ModuleStates[3].speedMetersPerSecond
+        // ShuffleboardLayout trueStatesLayout = getTab().getLayout("TrueModuleStates", BuiltInLayouts.kList).withSize(2,
+        //         3);
+        // addDoubleArrayToShuffleboard(name, () -> new double[] {
+        //         currentState.ModuleStates[0].angle.getDegrees(), currentState.ModuleStates[0].speedMetersPerSecond,
+        //         currentState.ModuleStates[1].angle.getDegrees(), currentState.ModuleStates[1].speedMetersPerSecond,
+        //         currentState.ModuleStates[2].angle.getDegrees(), currentState.ModuleStates[2].speedMetersPerSecond,
+        //         currentState.ModuleStates[3].angle.getDegrees(), currentState.ModuleStates[3].speedMetersPerSecond
 
-        }, trueStatesLayout);
+        // }, trueStatesLayout);
 
-        // System.out.println(object[0].getState());
+        // ShuffleboardLayout desiredStatesLayout = getTab().getLayout("DesiredModuleStates", BuiltInLayouts.kList)
+        //         .withSize(2, 3);
+        // addDoubleArrayToShuffleboard(name, () -> new double[] {
+        //         currentState.ModuleTargets[0].angle.getDegrees(), currentState.ModuleTargets[0].speedMetersPerSecond,
+        //         currentState.ModuleTargets[1].angle.getDegrees(), currentState.ModuleTargets[1].speedMetersPerSecond,
+        //         currentState.ModuleTargets[2].angle.getDegrees(), currentState.ModuleTargets[2].speedMetersPerSecond,
+        //         currentState.ModuleTargets[3].angle.getDegrees(), currentState.ModuleTargets[3].speedMetersPerSecond
+        // }, desiredStatesLayout);
 
-        ShuffleboardLayout desiredStatesLayout = getTab().getLayout("DesiredModuleStates", BuiltInLayouts.kList)
-                .withSize(2, 3);
-        addDoubleArrayToShuffleboard(name, () -> new double[] {
-                currentState.ModuleTargets[0].angle.getDegrees(), currentState.ModuleTargets[0].speedMetersPerSecond,
-                currentState.ModuleTargets[1].angle.getDegrees(), currentState.ModuleTargets[1].speedMetersPerSecond,
-                currentState.ModuleTargets[2].angle.getDegrees(), currentState.ModuleTargets[2].speedMetersPerSecond,
-                currentState.ModuleTargets[3].angle.getDegrees(), currentState.ModuleTargets[3].speedMetersPerSecond
-        }, desiredStatesLayout);
+
 
         // FL, FR, BL, BR
         add(new LoggedDoubleArray(this, () -> new double[] {

@@ -12,8 +12,8 @@ import frc.lib.util.logging.Logger.LoggingLevel;
 
 /** Add your docs here. */
 public class LoggedCommand extends LoggedContainer{
-    public LoggedCommand(String name, Map<String, LoggingLevel> logPriorities) {
-        super(name, logPriorities);
+    public LoggedCommand(String name) {
+        super(name);
     }
 
     public void initialize(){

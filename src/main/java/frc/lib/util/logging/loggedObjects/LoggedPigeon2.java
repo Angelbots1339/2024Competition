@@ -14,22 +14,23 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.util.logging.LoggedContainer;
+import frc.lib.util.logging.Logger.LoggingLevel;
 import frc.lib.util.logging.loggedPrimitives.LoggedDouble;
 import frc.lib.util.logging.loggedPrimitives.LoggedDoubleArray;
 
 /** Add your docs here. */
 public class LoggedPigeon2 extends LoggedObject<Pigeon2> {
 
-    public LoggedPigeon2(String name, LoggedContainer subsystemLogger, Pigeon2 object, String logType, String tabName) {
+    public LoggedPigeon2(String name, LoggedContainer subsystemLogger, Pigeon2 object, LoggingLevel logType, String tabName) {
         super(name, subsystemLogger, object, logType, tabName);
     }
 
-    public LoggedPigeon2(String name, LoggedContainer subsystemLogger, Pigeon2 object, String logType,
+    public LoggedPigeon2(String name, LoggedContainer subsystemLogger, Pigeon2 object, LoggingLevel logType,
             Boolean SeptateTab) {
         super(name, subsystemLogger, object, logType, SeptateTab);
     }
 
-    public LoggedPigeon2(String name, LoggedContainer subsystemLogger, Pigeon2 object, String logType) {
+    public LoggedPigeon2(String name, LoggedContainer subsystemLogger, Pigeon2 object, LoggingLevel logType) {
         super(name, subsystemLogger, object, logType);
     }
 

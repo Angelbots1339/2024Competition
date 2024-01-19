@@ -9,22 +9,23 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.util.logging.LoggedContainer;
+import frc.lib.util.logging.Logger.LoggingLevel;
 import frc.lib.util.logging.loggedPrimitives.LoggedDouble;
 
 /** Add your docs here. */
 public class LoggedFalcon extends LoggedObject<TalonFX> {
 
-    public LoggedFalcon(String name, LoggedContainer subsystemLogger, TalonFX object, String logType,
+    public LoggedFalcon(String name, LoggedContainer subsystemLogger, TalonFX object, LoggingLevel logType,
             String tabName) {
         super(name, subsystemLogger, object, logType, tabName);
     }
 
-    public LoggedFalcon(String name, LoggedContainer subsystemLogger, TalonFX object, String logType,
+    public LoggedFalcon(String name, LoggedContainer subsystemLogger, TalonFX object, LoggingLevel logType,
             Boolean SeptateTab) {
         super(name, subsystemLogger, object, logType, SeptateTab);
     }
 
-    public LoggedFalcon(String name, LoggedContainer subsystemLogger, TalonFX object, String logType) {
+    public LoggedFalcon(String name, LoggedContainer subsystemLogger, TalonFX object, LoggingLevel logType) {
         super(name, subsystemLogger, object, logType);
     }
 

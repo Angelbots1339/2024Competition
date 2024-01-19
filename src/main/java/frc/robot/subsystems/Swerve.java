@@ -1,21 +1,20 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.PoseEstimator;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,8 +26,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.lib.util.LimelightHelpers;
 import frc.lib.util.PoseEstimation;
+import frc.lib.util.logging.LoggedSubsystem;
+import frc.lib.util.logging.loggedObjects.LoggedField;
+import frc.lib.util.logging.loggedObjects.LoggedPigeon2;
+import frc.lib.util.logging.loggedObjects.LoggedSweveModules;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.LoggingConstants.SwerveLogging;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -40,25 +45,64 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
+    private LoggedSubsystem logger;
+    private LoggedField field;
+    private LoggedField autoField;
+
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
-    public Swerve(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
-            SwerveModuleConstants... modules) {
-        super(driveTrainConstants, OdometryUpdateFrequency, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        CommandScheduler.getInstance().registerSubsystem(this);
-        registerTelemetry((SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(pose.Pose));
-    }
+    private final SwerveRequest.FieldCentric driveRequestFieldOriented = new SwerveRequest.FieldCentric()
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private final SwerveRequest.RobotCentric driveRequestRobotOriented = new SwerveRequest.RobotCentric()
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     public Swerve(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
+
+        CommandScheduler.getInstance().registerSubsystem(this);
+        registerTelemetry((SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(pose));
+        PathPlannerLogging.setLogTargetPoseCallback(PoseEstimation::updateTargetAutoPose);
+
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        CommandScheduler.getInstance().registerSubsystem(this);
-        registerTelemetry((SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(pose.Pose));
+        initializeLogging();
+        PoseEstimation.initNonVisionPoseEstimator(this.getState().Pose.getRotation(), m_kinematics, this.m_modulePositions);
+    }
+
+    /**
+     * 
+     * @param translationX Meters/second
+     * @param translationY Meters/second
+     * @param rotation Rad/second
+     * @param fieldOriented Use field oriented drive?
+     * @param skewReduction Use Skew Reduction? // TODO Currently doesn't work :( 
+     * @return
+     */
+    public Command drive(Supplier<Double> translationX, Supplier<Double> translationY, Supplier<Double> rotation,
+            Supplier<Boolean> fieldOriented, Supplier<Boolean> skewReduction) {
+
+        SwerveRequest req;
+
+        if (fieldOriented.get()) {
+            req = new SwerveRequest.FieldCentric()
+                    .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
+                            : DriveRequestType.Velocity)
+                    .withVelocityX(translationX.get()) // Drive forward with negative Y (forward)
+                    .withVelocityY(translationY.get()) // Drive left with negative X (left)
+                    .withRotationalRate(rotation.get());
+
+            
+        } else {
+            req = new SwerveRequest.RobotCentric()
+                    .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
+                            : DriveRequestType.Velocity)
+                    .withVelocityX(translationX.get()) // Drive forward with negative Y (forward)
+                    .withVelocityY(translationY.get()) // Drive left with negative X (left)
+                    .withRotationalRate(rotation.get());
+        }
+
+        return run(() -> this.setControl(req));
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -82,18 +126,18 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     public void updateVision() {
 
-        if (LimelightHelpers.getFiducialID(VisionConstants.kLimelightName) < 0) {
+        if (LimelightHelpers.getFiducialID(VisionConstants.limelight1Name) < 0) {
             return;
         }
 
-        double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.kLimelightName)
+        double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelight1Name)
                 .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
         double xyStdDev2 = MathUtil.clamp(0.002 * Math.pow(2.2, tagDistance), 0, 1);
 
-        Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.kLimelightName);
+        Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelight1Name);
         double poseFromVisionTimestamp = Timer.getFPGATimestamp()
-                - (LimelightHelpers.getLatency_Capture(VisionConstants.kLimelightName)
-                        + LimelightHelpers.getLatency_Pipeline(VisionConstants.kLimelightName)) / 1000;
+                - (LimelightHelpers.getLatency_Capture(VisionConstants.limelight1Name)
+                        + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelight1Name)) / 1000;
 
         addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
 
@@ -135,6 +179,38 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+    }
+
+    private String command = "None";
+
+    public void initializeLogging() {
+
+        logger = new LoggedSubsystem("Swerve");
+        field = new LoggedField("PoseEstimator", logger, SwerveLogging.PoseEstimator, true);
+
+        logger.add(field);
+        field.addPose2d("Field", () -> this.getState().Pose, true);
+
+        logger.add(new LoggedSweveModules(null, logger, this, SwerveLogging.Modules));
+
+        logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2, SwerveLogging.Gyro));
+
+        logger.addDouble("Heading", () -> this.getState().Pose.getRotation().getDegrees(), SwerveLogging.Pose);
+        logger.addDouble("x velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
+        logger.addDouble("y velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
+
+        logger.addString("Command", () -> {
+            Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+                command = c.getName();
+            });
+            return command;
+        }, SwerveLogging.Main);
+
+        logger.addDouble("xAutoError", () -> PoseEstimation.getAutoTargetPoseError().getX(), SwerveLogging.Auto);
+        logger.addDouble("yAutoError", () -> PoseEstimation.getAutoTargetPoseError().getY(), SwerveLogging.Auto);
+        logger.addDouble("thetaAutoError", () -> PoseEstimation.getAutoTargetPoseError().getRotation().getDegrees(),
+                SwerveLogging.Auto);
+
     }
 
 }

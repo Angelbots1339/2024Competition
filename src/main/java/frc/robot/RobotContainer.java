@@ -21,7 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.DriverConstants;
+import frc.robot.Constants.GeneratedSwerveConstants;
 import frc.robot.subsystems.Swerve;
 
 public class RobotContainer {
@@ -31,38 +32,29 @@ public class RobotContainer {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController driveController = new CommandXboxController(0); // My joystick
 
-  private final Swerve swerve = Constants.SwerveConstants.Swerve; // My drivetrain
-  private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
-                                                               // driving in open loop
+  private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
 
-  private final Telemetry logger = new Telemetry(SwerveConstants.maxSpeed);
+  private Supplier<Double> translationX = () -> DriverConstants
+      .fixTranslationJoystickValues(-driveController.getLeftY(), true);
+  private Supplier<Double> translationY = () -> DriverConstants
+      .fixTranslationJoystickValues(-driveController.getLeftX(), true);
+  private Supplier<Double> rotation = () -> DriverConstants.fixRotationJoystickValues(-driveController.getRightX(),
+      false);
 
-  private Supplier<Double> translationX = () -> MathUtil.applyDeadband(Math.pow(-driveController.getLeftY(), 2), 0.1) * SwerveConstants.maxSpeed;
-  private Supplier<Double> translationY = () -> MathUtil.applyDeadband(Math.pow(-driveController.getLeftX(), 2), 0.1) * SwerveConstants.maxSpeed;
-  private Supplier<Double> rotation = () -> MathUtil.applyDeadband(-driveController.getRightX(), 0.1) * SwerveConstants.maxAngularRate;
-
-
-   public RobotContainer() {
+  public RobotContainer() {
 
     autoChooser = AutoBuilder.buildAutoChooser("");
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     swerve.setDefaultCommand( // Drivetrain will execute this command periodically
-        swerve.applyRequest(() -> driveRequest.withVelocityX(translationX.get()) // Drive forward with negative Y (forward)
-            .withVelocityY(translationY.get()) // Drive left with negative X (left)
-            .withRotationalRate(rotation.get()) // Drive counterclockwise with negative X (left)
-        ));
-
+        swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
 
     configureBindings();
 
     if (Utils.isSimulation()) {
       swerve.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
-    swerve.registerTelemetry(logger::telemeterize);
   }
-
 
   private void configDriverBindings() {
     driveController.start().onTrue(swerve.runOnce(() -> swerve.seedFieldRelative()));
@@ -73,14 +65,11 @@ public class RobotContainer {
 
   }
 
-
   private void configureBindings() {
-    
+
     configDriverBindings();
     configOperatorBindings();
   }
-
- 
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
