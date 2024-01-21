@@ -27,15 +27,9 @@ public abstract class LoggedPrimitive<T> implements Iloggable {
     private LoggedPrimitive(String name, LoggingLevel level, String prefix) {
         this.level = level;
         isSupplied = false;
-
-        if (level == LoggingLevel.BOTH) {
+        if (level == LoggingLevel.SHUFFLEBOARD) {
             shuffleboardEntry = Shuffleboard.getTab(prefix).add(name, 0).getEntry();
-            initializeOnboardLog(name, prefix);
-
-        } else if (level == LoggingLevel.SHUFFLEBOARD) {
-            shuffleboardEntry = Shuffleboard.getTab(prefix).add(name, 0).getEntry();
-            
-        } else if (level == LoggingLevel.ONBOARD) {
+        } else if (level == LoggingLevel.ONBOARD_ONLY) {
             initializeOnboardLog(name, prefix);
         }
     }
@@ -61,11 +55,11 @@ public abstract class LoggedPrimitive<T> implements Iloggable {
      */
     // TODO find a better way to do this
     public LoggedPrimitive(LoggedObject<?> object, String name, Supplier<T> supplier) {
-        if (LoggingLevel.ONBOARD != object.getLevel()) {
+        if (LoggingLevel.ONBOARD_ONLY != object.getLevel()) {
             throw new IllegalArgumentException(
                     "LoggedPrimitive constructor called with an object that is not an onboard log");
         }
-        this.level = LoggingLevel.ONBOARD;
+        this.level = LoggingLevel.ONBOARD_ONLY;
         isSupplied = true;
         this.supplier = supplier;
         initializeOnboardLog(name, object.getName() + "/" + object.getPrefix());
@@ -99,7 +93,7 @@ public abstract class LoggedPrimitive<T> implements Iloggable {
             return;
         if (level == LoggingLevel.SHUFFLEBOARD) {
             logShuffleboard(value);
-        } else if (level == LoggingLevel.ONBOARD) {
+        } else if (level == LoggingLevel.ONBOARD_ONLY) {
             logOnboard(timestamp, value);
         }
         previousValue = value;

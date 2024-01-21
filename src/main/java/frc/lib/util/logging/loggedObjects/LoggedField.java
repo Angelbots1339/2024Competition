@@ -31,7 +31,7 @@ public class LoggedField extends LoggedObject<Field2d> {
         object = new Field2d();
         if (level == LoggingLevel.SHUFFLEBOARD)
             initializeShuffleboard();
-        else if (level == LoggingLevel.ONBOARD)
+        else if (level == LoggingLevel.ONBOARD_ONLY)
             initializeDataLog();
     }
 
@@ -61,7 +61,7 @@ public class LoggedField extends LoggedObject<Field2d> {
                 robots.putIfAbsent(name, pose2d);
         }
 
-        else if (level == LoggingLevel.ONBOARD)
+        else if (level == LoggingLevel.ONBOARD_ONLY)
             addDoubleArrayToOnboardLog(name,
                     () -> {
                         Pose2d pose = pose2d.get(); 
@@ -87,7 +87,7 @@ public class LoggedField extends LoggedObject<Field2d> {
                         .getGenericEntry().setDoubleArray(arr);
             }
         }
-        else if (level == LoggingLevel.ONBOARD){
+        else if (level == LoggingLevel.ONBOARD_ONLY){
             if(!trajectories.containsKey(name)){
                 trajectories.put(name, new DoubleArrayLogEntry(DataLogManager.getLog(), getPrefix() + "/" + this.name + "/" + name));
             }
@@ -114,6 +114,7 @@ public class LoggedField extends LoggedObject<Field2d> {
     protected void initializeDataLog() {
         addDoubleToOnboardLog("x", () -> object.getRobotPose().getX());
         addDoubleToOnboardLog("y", () -> object.getRobotPose().getY());
+        addDoubleToOnboardLog("theta", () -> object.getRobotPose().getRotation().getDegrees());
         addDoubleToOnboardLog("theta", () -> object.getRobotPose().getRotation().getDegrees());
     }
 }

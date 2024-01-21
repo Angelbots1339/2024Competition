@@ -172,7 +172,8 @@ public class Constants {
                 public static final double maxTranslationSpeed = GeneratedSwerveConstants.maxSpeed;
                 public static final double maxRotationSpeed = GeneratedSwerveConstants.maxAngularRate;
 
-                public static final double joystickDeadband = 0.1;
+                public static final double joystickDeadband = 0.05;
+                public static final double joystickCurvePower = 1;
 
                 public static final Boolean skewReduction = true;
                 public static final Boolean openLoopDrive = true;
@@ -180,24 +181,22 @@ public class Constants {
                 /**
                  * 
                  * @param val The joystick value
-                 * @param squareInputs Whether or not to square the inputs (x^2)
+                 * @param curveInputs Whether or not to curve the inputs (x^power)
                  * @return Desired robot speed from the joystick value
                  */
-                public static double fixTranslationJoystickValues(double val, boolean squareInputs) {
-                        return MathUtil.applyDeadband(Math.pow(val, squareInputs ? 2 : 1), joystickDeadband) * maxTranslationSpeed;
+                public static double fixTranslationJoystickValues(double val, boolean curveInputs) {
+                        return MathUtil.applyDeadband(Math.pow(Math.abs(val), curveInputs ? joystickCurvePower : 1), joystickDeadband) * maxTranslationSpeed * Math.signum(val);
                 }
 
                 /**
                  * 
                  * @param val The joystick value
-                 * @param squareInputs Whether or not to square the inputs (x^2)
+                 * @param curveInputs Whether or not to curve the inputs (x^power)
                  * @return Desired robot speed from the joystick value
                  */
-                public static double fixRotationJoystickValues(double val, boolean squareInputs) {
-                        return MathUtil.applyDeadband(Math.pow(val, squareInputs ? 2 : 1), joystickDeadband) * maxRotationSpeed;
+                public static double fixRotationJoystickValues(double val, boolean curveInputs) {
+                        return MathUtil.applyDeadband(Math.pow(Math.abs(val), curveInputs ? joystickCurvePower : 1), joystickDeadband) * maxRotationSpeed * Math.signum(val);
                 }
-
-                
         }
 
         public static final class AutoConstants {

@@ -34,7 +34,7 @@ public class PoseEstimation {
      * 
      * @param state
      */
-    public static void updateEstimatedPose(SwerveDriveState state) {
+    public static void updateEstimatedPose(SwerveDriveState state, SwerveModulePosition[] modulePositions, Swerve swerve) {
 
         double currentTime = Utils.getCurrentTimeSeconds();
         double diffTime = currentTime - lastTime;
@@ -45,6 +45,10 @@ public class PoseEstimation {
 
         estimatedVelocity = velocities;
         estimatedPose = state.Pose;
+
+        
+        // poseEstimatorNonVision.update(Rotation2d.fromDegrees(swerve.getPigeon2().getYaw().getValue()), swerve.getModulePositions());
+        // poseEstimatorNonVision.update(Rotation2d.fromDegrees(0), modulePositions);
 
     }
 

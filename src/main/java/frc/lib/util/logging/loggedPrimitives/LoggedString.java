@@ -15,7 +15,7 @@ import frc.lib.util.logging.Logger.LoggingLevel;
 import frc.lib.util.logging.loggedObjects.LoggedObject;
 
 /** Add your docs here. */
-public class LoggedString extends LoggedPrimitive<String> { // Strings technically aren't primitives Ethan 🤦 
+public class LoggedString extends LoggedPrimitive<String> {
     private StringLogEntry logEntry;
 
     /**

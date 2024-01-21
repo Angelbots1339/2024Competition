@@ -13,7 +13,7 @@ import frc.lib.util.logging.loggedObjects.LoggedObject;
 public class LoggedDoubleArray extends LoggedPrimitive<double[]>  {
   private DoubleArrayLogEntry logEntry;
   /**
-     * This constructor is used to create a LoggedPrimitive that is an shuffleboard only LOG
+     * This constructor is used to create a LoggedPrimitive that is an shuffulboard only LOG
      */
   public LoggedDoubleArray(LoggedObject<?> object, Supplier<double[]> supplier, GenericEntry entry) {
     super(object, supplier, entry);

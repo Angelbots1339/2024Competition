@@ -16,7 +16,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -51,58 +53,64 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
-    private final SwerveRequest.FieldCentric driveRequestFieldOriented = new SwerveRequest.FieldCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    private final SwerveRequest.RobotCentric driveRequestRobotOriented = new SwerveRequest.RobotCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    // private final SwerveRequest.FieldCentric driveRequestFieldOriented = new
+    // SwerveRequest.FieldCentric()
+    // .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    // private final SwerveRequest.RobotCentric driveRequestRobotOriented = new
+    // SwerveRequest.RobotCentric()
+    // .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     public Swerve(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
+        configPathPlanner();
 
         CommandScheduler.getInstance().registerSubsystem(this);
-        registerTelemetry((SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(pose));
+        registerTelemetry((SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(pose, m_modulePositions, this));
         PathPlannerLogging.setLogTargetPoseCallback(PoseEstimation::updateTargetAutoPose);
 
         if (Utils.isSimulation()) {
             startSimThread();
         }
         initializeLogging();
-        PoseEstimation.initNonVisionPoseEstimator(this.getState().Pose.getRotation(), m_kinematics, this.m_modulePositions);
+        PoseEstimation.initNonVisionPoseEstimator(Rotation2d.fromDegrees(this.m_pigeon2.getYaw().getValue()), m_kinematics,
+                this.m_modulePositions);
     }
 
     /**
      * 
-     * @param translationX Meters/second
-     * @param translationY Meters/second
-     * @param rotation Rad/second
+     * @param translationX  Meters/second
+     * @param translationY  Meters/second
+     * @param rotation      Rad/second
      * @param fieldOriented Use field oriented drive?
-     * @param skewReduction Use Skew Reduction? // TODO Currently doesn't work :( 
+     * @param skewReduction Use Skew Reduction? // TODO Currently doesn't work :(
      * @return
      */
     public Command drive(Supplier<Double> translationX, Supplier<Double> translationY, Supplier<Double> rotation,
             Supplier<Boolean> fieldOriented, Supplier<Boolean> skewReduction) {
 
-        SwerveRequest req;
+        return run(() -> {
+            SwerveRequest req;
 
-        if (fieldOriented.get()) {
-            req = new SwerveRequest.FieldCentric()
-                    .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
-                            : DriveRequestType.Velocity)
-                    .withVelocityX(translationX.get()) // Drive forward with negative Y (forward)
-                    .withVelocityY(translationY.get()) // Drive left with negative X (left)
-                    .withRotationalRate(rotation.get());
+            if (fieldOriented.get()) {
+                req = new SwerveRequest.FieldCentric()
+                        .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
+                                : DriveRequestType.Velocity)
+                        .withVelocityX(translationX.get()) // Drive forward with negative Y (forward)
+                        .withVelocityY(translationY.get()) // Drive left with negative X (left)
+                        .withRotationalRate(rotation.get());
 
-            
-        } else {
-            req = new SwerveRequest.RobotCentric()
-                    .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
-                            : DriveRequestType.Velocity)
-                    .withVelocityX(translationX.get()) // Drive forward with negative Y (forward)
-                    .withVelocityY(translationY.get()) // Drive left with negative X (left)
-                    .withRotationalRate(rotation.get());
-        }
+            } else {
+                req = new SwerveRequest.RobotCentric()
+                        .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
+                                : DriveRequestType.Velocity)
+                        .withVelocityX(translationX.get()) // Drive forward with negative Y (forward)
+                        .withVelocityY(translationY.get()) // Drive left with negative X (left)
+                        .withRotationalRate(rotation.get());
+            }
 
-        return run(() -> this.setControl(req));
+            this.setControl(req);
+            // System.out.println(translationX.get());
+        });
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -181,6 +189,11 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
 
+
+    public SwerveModulePosition[] getModulePositions() {
+        return m_modulePositions;
+    }
+
     private String command = "None";
 
     public void initializeLogging() {
@@ -189,11 +202,13 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         field = new LoggedField("PoseEstimator", logger, SwerveLogging.PoseEstimator, true);
 
         logger.add(field);
-        field.addPose2d("Field", () -> this.getState().Pose, true);
+        field.addPose2d("PoseEstimation", () -> this.getState().Pose, true);
 
-        logger.add(new LoggedSweveModules(null, logger, this, SwerveLogging.Modules));
+        logger.add(new LoggedSweveModules(null, logger, this,
+        SwerveLogging.Modules));
 
-        logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2, SwerveLogging.Gyro));
+        logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2,
+        SwerveLogging.Gyro));
 
         logger.addDouble("Heading", () -> this.getState().Pose.getRotation().getDegrees(), SwerveLogging.Pose);
         logger.addDouble("x velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);

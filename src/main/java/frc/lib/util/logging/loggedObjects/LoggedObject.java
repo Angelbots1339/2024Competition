@@ -47,13 +47,9 @@ public abstract class LoggedObject<T> implements Iloggable {
         this.prefix = prefix;
         this.object = object;
 
-        if (level == LoggingLevel.BOTH){
-            initializeDataLog();
+        if (level == LoggingLevel.SHUFFLEBOARD)
             initializeShuffleboard();
-        }
-        else if(level == LoggingLevel.SHUFFLEBOARD)
-            initializeShuffleboard();
-        else if(level == LoggingLevel.ONBOARD)
+        else if(level == LoggingLevel.ONBOARD_ONLY)
             initializeDataLog();
     }
 

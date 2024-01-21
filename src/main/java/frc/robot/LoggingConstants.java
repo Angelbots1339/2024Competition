@@ -9,15 +9,15 @@ import frc.lib.util.logging.Logger.LoggingLevel;
 /** Add your docs here. */
 public final class LoggingConstants {
         public class SwerveLogging {
-                public static LoggingLevel Modules = LoggingLevel.BOTH;
-                public static LoggingLevel Motors = LoggingLevel.ONBOARD;
-                public static LoggingLevel Gyro = LoggingLevel.BOTH;
-                public static LoggingLevel Pose = LoggingLevel.NONE;
+                public static LoggingLevel Modules = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Motors = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel Gyro = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Pose = LoggingLevel.SHUFFLEBOARD;
                 public static LoggingLevel Drive = LoggingLevel.NONE;
                 public static LoggingLevel PidPose = LoggingLevel.NONE;
                 public static LoggingLevel Auto = LoggingLevel.NONE;
-                public static LoggingLevel PoseEstimator = LoggingLevel.BOTH;
-                public static LoggingLevel Main = LoggingLevel.ONBOARD;
+                public static LoggingLevel PoseEstimator = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
         }
 
         public class RobotContainerLogging {
@@ -47,7 +47,7 @@ public final class LoggingConstants {
 
         public class ShooterLogging {
                 public static LoggingLevel Main = LoggingLevel.NONE;
-                public static LoggingLevel Motor = LoggingLevel.ONBOARD;
+                public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
