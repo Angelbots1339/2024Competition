@@ -7,11 +7,11 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team254.math.PolynomialRegression;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.logging.loggedObjects.LoggedFalcon;
-import frc.lib.util.math.PolynomialRegression;
 import frc.lib.util.TalonFXFactory;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;

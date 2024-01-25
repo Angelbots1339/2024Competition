@@ -8,6 +8,8 @@ import frc.lib.util.logging.Logger.LoggingLevel;
 
 /** Add your docs here. */
 public final class LoggingConstants {
+        // Shuffleboard automatically logs to both Onboard and Network Tables
+        // Make sure you call everything in Robot.java that needs to be called
         public class SwerveLogging {
                 public static LoggingLevel Modules = LoggingLevel.SHUFFLEBOARD;
                 public static LoggingLevel Motors = LoggingLevel.ONBOARD_ONLY;

@@ -44,21 +44,21 @@ public class TalonFXFactory {
         return createTalon(id, canBus, kDefaultConfiguration);
     }
 
-    /**
-     * 
-     * @param follower_id
-     * @param leader_id
-     * @param canBus
-     * @param invertedFromMaster Set to true for the motor to spin the opposite way
-     *                           of the master
-     * @return TalonFX
-     */
-    public static TalonFX createPermanentFollowerTalon(int follower_id, int leader_id, String canBus,
-            Boolean invertedFromMaster) {
-        final TalonFX talon = createTalon(follower_id, canBus, kFollowerConfiguration);
-        talon.setControl(new Follower(leader_id, invertedFromMaster));
-        return talon;
-    }    
+    // /**
+    //  * 
+    //  * @param follower_id
+    //  * @param leader_id
+    //  * @param canBus
+    //  * @param invertedFromMaster Set to true for the motor to spin the opposite way
+    //  *                           of the master
+    //  * @return TalonFX
+    //  */
+    // public static TalonFX createPermanentFollowerTalon(int follower_id, int leader_id, String canBus,
+    //         Boolean invertedFromMaster, TalonFXConfiguration config) {
+    //     final TalonFX talon = createTalon(follower_id, canBus, config);
+    //     talon.setControl(new Follower(leader_id, invertedFromMaster));
+    //     return talon;
+    // }    
 
     /**
      * Creates a new TalonFX and applies the given configuration

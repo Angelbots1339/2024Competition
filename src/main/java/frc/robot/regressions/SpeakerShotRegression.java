@@ -1,6 +1,6 @@
 package frc.robot.regressions;
 
-import frc.lib.util.math.PolynomialRegression;
+import frc.lib.team254.math.PolynomialRegression;
 
 public class SpeakerShotRegression {
     public static double[][] kWristManualAngle = {

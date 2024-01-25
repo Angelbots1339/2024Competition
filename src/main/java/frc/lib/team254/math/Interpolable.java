@@ -1,4 +1,4 @@
-package frc.lib.util.math;
+package frc.lib.team254.math;
 
 /**
  * Interpolable is an interface used by an Interpolating Tree as the Value type. Given two end points and an

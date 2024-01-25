@@ -1,11 +1,14 @@
 package frc.robot;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -13,9 +16,13 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
+import com.ctre.phoenix6.signals.ForwardLimitSourceValue;
+import com.ctre.phoenix6.signals.ForwardLimitTypeValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.ReverseLimitSourceValue;
+import com.ctre.phoenix6.signals.ReverseLimitTypeValue;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -29,7 +36,7 @@ import frc.robot.subsystems.Swerve;
 
 public class Constants {
 
-        public static final double kConfigTimeoutSeconds = 0.05;
+        public static final double kConfigTimeoutSeconds = 0.1;
 
         public static final class GeneratedSwerveConstants {
 
@@ -172,30 +179,36 @@ public class Constants {
                 public static final double maxTranslationSpeed = GeneratedSwerveConstants.maxSpeed;
                 public static final double maxRotationSpeed = GeneratedSwerveConstants.maxAngularRate;
 
-                public static final double joystickDeadband = 0.05;
-                public static final double joystickCurvePower = 1;
+                public static final double joystickDeadband = 0.1;
+                public static final double joystickCurvePower = 1.5;
 
                 public static final Boolean skewReduction = true;
                 public static final Boolean openLoopDrive = true;
 
+                public static final double looper_dt = 0.02; // used for 254's solution to swerve skew it is loop time in sec
+                public static final double FudgeFactorKp = 0.1; // used for the CD fudge factor solution to swerve skew
+                public static final double FudgeFactorSimpleKp = 0.1; // used for the CD fudge factor solution to swerve skew
+
                 /**
                  * 
-                 * @param val The joystick value
+                 * @param val         The joystick value
                  * @param curveInputs Whether or not to curve the inputs (x^power)
                  * @return Desired robot speed from the joystick value
                  */
                 public static double fixTranslationJoystickValues(double val, boolean curveInputs) {
-                        return MathUtil.applyDeadband(Math.pow(Math.abs(val), curveInputs ? joystickCurvePower : 1), joystickDeadband) * maxTranslationSpeed * Math.signum(val);
+                        return MathUtil.applyDeadband(Math.pow(Math.abs(val), curveInputs ? joystickCurvePower : 1),
+                                        joystickDeadband) * maxTranslationSpeed * Math.signum(val);
                 }
 
                 /**
                  * 
-                 * @param val The joystick value
+                 * @param val         The joystick value
                  * @param curveInputs Whether or not to curve the inputs (x^power)
                  * @return Desired robot speed from the joystick value
                  */
                 public static double fixRotationJoystickValues(double val, boolean curveInputs) {
-                        return MathUtil.applyDeadband(Math.pow(Math.abs(val), curveInputs ? joystickCurvePower : 1), joystickDeadband) * maxRotationSpeed * Math.signum(val);
+                        return MathUtil.applyDeadband(Math.pow(Math.abs(val), curveInputs ? joystickCurvePower : 1),
+                                        joystickDeadband) * maxRotationSpeed * Math.signum(val);
                 }
         }
 
@@ -230,13 +243,14 @@ public class Constants {
                                 .withSlot0(new Slot0Configs()
                                                 .withKP(0)
                                                 .withKI(0)
-                                                .withKD(0));
+                                                .withKD(0))
+                                .withFeedback(new FeedbackConfigs()
+                                                .withSensorToMechanismRatio(1));
 
                 public static final VelocityVoltage shooterControl = new VelocityVoltage(0, 0, false, 0, 0, false,
                                 false, false);
 
                 public static final double kShooterVelocityUpdateFrequency = 10; // Hertz
-
 
                 public static final double gamePieceSpeedLeavingShooter = 2; // Meters/second
         }
@@ -269,9 +283,50 @@ public class Constants {
                 public static final int wristMotorID = 18; // TODO Set these
                 public static final String wristMotorCANBus = "canivore";
 
-                private static final double wristMaxSpeed = 0.5;
+                public static final double wristGearRatio = 1; // Sensor to Mechanism Ratio
 
                 public static final TalonFXConfiguration kWristConfiguration = new TalonFXConfiguration()
+                                .withCurrentLimits(new CurrentLimitsConfigs()
+                                                .withStatorCurrentLimit(80)
+                                                .withSupplyCurrentLimit(40)
+                                                .withStatorCurrentLimitEnable(true)
+                                                .withSupplyCurrentLimitEnable(true))
+                                .withMotorOutput(new MotorOutputConfigs()
+                                                .withNeutralMode(NeutralModeValue.Brake)
+                                                .withInverted(InvertedValue.Clockwise_Positive))
+                                .withSlot0(new Slot0Configs()
+                                                .withKV(0)
+                                                .withKA(0)
+                                                .withKP(0)
+                                                .withKI(0)
+                                                .withKD(0)
+                                                .withGravityType(GravityTypeValue.Arm_Cosine)
+                                                .withKG(0))
+                                .withFeedback(new FeedbackConfigs()
+                                                .withSensorToMechanismRatio(wristGearRatio))
+                                .withMotionMagic(new MotionMagicConfigs()
+                                                .withMotionMagicCruiseVelocity(0) // TODO Tune
+                                                .withMotionMagicAcceleration(0)
+                                                .withMotionMagicJerk(0));
+
+                public static final MotionMagicVoltage wristPositionControl = new MotionMagicVoltage(0, true, 0, 0,
+                                false,
+                                false, false);
+
+                public static final double kWristPositionUpdateFrequency = 10; // Hertz
+                public static final double kWristErrorUpdateFrequency = 20; // Hertz
+
+        }
+
+        public static final class ElevatorConstants {
+                public static final int elevatorLeaderMotorID = 19; // TODO Set these
+                public static final int elevatorFollowerMotorID = 20;
+                public static final String elevatorMotorCANBus = "canivore";
+
+                public static final double elevatorGearRatio = 15; // Sensor to Mechanism Ratio
+                public static final double elevatorPinionRadius = 0.05; // Meters
+
+                public static final TalonFXConfiguration kElevatorConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
                                                 .withStatorCurrentLimit(80)
                                                 .withSupplyCurrentLimit(40)
@@ -284,27 +339,54 @@ public class Constants {
                                                 .withKP(0)
                                                 .withKI(0)
                                                 .withKD(0)
-                                                .withGravityType(GravityTypeValue.Arm_Cosine)
+                                                .withGravityType(GravityTypeValue.Elevator_Static)
                                                 .withKG(0))
+                                .withFeedback(new FeedbackConfigs()
+                                                .withSensorToMechanismRatio(elevatorGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
                                                 .withMotionMagicCruiseVelocity(0) // TODO Tune
                                                 .withMotionMagicAcceleration(0)
-                                                .withMotionMagicJerk(0));
+                                                .withMotionMagicJerk(0))
+                                .withHardwareLimitSwitch(new HardwareLimitSwitchConfigs()
+                                                .withForwardLimitEnable(true)
+                                                .withReverseLimitEnable(true)
+                                                .withForwardLimitAutosetPositionEnable(false)
+                                                .withReverseLimitAutosetPositionEnable(false)
+                                                .withForwardLimitSource(ForwardLimitSourceValue.LimitSwitchPin)
+                                                .withReverseLimitSource(ReverseLimitSourceValue.LimitSwitchPin)
+                                                .withForwardLimitType(ForwardLimitTypeValue.NormallyOpen)
+                                                .withReverseLimitType(ReverseLimitTypeValue.NormallyOpen));
 
-                public static final MotionMagicVoltage wristPositionControl = new MotionMagicVoltage(0, true, 0, 0, false,
+                public static final MotionMagicVoltage elevatorPositionControl = new MotionMagicVoltage(0, true, 0, 0,
+                                false,
                                 false, false);
 
+                public static final Follower followerControl = new Follower(elevatorLeaderMotorID, true);
 
-                public static final double kWristPositionUpdateFrequency = 10; // Hertz
-                public static final String Constants = null;
+                public static final double heightErrorTolerance = 0.02; // Meters
 
+                public static final double kElevatorPositionUpdateFrequency = 10; // Hertz
+                public static final double kElevatorErrorUpdateFrequency = 20; // Hertz
+
+
+
+                public static double elevatorMetersToRotations(double meters) {
+
+                        return meters / (2 * Math.PI * elevatorPinionRadius);
+                }
+
+                public static double elevatorRotationsToMeters(double rotations) {
+
+                        return rotations * (2 * Math.PI * elevatorPinionRadius);
+                }
         }
 
         public static final class VisionConstants {
 
                 public static final String limelight1Name = "";
 
-                public static final Translation3d limelight1Offset = new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0));
+                public static final Translation3d limelight1Offset = new Translation3d(Units.inchesToMeters(0),
+                                Units.inchesToMeters(0), Units.inchesToMeters(0));
         }
 
 }

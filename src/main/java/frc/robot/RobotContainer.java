@@ -20,9 +20,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.GeneratedSwerveConstants;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Swerve;
 
 public class RobotContainer {
@@ -33,6 +35,7 @@ public class RobotContainer {
   private final CommandXboxController driveController = new CommandXboxController(0); // My joystick
 
   private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
+  private final Intake intake = new Intake();
 
   private Supplier<Double> translationX = () -> DriverConstants
       .fixTranslationJoystickValues(-driveController.getLeftY(), true);
@@ -57,12 +60,16 @@ public class RobotContainer {
   }
 
   private void configDriverBindings() {
-    driveController.start().onTrue(swerve.runOnce(() -> swerve.seedFieldRelative()));
+    driveController.start().onTrue(swerve.runOnce(swerve::seedFieldRelative));
+
+
+    driveController.leftBumper().whileTrue(new StartEndCommand(() -> intake.spinner(0.3), intake::disable, intake));
+    driveController.rightBumper().whileTrue(new StartEndCommand(() -> intake.spinner(-0.3), intake::disable, intake));
 
   }
 
   private void configOperatorBindings() {
-
+ 
   }
 
   private void configureBindings() {

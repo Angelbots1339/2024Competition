@@ -6,11 +6,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team254.math.PolynomialRegression;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.TalonFXFactory;
-import frc.lib.util.math.PolynomialRegression;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.WristConstants;
@@ -36,6 +37,17 @@ public class Wrist extends SubsystemBase {
     wristMotor.setControl(WristConstants.wristPositionControl.withPosition(position));
   }
 
+
+   /**
+   * Move Wrist to position
+   * 
+   * @param rotations Rotation 2d
+   */
+  public void wristToPosition(Rotation2d position) {
+
+    wristToPosition(position.getRotations());
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -44,6 +56,10 @@ public class Wrist extends SubsystemBase {
   private TalonFX configWristMotor(TalonFX motor) {
     ErrorCheckUtil.checkError(
         motor.getPosition().setUpdateFrequency(WristConstants.kWristPositionUpdateFrequency,
+            Constants.kConfigTimeoutSeconds),
+        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    ErrorCheckUtil.checkError(
+        motor.getClosedLoopError().setUpdateFrequency(WristConstants.kWristErrorUpdateFrequency,
             Constants.kConfigTimeoutSeconds),
         CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
 

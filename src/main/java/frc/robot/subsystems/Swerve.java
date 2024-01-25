@@ -14,7 +14,6 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -89,6 +88,12 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             Supplier<Boolean> fieldOriented, Supplier<Boolean> skewReduction) {
 
         return run(() -> {
+            ChassisSpeeds speeds = new ChassisSpeeds(translationX.get(), translationY.get(), rotation.get());
+
+            if(skewReduction.get()) {
+                
+            }
+
             SwerveRequest req;
 
             if (fieldOriented.get()) {
