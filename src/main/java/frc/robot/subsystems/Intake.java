@@ -19,41 +19,39 @@ import frc.robot.Constants.ShooterConstants;
 
 public class Intake extends SubsystemBase {
 
-  // private TalonFX intakeMotor = configIntakeMotor(TalonFXFactory.createTalon(IntakeConstants.intakeMotorID,
-  //     IntakeConstants.intakeMotorCANBus, IntakeConstants.kIntakeConfiguration));
+  private TalonFX intakeMotor = configIntakeMotor(TalonFXFactory.createTalon(IntakeConstants.intakeMotorID,
+      IntakeConstants.intakeMotorCANBus, IntakeConstants.kIntakeConfiguration));
 
-  private CANSparkMax intakeMotorLeft = new CANSparkMax(20, MotorType.kBrushless);
-  private CANSparkMax intakeMotorRight = new CANSparkMax(21, MotorType.kBrushless);
+  // private CANSparkMax intakeMotorLeft = new CANSparkMax(20, MotorType.kBrushless);
+  // private CANSparkMax intakeMotorRight = new CANSparkMax(21, MotorType.kBrushless);
 
 
   /** Creates a new intake. */
   public Intake() {
 
-    intakeMotorLeft.setIdleMode(IdleMode.kBrake);
-    intakeMotorRight.setIdleMode(IdleMode.kBrake);
+    // intakeMotorLeft.setIdleMode(IdleMode.kBrake);
+    // intakeMotorRight.setIdleMode(IdleMode.kBrake);
 
   }
   
+  // public void spinner(double speed) {
+  //   intakeMotorRight.set(speed);
+  //   intakeMotorLeft.set(speed);
+  // }
+
   
-  public void spinner(double speed) {
-    intakeMotorRight.set(speed);
-    intakeMotorLeft.set(speed);
-  }
   
   public void disable() {
-    intakeMotorLeft.set(0);
-    intakeMotorRight.set(0);
+   intakeMotor.setControl(IntakeConstants.intakeDutyCycle.withOutput(0));
   }
 
+  public void runIntakeDutyCycle(double speed) {
+    intakeMotor.setControl(IntakeConstants.intakeDutyCycle.withOutput(speed));
+  }
 
-
-  // public void runIntakeDutyCycle(double speed) {
-  //   intakeMotor.setControl(IntakeConstants.intakeDutyCycle.withOutput(speed));
-  // }
-
-  // public void runIntakeTorqueControl(double amps) {
-  //   intakeMotor.setControl(IntakeConstants.intakeTorqueControl.withOutput(amps));
-  // }
+  public void runIntakeTorqueControl(double amps) {
+    intakeMotor.setControl(IntakeConstants.intakeTorqueControl.withOutput(amps));
+  }
 
   @Override
   public void periodic() {

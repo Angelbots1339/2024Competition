@@ -76,11 +76,13 @@ public class PoseEstimation {
      * 
      * @return the translated target position
      */
-    public static Translation2d calculateVirtualSpeakerOffset() {
+    public static Translation2d calculateVirtualSpeakerOffset(Translation2d targetPosition) {
 
         // TODO Do math here
 
-        return FieldUtil.getAllianceSpeakerPosition();
+        
+
+        return targetPosition;
     }
 
     /**

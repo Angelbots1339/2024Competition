@@ -1,0 +1,44 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Swerve:SHUFFLEBOARD/Field": "Field2d",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/superstructureSim": "Mechanism2d"
+    },
+    "windows": {
+      "/Shuffleboard/Swerve:SHUFFLEBOARD/Field": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/superstructureSim": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        "Swerve": {
+          "Module:0": {
+            "open": true
+          }
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "Auto Chooser": {
+          "string[]##v_/SmartDashboard/Auto Chooser/options": {
+            "open": true
+          }
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

@@ -38,25 +38,26 @@ public class LoggedField extends LoggedObject<Field2d> {
     @Override
     public void log(long timestamp) {
         super.log(timestamp);
-        
+
         robots.forEach((name, pose2d) -> {
             Pose2d pose = pose2d.get();
             object.getObject(name).setPose(pose);
         });
-        
 
     }
-
 
     public void addPose2d(String name, Supplier<Pose2d> pose2d, Boolean showOnShuffleboardWidget) {
         if (level == LoggingLevel.SHUFFLEBOARD) {
 
             getTab().addDoubleArray(name,
-            () -> {
-                        Pose2d pose = pose2d.get(); 
-                        return new double[] { pose.getX(), pose.getY(), pose.getRotation().getDegrees() };
+                    () -> {
+                        if (pose2d.get() != null && pose2d.get().getX() != Double.NaN) {
+                            Pose2d pose = pose2d.get();
+                            return new double[] { pose.getX(), pose.getY(), pose.getRotation().getDegrees() };
+                        }
+                        return new double[] { 0, 0, 0 };
                     });
-                
+
             if (showOnShuffleboardWidget)
                 robots.putIfAbsent(name, pose2d);
         }
@@ -64,9 +65,12 @@ public class LoggedField extends LoggedObject<Field2d> {
         else if (level == LoggingLevel.ONBOARD_ONLY)
             addDoubleArrayToOnboardLog(name,
                     () -> {
-                        Pose2d pose = pose2d.get(); 
-                       return new double[] { pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
-                });
+                        if (pose2d.get() != null && pose2d.get().getX() != Double.NaN) {
+                            Pose2d pose = pose2d.get();
+                            return new double[] { pose.getX(), pose.getY(), pose.getRotation().getDegrees() };
+                        }
+                        return new double[] { 0, 0, 0 };
+                    });
     }
 
     public void setTrajectory(String name, Trajectory trajectory, Boolean showOnShuffleboardWidget) {
@@ -86,20 +90,20 @@ public class LoggedField extends LoggedObject<Field2d> {
                 NetworkTableInstance.getDefault().getTable(getPrefix()).getSubTable(this.name).getDoubleArrayTopic(name)
                         .getGenericEntry().setDoubleArray(arr);
             }
-        }
-        else if (level == LoggingLevel.ONBOARD_ONLY){
-            if(!trajectories.containsKey(name)){
-                trajectories.put(name, new DoubleArrayLogEntry(DataLogManager.getLog(), getPrefix() + "/" + this.name + "/" + name));
+        } else if (level == LoggingLevel.ONBOARD_ONLY) {
+            if (!trajectories.containsKey(name)) {
+                trajectories.put(name,
+                        new DoubleArrayLogEntry(DataLogManager.getLog(), getPrefix() + "/" + this.name + "/" + name));
             }
             double[] arr = new double[trajectory.getStates().size() * 3];
-                int ndx = 0;
-                for (State pose : trajectory.getStates()) {
-                    Translation2d translation = pose.poseMeters.getTranslation();
-                    arr[ndx + 0] = translation.getX();
-                    arr[ndx + 1] = translation.getY();
-                    arr[ndx + 2] = pose.poseMeters.getRotation().getDegrees();
-                    ndx += 3;
-                }
+            int ndx = 0;
+            for (State pose : trajectory.getStates()) {
+                Translation2d translation = pose.poseMeters.getTranslation();
+                arr[ndx + 0] = translation.getX();
+                arr[ndx + 1] = translation.getY();
+                arr[ndx + 2] = pose.poseMeters.getRotation().getDegrees();
+                ndx += 3;
+            }
             trajectories.get(name).append(arr);
         }
 

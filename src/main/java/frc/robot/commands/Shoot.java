@@ -30,7 +30,7 @@ public class Shoot extends Command {
   @Override
   public void initialize() {
 
-    double targetDistance = PoseEstimation.getEstimatedPose().getTranslation().getDistance(PoseEstimation.calculateVirtualSpeakerOffset());
+    double targetDistance = PoseEstimation.getEstimatedPose().getTranslation().getDistance(PoseEstimation.calculateVirtualSpeakerOffset(FieldUtil.getAllianceSpeakerPosition()));
 
     wrist.wristToPosition(SpeakerShotRegression.wristRegression.predict(targetDistance));
     shooter.shooterToRMP(SpeakerShotRegression.flywheelRegression.predict(targetDistance));
@@ -46,6 +46,8 @@ public class Shoot extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    shooter.disable();
+    wrist.disable();
   }
 
   // Returns true when the command should end.

@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -30,8 +31,10 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.lib.util.WristElevatorState;
 import frc.robot.subsystems.Swerve;
 
 public class Constants {
@@ -180,14 +183,16 @@ public class Constants {
                 public static final double maxRotationSpeed = GeneratedSwerveConstants.maxAngularRate;
 
                 public static final double joystickDeadband = 0.1;
-                public static final double joystickCurvePower = 1.5;
+                public static final double joystickCurvePower = 1.3;
 
                 public static final Boolean skewReduction = true;
                 public static final Boolean openLoopDrive = true;
 
-                public static final double looper_dt = 0.02; // used for 254's solution to swerve skew it is loop time in sec
+                public static final double looper_dt = 0.02; // used for 254's solution to swerve skew it is loop time
+                                                             // in sec
                 public static final double FudgeFactorKp = 0.1; // used for the CD fudge factor solution to swerve skew
-                public static final double FudgeFactorSimpleKp = 0.1; // used for the CD fudge factor solution to swerve skew
+                public static final double FudgeFactorSimpleKp = 0.1; // used for the CD fudge factor solution to swerve
+                                                                      // skew
 
                 /**
                  * 
@@ -228,9 +233,10 @@ public class Constants {
 
         public static final class ShooterConstants {
 
-                public static final int shooterMotorID = 16; // TODO Set these
-                public static final String shooterMotorCANBus = "canivore";
-
+                public static final int shooterMotorTopID = 16; // TODO Set these
+                public static final int shooterMotorBottomID = 17; // TODO Set these
+                public static final String shooterMotorCANBus = "rio";
+                
                 public static final TalonFXConfiguration kShooterConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
                                                 .withStatorCurrentLimit(80)
@@ -238,7 +244,7 @@ public class Constants {
                                                 .withStatorCurrentLimitEnable(true)
                                                 .withSupplyCurrentLimitEnable(true))
                                 .withMotorOutput(new MotorOutputConfigs()
-                                                .withNeutralMode(NeutralModeValue.Coast)
+                                                .withNeutralMode(NeutralModeValue.Brake)
                                                 .withInverted(InvertedValue.Clockwise_Positive))
                                 .withSlot0(new Slot0Configs()
                                                 .withKP(0)
@@ -256,8 +262,8 @@ public class Constants {
         }
 
         public static final class IntakeConstants {
-                public static final int intakeMotorID = 17; // TODO Set these
-                public static final String intakeMotorCANBus = "canivore";
+                public static final int intakeMotorID = 18; // TODO Set these
+                public static final String intakeMotorCANBus = "rio";
 
                 private static final double intakeMaxSpeed = 0.5;
 
@@ -279,11 +285,41 @@ public class Constants {
 
         }
 
+        public static final class IndexerConstants {
+                public static final int indexerMotorID = 19; // TODO Set these
+                public static final String indexerMotorCANBus = "rio";
+
+
+                public static final TalonFXConfiguration kIndexerConfiguration = new TalonFXConfiguration()
+                                .withCurrentLimits(new CurrentLimitsConfigs()
+                                                .withStatorCurrentLimit(80)
+                                                .withSupplyCurrentLimit(40)
+                                                .withStatorCurrentLimitEnable(true)
+                                                .withSupplyCurrentLimitEnable(true))
+                                .withMotorOutput(new MotorOutputConfigs()
+                                                .withNeutralMode(NeutralModeValue.Coast)
+                                                .withInverted(InvertedValue.Clockwise_Positive));
+
+                public static final DutyCycleOut indexerDutyCycle = new DutyCycleOut(0, true, false,
+                                false, false);
+
+                public static final TorqueCurrentFOC indexerTorqueControl = new TorqueCurrentFOC(0, 0.5, 0, false, false,
+                                false);
+
+        }
+
         public static final class WristConstants {
-                public static final int wristMotorID = 18; // TODO Set these
+                public static final int wristMotorID = 20; // TODO Set these
                 public static final String wristMotorCANBus = "canivore";
 
                 public static final double wristGearRatio = 1; // Sensor to Mechanism Ratio
+
+                /****
+                 * Wrist is counter-clockwise (from the left side of the robot with intake
+                 * forward) with 0 being horizontal towards the intake
+                 ****/
+                public static final Rotation2d wristMinAngle = Rotation2d.fromDegrees(0);
+                public static final Rotation2d wristMaxAngle = Rotation2d.fromDegrees(180);
 
                 public static final TalonFXConfiguration kWristConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -307,7 +343,12 @@ public class Constants {
                                 .withMotionMagic(new MotionMagicConfigs()
                                                 .withMotionMagicCruiseVelocity(0) // TODO Tune
                                                 .withMotionMagicAcceleration(0)
-                                                .withMotionMagicJerk(0));
+                                                .withMotionMagicJerk(0))
+                                .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
+                                                .withForwardSoftLimitEnable(true)
+                                                .withReverseSoftLimitEnable(true)
+                                                .withForwardSoftLimitThreshold(wristMaxAngle.getDegrees())
+                                                .withReverseSoftLimitThreshold(wristMinAngle.getRotations()));
 
                 public static final MotionMagicVoltage wristPositionControl = new MotionMagicVoltage(0, true, 0, 0,
                                 false,
@@ -319,12 +360,14 @@ public class Constants {
         }
 
         public static final class ElevatorConstants {
-                public static final int elevatorLeaderMotorID = 19; // TODO Set these
-                public static final int elevatorFollowerMotorID = 20;
+                public static final int elevatorLeaderMotorID = 21; // TODO Set these
+                public static final int elevatorFollowerMotorID = 22;
                 public static final String elevatorMotorCANBus = "canivore";
 
                 public static final double elevatorGearRatio = 15; // Sensor to Mechanism Ratio
                 public static final double elevatorPinionRadius = 0.05; // Meters
+
+                public static final double maxElevatorHeight = 1; // Meters
 
                 public static final TalonFXConfiguration kElevatorConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -355,7 +398,18 @@ public class Constants {
                                                 .withForwardLimitSource(ForwardLimitSourceValue.LimitSwitchPin)
                                                 .withReverseLimitSource(ReverseLimitSourceValue.LimitSwitchPin)
                                                 .withForwardLimitType(ForwardLimitTypeValue.NormallyOpen)
-                                                .withReverseLimitType(ReverseLimitTypeValue.NormallyOpen));
+                                                .withReverseLimitType(ReverseLimitTypeValue.NormallyOpen))
+                                .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
+                                                .withForwardSoftLimitEnable(true)
+                                                .withReverseSoftLimitEnable(true)
+                                                .withForwardSoftLimitThreshold(
+                                                                elevatorMetersToRotations(maxElevatorHeight)) // Set
+                                                                                                              // forward
+                                                                                                              // limit
+                                                                                                              // to max
+                                                                                                              // elevator
+                                                                                                              // height
+                                                .withReverseSoftLimitThreshold(0));
 
                 public static final MotionMagicVoltage elevatorPositionControl = new MotionMagicVoltage(0, true, 0, 0,
                                 false,
@@ -368,8 +422,6 @@ public class Constants {
                 public static final double kElevatorPositionUpdateFrequency = 10; // Hertz
                 public static final double kElevatorErrorUpdateFrequency = 20; // Hertz
 
-
-
                 public static double elevatorMetersToRotations(double meters) {
 
                         return meters / (2 * Math.PI * elevatorPinionRadius);
@@ -379,6 +431,13 @@ public class Constants {
 
                         return rotations * (2 * Math.PI * elevatorPinionRadius);
                 }
+        }
+
+        public static class SuperstructureStates {
+
+                public WristElevatorState Handoff = new WristElevatorState(0, 0);
+                public WristElevatorState ScoreAmp = new WristElevatorState(0, 0);
+
         }
 
         public static final class VisionConstants {

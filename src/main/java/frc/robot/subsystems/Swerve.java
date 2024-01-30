@@ -27,10 +27,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.lib.util.LimelightHelpers;
 import frc.lib.util.PoseEstimation;
+import frc.lib.util.SwerveSkewMath;
 import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.logging.loggedObjects.LoggedField;
 import frc.lib.util.logging.loggedObjects.LoggedPigeon2;
 import frc.lib.util.logging.loggedObjects.LoggedSweveModules;
+import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.VisionConstants;
@@ -71,8 +74,11 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             startSimThread();
         }
         initializeLogging();
-        PoseEstimation.initNonVisionPoseEstimator(Rotation2d.fromDegrees(this.m_pigeon2.getYaw().getValue()), m_kinematics,
+        PoseEstimation.initNonVisionPoseEstimator(Rotation2d.fromDegrees(this.m_pigeon2.getYaw().getValue()),
+                m_kinematics,
                 this.m_modulePositions);
+
+        // m_pigeon2.setYaw(0, Constants.kConfigTimeoutSeconds);
     }
 
     /**
@@ -90,8 +96,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         return run(() -> {
             ChassisSpeeds speeds = new ChassisSpeeds(translationX.get(), translationY.get(), rotation.get());
 
-            if(skewReduction.get()) {
-                
+            if (skewReduction.get()) {
+                SwerveSkewMath.reduceSkewFromLogTwist2d(speeds);
             }
 
             SwerveRequest req;
@@ -139,20 +145,23 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     public void updateVision() {
 
-        if (LimelightHelpers.getFiducialID(VisionConstants.limelight1Name) < 0) {
-            return;
+        if (Robot.isReal()) {
+
+            if (LimelightHelpers.getFiducialID(VisionConstants.limelight1Name) < 0) {
+                return;
+            }
+
+            double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelight1Name)
+                    .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
+            double xyStdDev2 = MathUtil.clamp(0.002 * Math.pow(2.2, tagDistance), 0, 1);
+
+            Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelight1Name);
+            double poseFromVisionTimestamp = Timer.getFPGATimestamp()
+                    - (LimelightHelpers.getLatency_Capture(VisionConstants.limelight1Name)
+                            + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelight1Name)) / 1000;
+
+            addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
         }
-
-        double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelight1Name)
-                .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-        double xyStdDev2 = MathUtil.clamp(0.002 * Math.pow(2.2, tagDistance), 0, 1);
-
-        Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelight1Name);
-        double poseFromVisionTimestamp = Timer.getFPGATimestamp()
-                - (LimelightHelpers.getLatency_Capture(VisionConstants.limelight1Name)
-                        + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelight1Name)) / 1000;
-
-        addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
 
     }
 
@@ -194,7 +203,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
 
-
     public SwerveModulePosition[] getModulePositions() {
         return m_modulePositions;
     }
@@ -210,10 +218,10 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         field.addPose2d("PoseEstimation", () -> this.getState().Pose, true);
 
         logger.add(new LoggedSweveModules(null, logger, this,
-        SwerveLogging.Modules));
+                SwerveLogging.Modules));
 
         logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2,
-        SwerveLogging.Gyro));
+                SwerveLogging.Gyro));
 
         logger.addDouble("Heading", () -> this.getState().Pose.getRotation().getDegrees(), SwerveLogging.Pose);
         logger.addDouble("x velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
