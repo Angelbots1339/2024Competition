@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -82,6 +83,13 @@ public class Shooter extends SubsystemBase {
     shooterMotorTop.setControl(ShooterConstants.shooterControl.withVelocity(topSpeed));
     shooterMotorBottom.setControl(ShooterConstants.shooterControl.withVelocity(bottomSpeed));
   }
+
+
+  public void setVoltage(double volts) {
+    shooterMotorTop.setControl(new VoltageOut(volts));
+    shooterMotorBottom.setControl(new VoltageOut(volts));
+  }
+
 
   public void disable() {
     shooterMotorTop.setControl(new DutyCycleOut(0));

@@ -24,11 +24,12 @@ import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
 
-  private TalonFX elevatorMotorLeader = configElevatorMotor(TalonFXFactory.createTalon(ElevatorConstants.elevatorLeaderMotorID,
-      ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration));
-  private TalonFX elevatorMotorFollower = configElevatorMotor(TalonFXFactory.createTalon(ElevatorConstants.elevatorFollowerMotorID,
-      ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration));
-
+  private TalonFX elevatorMotorLeader = configElevatorMotor(
+      TalonFXFactory.createTalon(ElevatorConstants.elevatorLeaderMotorID,
+          ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration));
+  private TalonFX elevatorMotorFollower = configElevatorMotor(
+      TalonFXFactory.createTalon(ElevatorConstants.elevatorFollowerMotorID,
+          ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration));
 
   private TalonFXSimState leaderSim = elevatorMotorLeader.getSimState();
   private TalonFXSimState followerSim = elevatorMotorFollower.getSimState();
@@ -36,47 +37,45 @@ public class Elevator extends SubsystemBase {
   private MechanismLigament2d elevatorMech;
   private ElevatorSim elevatorSim;
 
-
   private double targetHeight = 0;
 
   /** Creates a new Elevator. */
   public Elevator() {
     elevatorMotorFollower.setControl(ElevatorConstants.followerControl);
 
-    if(Robot.isSimulation()) {
+    if (Robot.isSimulation()) {
       elevatorMech = Mech2dManger.getInstance().getElevator();
-      
-      elevatorSim = new ElevatorSim(DCMotor.getFalcon500(2), ElevatorConstants.elevatorGearRatio, 19.0509,
-        ElevatorConstants.elevatorPinionRadius, 0, 1.4732, false, 0);
+
+      elevatorSim = new ElevatorSim(DCMotor.getFalcon500(2), ElevatorConstants.elevatorGearRatio, 20,
+          ElevatorConstants.elevatorPinionRadius, 0, 1.4732, true, 0);
     }
   }
-
-
-
 
   /**
    * Move Elevator to position
    * 
-   * @param meters 0 to 1 meter
+   * @param height in meters (0 to max height)
    */
   public void toHeight(double height) {
-    elevatorMotorLeader.setControl(
-      ElevatorConstants.elevatorPositionControl.withPosition(ElevatorConstants.elevatorMetersToRotations(height)));
 
-      targetHeight = height;
-  }
-
-
-  /**
-   * Move elevator to home position (0) and rest
-   */
-  public void home() {
-    if(isAtSetpoint()) {
-      disable(); // Let the elevator rest while at 0 (stop outputting Kg)
-    } else {
-      toHeight(0);
+    if (!isAtSetpoint()) {
+      elevatorMotorLeader.setControl(
+          ElevatorConstants.elevatorPositionControl.withPosition(ElevatorConstants.elevatorMetersToRotations(height)));
+    } else { 
+      // Let the elevator rest while at 0 (stop outputting Kg)
+      elevatorMotorLeader.setControl(new DutyCycleOut(0));
     }
 
+    elevatorMotorFollower.setControl(ElevatorConstants.followerControl);
+
+    targetHeight = height;
+  }
+
+  /**
+   * Move elevator to home position (0)
+   */
+  public void home() {
+      toHeight(0);
   }
 
   /**
@@ -91,13 +90,12 @@ public class Elevator extends SubsystemBase {
    * 
    * @param volts
    */
-  public void setElevatorVolts(double volts) {
+  public void setVoltage(double volts) {
 
     elevatorMotorLeader.setControl(new VoltageOut(volts));
   }
 
-  public void resetPosition(double height) {
-
+  public void resetEncoderPosition(double height) {
     elevatorMotorLeader.setPosition(ElevatorConstants.elevatorMetersToRotations(height));
   }
 
@@ -106,23 +104,25 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean isAtSetpoint() {
-    return (targetHeight - getSetpointError()) < ElevatorConstants.heightErrorTolerance;
+    return Math.abs(targetHeight - getSetpointError()) < ElevatorConstants.heightErrorTolerance;
   }
-
 
   @Override
   public void simulationPeriodic() {
     leaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     followerSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    elevatorMech.setLength(ElevatorConstants.elevatorRotationsToMeters(elevatorMotorLeader.getPosition().getValue()));
+    elevatorSim.setInputVoltage(leaderSim.getMotorVoltage());
+    elevatorSim.update(0.02);
+    elevatorMech.setLength(elevatorSim.getPositionMeters());
+
+    leaderSim.setRawRotorPosition(ElevatorConstants.elevatorMetersToRotations(elevatorSim.getPositionMeters()));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
-
 
   private TalonFX configElevatorMotor(TalonFX motor) {
 

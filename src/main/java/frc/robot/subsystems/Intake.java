@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -39,7 +40,7 @@ public class Intake extends SubsystemBase {
   //   intakeMotorLeft.set(speed);
   // }
 
-  
+
   
   public void disable() {
    intakeMotor.setControl(IntakeConstants.intakeDutyCycle.withOutput(0));
@@ -51,6 +52,10 @@ public class Intake extends SubsystemBase {
 
   public void runIntakeTorqueControl(double amps) {
     intakeMotor.setControl(IntakeConstants.intakeTorqueControl.withOutput(amps));
+  }
+
+  public void setVoltage(double volts) {
+    intakeMotor.setControl(new VoltageOut(volts));
   }
 
   @Override

@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -12,10 +13,11 @@ import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.TalonFXFactory;
 import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.Constants.IntakeConstants;
 
 public class Indexer extends SubsystemBase {
 
-  private TalonFX intakeMotor = configIndexerMotor(TalonFXFactory.createTalon(IndexerConstants.indexerMotorID,
+  private TalonFX indexerMotor = configIndexerMotor(TalonFXFactory.createTalon(IndexerConstants.indexerMotorID,
       IndexerConstants.indexerMotorCANBus, IndexerConstants.kIndexerConfiguration));
 
   /** Creates a new Indexer. */
@@ -24,11 +26,19 @@ public class Indexer extends SubsystemBase {
   }
 
   public void runIndexerDutyCycle(double speed) {
-    intakeMotor.setControl(IndexerConstants.indexerDutyCycle.withOutput(speed));
+    indexerMotor.setControl(IndexerConstants.indexerDutyCycle.withOutput(speed));
   }
 
   public void runIndexerTorqueControl(double amps) {
-    intakeMotor.setControl(IndexerConstants.indexerTorqueControl.withOutput(amps));
+    indexerMotor.setControl(IndexerConstants.indexerTorqueControl.withOutput(amps));
+  }
+
+  public void setVoltage(double volts) {
+    indexerMotor.setControl(new VoltageOut(volts));
+  }
+
+  public void disable() {
+    indexerMotor.setControl(IntakeConstants.intakeDutyCycle.withOutput(0));
   }
 
   @Override

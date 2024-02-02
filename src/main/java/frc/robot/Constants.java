@@ -236,7 +236,9 @@ public class Constants {
                 public static final int shooterMotorTopID = 16; // TODO Set these
                 public static final int shooterMotorBottomID = 17; // TODO Set these
                 public static final String shooterMotorCANBus = "rio";
-                
+
+                public static final double shooterGearRatio = 0.5; // Sensor to Mechanism Ratio
+
                 public static final TalonFXConfiguration kShooterConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
                                                 .withStatorCurrentLimit(80)
@@ -251,7 +253,7 @@ public class Constants {
                                                 .withKI(0)
                                                 .withKD(0))
                                 .withFeedback(new FeedbackConfigs()
-                                                .withSensorToMechanismRatio(1));
+                                                .withSensorToMechanismRatio(shooterGearRatio));
 
                 public static final VelocityVoltage shooterControl = new VelocityVoltage(0, 0, false, 0, 0, false,
                                 false, false);
@@ -289,7 +291,6 @@ public class Constants {
                 public static final int indexerMotorID = 19; // TODO Set these
                 public static final String indexerMotorCANBus = "rio";
 
-
                 public static final TalonFXConfiguration kIndexerConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
                                                 .withStatorCurrentLimit(80)
@@ -303,16 +304,18 @@ public class Constants {
                 public static final DutyCycleOut indexerDutyCycle = new DutyCycleOut(0, true, false,
                                 false, false);
 
-                public static final TorqueCurrentFOC indexerTorqueControl = new TorqueCurrentFOC(0, 0.5, 0, false, false,
+                public static final TorqueCurrentFOC indexerTorqueControl = new TorqueCurrentFOC(0, 0.5, 0, false,
+                                false,
                                 false);
 
         }
 
         public static final class WristConstants {
-                public static final int wristMotorID = 20; // TODO Set these
+                public static final int wristLeaderMotorID = 20; // TODO Set these
+                public static final int wristFollowerMotorID = 21; // TODO Set these
                 public static final String wristMotorCANBus = "canivore";
 
-                public static final double wristGearRatio = 1; // Sensor to Mechanism Ratio
+                public static final double wristGearRatio = 75; // Sensor to Mechanism Ratio
 
                 /****
                  * Wrist is counter-clockwise (from the left side of the robot with intake
@@ -333,7 +336,7 @@ public class Constants {
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
-                                                .withKP(0)
+                                                .withKP(4)
                                                 .withKI(0)
                                                 .withKD(0)
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
@@ -354,14 +357,16 @@ public class Constants {
                                 false,
                                 false, false);
 
+                public static final Follower followerControl = new Follower(wristLeaderMotorID, true);
+
                 public static final double kWristPositionUpdateFrequency = 10; // Hertz
                 public static final double kWristErrorUpdateFrequency = 20; // Hertz
 
         }
 
         public static final class ElevatorConstants {
-                public static final int elevatorLeaderMotorID = 21; // TODO Set these
-                public static final int elevatorFollowerMotorID = 22;
+                public static final int elevatorLeaderMotorID = 22; // TODO Set these
+                public static final int elevatorFollowerMotorID = 23;
                 public static final String elevatorMotorCANBus = "canivore";
 
                 public static final double elevatorGearRatio = 15; // Sensor to Mechanism Ratio
@@ -377,9 +382,9 @@ public class Constants {
                                                 .withSupplyCurrentLimitEnable(true))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
-                                                .withInverted(InvertedValue.Clockwise_Positive))
+                                                .withInverted(InvertedValue.CounterClockwise_Positive))
                                 .withSlot0(new Slot0Configs()
-                                                .withKP(0)
+                                                .withKP(4)
                                                 .withKI(0)
                                                 .withKD(0)
                                                 .withGravityType(GravityTypeValue.Elevator_Static)
@@ -394,7 +399,9 @@ public class Constants {
                                                 .withForwardLimitEnable(true)
                                                 .withReverseLimitEnable(true)
                                                 .withForwardLimitAutosetPositionEnable(false)
-                                                .withReverseLimitAutosetPositionEnable(false)
+                                                .withReverseLimitAutosetPositionEnable(true)
+                                                .withForwardLimitAutosetPositionValue(maxElevatorHeight)
+                                                .withReverseLimitAutosetPositionValue(0)
                                                 .withForwardLimitSource(ForwardLimitSourceValue.LimitSwitchPin)
                                                 .withReverseLimitSource(ReverseLimitSourceValue.LimitSwitchPin)
                                                 .withForwardLimitType(ForwardLimitTypeValue.NormallyOpen)
@@ -403,12 +410,7 @@ public class Constants {
                                                 .withForwardSoftLimitEnable(true)
                                                 .withReverseSoftLimitEnable(true)
                                                 .withForwardSoftLimitThreshold(
-                                                                elevatorMetersToRotations(maxElevatorHeight)) // Set
-                                                                                                              // forward
-                                                                                                              // limit
-                                                                                                              // to max
-                                                                                                              // elevator
-                                                                                                              // height
+                                                                elevatorMetersToRotations(maxElevatorHeight))
                                                 .withReverseSoftLimitThreshold(0));
 
                 public static final MotionMagicVoltage elevatorPositionControl = new MotionMagicVoltage(0, true, 0, 0,
@@ -435,16 +437,16 @@ public class Constants {
 
         public static class SuperstructureStates {
 
-                public WristElevatorState Handoff = new WristElevatorState(0, 0);
-                public WristElevatorState ScoreAmp = new WristElevatorState(0, 0);
+                public static final WristElevatorState Handoff = new WristElevatorState(0, 0);
+                public static final WristElevatorState ScoreAmp = new WristElevatorState(0, 0);
 
         }
 
         public static final class VisionConstants {
 
-                public static final String limelight1Name = "";
+                public static final String limelightCenterName = "";
 
-                public static final Translation3d limelight1Offset = new Translation3d(Units.inchesToMeters(0),
+                public static final Translation3d limelightCenterOffset = new Translation3d(Units.inchesToMeters(0),
                                 Units.inchesToMeters(0), Units.inchesToMeters(0));
         }
 

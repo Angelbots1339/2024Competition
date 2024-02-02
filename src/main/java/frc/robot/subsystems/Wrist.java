@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,10 +26,12 @@ import frc.robot.regressions.SpeakerShotRegression;
 
 public class Wrist extends SubsystemBase {
 
-  private TalonFX wristMotor = configWristMotor(TalonFXFactory.createTalon(WristConstants.wristMotorID,
+  private TalonFX wristLeaderMotor = configWristMotor(TalonFXFactory.createTalon(WristConstants.wristLeaderMotorID,
+      WristConstants.wristMotorCANBus, WristConstants.kWristConfiguration));
+  private TalonFX wristFollowerMotor = configWristMotor(TalonFXFactory.createTalon(WristConstants.wristFollowerMotorID,
       WristConstants.wristMotorCANBus, WristConstants.kWristConfiguration));
 
-    private final DutyCycleEncoder dutyCycleEncoder = new DutyCycleEncoder(23);
+    // private final DutyCycleEncoder dutyCycleEncoder = new DutyCycleEncoder(23);
 
 
   private double targetPosition = 0;
@@ -37,9 +40,12 @@ public class Wrist extends SubsystemBase {
 
   /** Creates a new Wrist. */
   public Wrist() {
+
+    wristFollowerMotor.setControl(WristConstants.followerControl);
+
      if(Robot.isSimulation()) {
       simWrist = Mech2dManger.getInstance().getWrist();
-      wristMotor.getSimState().setSupplyVoltage(12);
+      wristLeaderMotor.getSimState().setSupplyVoltage(12);
     }
   }
 
@@ -50,7 +56,9 @@ public class Wrist extends SubsystemBase {
    */
   public void wristToPosition(double position) {
 
-    wristMotor.setControl(WristConstants.wristPositionControl.withPosition(position));
+    wristLeaderMotor.setControl(WristConstants.wristPositionControl.withPosition(position));
+    wristFollowerMotor.setControl(WristConstants.followerControl);
+    
     targetPosition = position;
   }
 
@@ -69,15 +77,19 @@ public class Wrist extends SubsystemBase {
   }
 
   public double getSetpointError() {
-    return ElevatorConstants.elevatorRotationsToMeters(wristMotor.getClosedLoopError().getValue());
+    return ElevatorConstants.elevatorRotationsToMeters(wristLeaderMotor.getClosedLoopError().getValue());
   }
 
   public boolean isAtSetpoint() {
-    return (targetPosition - getSetpointError()) < ElevatorConstants.heightErrorTolerance;
+    return Math.abs(targetPosition - getSetpointError()) <= ElevatorConstants.heightErrorTolerance;
   }
 
   public void disable() {
-    wristMotor.setControl(new DutyCycleOut(0));
+    wristLeaderMotor.setControl(new DutyCycleOut(0));
+  }
+
+  public void setVoltage(double volts) {
+    wristLeaderMotor.setControl(new VoltageOut(volts));
   }
 
 
@@ -85,7 +97,7 @@ public class Wrist extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     super.simulationPeriodic();
-      simWrist.setAngle(Rotation2d.fromRotations(wristMotor.getPosition().getValue()));
+      simWrist.setAngle(Rotation2d.fromRotations(wristLeaderMotor.getPosition().getValue() * 360));
   }
 
   @Override

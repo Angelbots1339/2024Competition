@@ -147,18 +147,18 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         if (Robot.isReal()) {
 
-            if (LimelightHelpers.getFiducialID(VisionConstants.limelight1Name) < 0) {
+            if (LimelightHelpers.getFiducialID(VisionConstants.limelightCenterName) < 0) {
                 return;
             }
 
-            double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelight1Name)
+            double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightCenterName)
                     .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
             double xyStdDev2 = MathUtil.clamp(0.002 * Math.pow(2.2, tagDistance), 0, 1);
 
-            Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelight1Name);
+            Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName);
             double poseFromVisionTimestamp = Timer.getFPGATimestamp()
-                    - (LimelightHelpers.getLatency_Capture(VisionConstants.limelight1Name)
-                            + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelight1Name)) / 1000;
+                    - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightCenterName)
+                            + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightCenterName)) / 1000;
 
             addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
         }
