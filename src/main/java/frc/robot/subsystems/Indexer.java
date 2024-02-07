@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.playingwithfusion.TimeOfFlight;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
@@ -13,16 +14,20 @@ import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.TalonFXFactory;
 import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants;
-import frc.robot.Constants.IntakeConstants;
 
 public class Indexer extends SubsystemBase {
 
   private TalonFX indexerMotor = configIndexerMotor(TalonFXFactory.createTalon(IndexerConstants.indexerMotorID,
       IndexerConstants.indexerMotorCANBus, IndexerConstants.kIndexerConfiguration));
 
+
+    private TimeOfFlight indexerSensor = new TimeOfFlight(IndexerConstants.indexerSensorID);
+
+
   /** Creates a new Indexer. */
   public Indexer() {
-
+    indexerSensor.setRangingMode(IndexerConstants.indexerSensorRange, IndexerConstants.indexerSampleTime);
+    indexerSensor.setRangeOfInterest(8, 8, 12, 12);
   }
 
   public void runIndexerDutyCycle(double speed) {
@@ -37,8 +42,12 @@ public class Indexer extends SubsystemBase {
     indexerMotor.setControl(new VoltageOut(volts));
   }
 
+  public boolean isNotePresent() {
+    return indexerSensor.getRange() < IndexerConstants.isNotePresentThreshold;
+  }
+
   public void disable() {
-    indexerMotor.setControl(IntakeConstants.intakeDutyCycle.withOutput(0));
+    indexerMotor.setControl(IndexerConstants.indexerDutyCycle.withOutput(0));
   }
 
   @Override

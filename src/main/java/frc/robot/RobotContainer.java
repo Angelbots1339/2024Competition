@@ -10,18 +10,20 @@ import com.ctre.phoenix6.Utils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.tuning.GlobalVoltageTuning;
 import frc.lib.util.tuning.ShooterTuning;
 import frc.robot.Constants.DriverConstants;
+import frc.robot.commands.IntakeNote;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -36,11 +38,11 @@ public class RobotContainer {
   
   /***** Instancing Subsystems *****/
   private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
-  private final Intake intake = new Intake();
-  private final Shooter shooter = new Shooter();
-  private final Wrist wrist = new Wrist();
-  private final Elevator elevator = new Elevator();
-  private final Indexer indexer = new Indexer();
+  // private final Intake intake = new Intake();
+  // private final Shooter shooter = new Shooter();
+  // private final Wrist wrist = new Wrist();
+  // private final Elevator elevator = new Elevator();
+  // private final Indexer indexer = new Indexer();
 
 
 
@@ -64,8 +66,14 @@ public class RobotContainer {
 
   private Trigger resetGyro = new JoystickButton(driveController, XboxController.Button.kStart.value);
 
+  
   private void configDriverBindings() {
-    resetGyro.onTrue(swerve.runOnce(swerve::seedFieldRelative));
+    resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
+    // runIntake.whileTrue(new StartEndCommand(() -> intake.runIntakeDutyCycle(0.75), () -> intake.runIntakeDutyCycle(0), intake));
+    // runOuttake.whileTrue(new StartEndCommand(() -> intake.runIntakeDutyCycle(-0.75), () -> intake.runIntakeDutyCycle(0), intake));
+
+    // runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false));
+
 
   }
 
@@ -85,16 +93,16 @@ public class RobotContainer {
     configDefaultCommands();
     configDriverBindings();
     configOperatorBindings();
-
-    if (Utils.isSimulation()) {
-      swerve.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
-    }
+    
   }
 
   private void configDefaultCommands() {
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
     // wrist.setDefaultCommand(new RunCommand(wrist::home, wrist));
     // elevator.setDefaultCommand(new RunCommand(elevator::home, elevator));
+    // intake.setDefaultCommand(new RunCommand(() -> intake.disable(), intake));
+    // indexer.setDefaultCommand(new RunCommand(() -> indexer.disable(), indexer));
+    // shooter.setDefaultCommand(new RunCommand(() -> shooter.disable(), shooter));
   }
 
   public Command getAutonomousCommand() {
@@ -112,11 +120,11 @@ public class RobotContainer {
    */
   public void tuningInitialization() {
 
-    if (tuningMode == TuningMode.VOLTAGE) {
-      GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
-    } else if (tuningMode == TuningMode.SHOOTER) {
-      ShooterTuning.initialize(shooter);
-    }
+    // if (tuningMode == TuningMode.VOLTAGE) {
+    //   GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
+    // } else if (tuningMode == TuningMode.SHOOTER) {
+    //   ShooterTuning.initialize(shooter);
+    // }
   }
 
   /**

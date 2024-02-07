@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.0814806583316874,
+        "x": 1.437490004609639,
         "y": 6.587093364001543
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7525241300482604,
-        "y": 6.618448315600335
+        "x": 2.0888178628209113,
+        "y": 6.81008170349674
       },
       "isLocked": false,
       "linkedName": "AmpSideStart"
@@ -69,7 +69,31 @@
       }
     }
   ],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intakeNote"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 6.21,
     "maxAcceleration": 3.0,

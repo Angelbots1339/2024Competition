@@ -4,16 +4,21 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.configs.Pigeon2FeaturesConfigs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -53,6 +58,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     private LoggedField field;
     private LoggedField autoField;
 
+    private PIDController angularDrivePID = new PIDController(DriverConstants.angularDriveKP, DriverConstants.angularDriveKI, DriverConstants.angularDriveKD);
+
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
     // private final SwerveRequest.FieldCentric driveRequestFieldOriented = new
@@ -78,7 +85,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 m_kinematics,
                 this.m_modulePositions);
 
-        // m_pigeon2.setYaw(0, Constants.kConfigTimeoutSeconds);
     }
 
     /**
@@ -124,6 +130,57 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         });
     }
 
+    /**
+     * 
+     * @param translationX  Meters/second
+     * @param translationY  Meters/second
+     * @param rotation      Rad/second
+     * @param fieldOriented Use field oriented drive?
+     * @param skewReduction Use Skew Reduction? // TODO Currently doesn't work :(
+     * @return
+     */
+    public Command angularDrive(Supplier<Double> translationX, Supplier<Double> translationY, Supplier<Rotation2d> desiredRotation,
+            Supplier<Boolean> fieldOriented, Supplier<Boolean> skewReduction) {
+
+        return run(() -> {
+            Rotation2d rot = desiredRotation.get();
+
+            // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+            //     rot = rot.plus(Rotation2d.fromDegrees(180));
+            // };
+
+            double pid = angularDrivePID.calculate(this.getGyroYaw().getDegrees(), rot.getDegrees());
+
+
+            ChassisSpeeds speeds = new ChassisSpeeds(translationX.get(), translationY.get(), pid + (DriverConstants.angularDriveKS * Math.signum(pid)));
+
+            if (skewReduction.get()) {
+                speeds = SwerveSkewMath.reduceSkewFromLogTwist2d(speeds);
+            }
+
+            SwerveRequest req;
+
+            if (fieldOriented.get()) {
+                req = new SwerveRequest.FieldCentric()
+                        .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
+                                : DriveRequestType.Velocity)
+                        .withVelocityX(speeds.vxMetersPerSecond) 
+                        .withVelocityY(speeds.vyMetersPerSecond) 
+                        .withRotationalRate(speeds.omegaRadiansPerSecond);
+
+            } else {
+                req = new SwerveRequest.RobotCentric()
+                        .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
+                                : DriveRequestType.Velocity)
+                        .withVelocityX(translationX.get()) 
+                        .withVelocityY(translationY.get()) 
+                        .withRotationalRate(speeds.omegaRadiansPerSecond);
+            }
+
+            this.setControl(req);
+        });
+    }
+
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
     }
@@ -162,12 +219,11 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
             addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
         }
-
     }
 
     public void periodic() {
 
-        updateVision();
+        // updateVision();
 
     }
 
@@ -193,6 +249,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 },
                 this // Reference to this subsystem to set requirements
         );
+
+        NamedCommands.registerCommand("", null);
     }
 
     public void setChassisSpeeds(ChassisSpeeds speeds) {
@@ -205,6 +263,22 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     public SwerveModulePosition[] getModulePositions() {
         return m_modulePositions;
+    }
+
+    public Rotation2d getGyroYaw() {
+        return Rotation2d.fromDegrees(m_pigeon2.getYaw().getValue());
+    }
+
+    public void setGyroYaw(Rotation2d yaw) {
+        m_pigeon2.setYaw(yaw.getDegrees(), Constants.kConfigTimeoutSeconds);
+    }
+
+    public void zeroGyro() {
+        if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {   
+            setGyroYaw(Rotation2d.fromDegrees(0));
+        } else {            
+            setGyroYaw(Rotation2d.fromDegrees(180));
+        }
     }
 
     private String command = "None";

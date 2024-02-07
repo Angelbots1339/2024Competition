@@ -6,9 +6,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.playingwithfusion.TimeOfFlight;
+
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
@@ -16,34 +15,37 @@ import frc.lib.util.TalonFXFactory;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.ShooterConstants;
 
 public class Intake extends SubsystemBase {
 
   private TalonFX intakeMotor = configIntakeMotor(TalonFXFactory.createTalon(IntakeConstants.intakeMotorID,
       IntakeConstants.intakeMotorCANBus, IntakeConstants.kIntakeConfiguration));
 
-  // private CANSparkMax intakeMotorLeft = new CANSparkMax(20, MotorType.kBrushless);
-  // private CANSparkMax intakeMotorRight = new CANSparkMax(21, MotorType.kBrushless);
+  private TimeOfFlight intakeSensor = new TimeOfFlight(IntakeConstants.intakeSensorID);
 
+  // private CANSparkMax intakeMotorLeft = new CANSparkMax(20,
+  // MotorType.kBrushless);
+  // private CANSparkMax intakeMotorRight = new CANSparkMax(21,
+  // MotorType.kBrushless);
 
   /** Creates a new intake. */
   public Intake() {
+
+    intakeSensor.setRangingMode(IntakeConstants.intakeSensorRange, IntakeConstants.intakeSampleTime);
+    intakeSensor.setRangeOfInterest(8, 8, 12, 12);
 
     // intakeMotorLeft.setIdleMode(IdleMode.kBrake);
     // intakeMotorRight.setIdleMode(IdleMode.kBrake);
 
   }
-  
+
   // public void spinner(double speed) {
-  //   intakeMotorRight.set(speed);
-  //   intakeMotorLeft.set(speed);
+  // intakeMotorRight.set(speed);
+  // intakeMotorLeft.set(speed);
   // }
 
-
-  
   public void disable() {
-   intakeMotor.setControl(IntakeConstants.intakeDutyCycle.withOutput(0));
+    intakeMotor.setControl(IntakeConstants.intakeDutyCycle.withOutput(0));
   }
 
   public void runIntakeDutyCycle(double speed) {
@@ -56,6 +58,10 @@ public class Intake extends SubsystemBase {
 
   public void setVoltage(double volts) {
     intakeMotor.setControl(new VoltageOut(volts));
+  }
+
+  public boolean isNotePresent() {
+    return intakeSensor.getRange() < IntakeConstants.isNotePresentThreshold;
   }
 
   @Override

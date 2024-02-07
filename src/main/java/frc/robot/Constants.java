@@ -29,6 +29,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackTy
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -85,10 +86,10 @@ public class Constants {
 
                 private static final boolean kSteerMotorReversed = false;
                 private static final boolean kInvertLeftSide = false;
-                private static final boolean kInvertRightSide = true;
+                private static final boolean kInvertRightSide = false;
 
-                private static final String kSwerveCANbusName = "";
-                private static final int kPigeonId = 21;
+                private static final String kSwerveCANbusName = "Drivebase";
+                private static final int kPigeonId = 13;
 
                 // These are only used for simulation
                 private static final double kSteerInertia = 0.00001;
@@ -120,40 +121,40 @@ public class Constants {
                                 .withSteerMotorInverted(kSteerMotorReversed);
 
                 // Front Left
-                private static final int kFrontLeftDriveMotorId = 1;
-                private static final int kFrontLeftSteerMotorId = 3;
-                private static final int kFrontLeftEncoderId = 2;
-                private static final double kFrontLeftEncoderOffset = -0.995361328125;
+                private static final int kFrontLeftDriveMotorId = 7;
+                private static final int kFrontLeftSteerMotorId = 9;
+                private static final int kFrontLeftEncoderId = 8;
+                private static final double kFrontLeftEncoderOffset = -0.194092;
 
-                private static final double kFrontLeftXPosInches = 10.75;
-                private static final double kFrontLeftYPosInches = 11.75;
+                private static final double kFrontLeftXPosInches = 10.25;
+                private static final double kFrontLeftYPosInches = 10.25;
 
                 // Front Right
-                private static final int kFrontRightDriveMotorId = 12;
-                private static final int kFrontRightSteerMotorId = 14;
-                private static final int kFrontRightEncoderId = 13;
-                private static final double kFrontRightEncoderOffset = -0.443359375;
+                private static final int kFrontRightDriveMotorId = 10;
+                private static final int kFrontRightSteerMotorId = 12;
+                private static final int kFrontRightEncoderId = 11;
+                private static final double kFrontRightEncoderOffset = -0.251221;
 
-                private static final double kFrontRightXPosInches = 10.75;
-                private static final double kFrontRightYPosInches = -11.75;
+                private static final double kFrontRightXPosInches = 10.25;
+                private static final double kFrontRightYPosInches = -10.25;
 
                 // Back Left
                 private static final int kBackLeftDriveMotorId = 4;
                 private static final int kBackLeftSteerMotorId = 6;
                 private static final int kBackLeftEncoderId = 5;
-                private static final double kBackLeftEncoderOffset = -0.334228515625;
+                private static final double kBackLeftEncoderOffset = -0.342773;
 
-                private static final double kBackLeftXPosInches = -10.75;
-                private static final double kBackLeftYPosInches = 11.75;
+                private static final double kBackLeftXPosInches = -10.25;
+                private static final double kBackLeftYPosInches = 10.25;
 
                 // Back Right
-                private static final int kBackRightDriveMotorId = 9;
-                private static final int kBackRightSteerMotorId = 11;
-                private static final int kBackRightEncoderId = 10;
-                private static final double kBackRightEncoderOffset = -0.608642578125;
+                private static final int kBackRightDriveMotorId = 1;
+                private static final int kBackRightSteerMotorId = 3;
+                private static final int kBackRightEncoderId = 2;
+                private static final double kBackRightEncoderOffset = -0.253174;
 
-                private static final double kBackRightXPosInches = -10.75;
-                private static final double kBackRightYPosInches = -11.75;
+                private static final double kBackRightXPosInches = -10.25;
+                private static final double kBackRightYPosInches = -10.25;
 
                 private static final SwerveModuleConstants FrontLeft = ConstantCreator.createModuleConstants(
                                 kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId,
@@ -183,7 +184,7 @@ public class Constants {
                 public static final double maxRotationSpeed = GeneratedSwerveConstants.maxAngularRate;
 
                 public static final double joystickDeadband = 0.1;
-                public static final double joystickCurvePower = 1.3;
+                public static final double joystickCurvePower = 1;
 
                 public static final Boolean skewReduction = true;
                 public static final Boolean openLoopDrive = true;
@@ -193,6 +194,13 @@ public class Constants {
                 public static final double FudgeFactorKp = 0.1; // used for the CD fudge factor solution to swerve skew
                 public static final double FudgeFactorSimpleKp = 0.1; // used for the CD fudge factor solution to swerve
                                                                       // skew
+
+                public static final double angularDriveKP = 0;
+                public static final double angularDriveKI = 0;
+                public static final double angularDriveKD = 0;
+
+                public static final double angularDriveKS = 0.7; // radians per sec
+                public static final double angularDriveTolerance = 2; // Degrees
 
                 /**
                  * 
@@ -267,7 +275,14 @@ public class Constants {
                 public static final int intakeMotorID = 18; // TODO Set these
                 public static final String intakeMotorCANBus = "rio";
 
-                private static final double intakeMaxSpeed = 0.5;
+                public static final int intakeSensorID = 26; // TODO Set these
+                public static final RangingMode intakeSensorRange = RangingMode.Short;
+                public static final double intakeSampleTime = 100;
+
+                public static final double isNotePresentThreshold = 5; // Milimeters
+
+                private static final double intakeMaxDutyCycle = 0.5;
+                public static final double intakingTargetCurrent = 20; // Amps
 
                 public static final TalonFXConfiguration kIntakeConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -282,7 +297,8 @@ public class Constants {
                 public static final DutyCycleOut intakeDutyCycle = new DutyCycleOut(0, true, false,
                                 false, false);
 
-                public static final TorqueCurrentFOC intakeTorqueControl = new TorqueCurrentFOC(0, 0.5, 0, false, false,
+                public static final TorqueCurrentFOC intakeTorqueControl = new TorqueCurrentFOC(0, intakeMaxDutyCycle,
+                                0, false, false,
                                 false);
 
         }
@@ -290,6 +306,15 @@ public class Constants {
         public static final class IndexerConstants {
                 public static final int indexerMotorID = 19; // TODO Set these
                 public static final String indexerMotorCANBus = "rio";
+
+                public static final int indexerSensorID = 27; // TODO Set these
+                public static final RangingMode indexerSensorRange = RangingMode.Short;
+                public static final double indexerSampleTime = 100;
+
+                public static final double isNotePresentThreshold = 5; // Milimeters
+
+                private static final double indexerMaxDutyCycle = 0.5;
+                public static final double indexingTargetCurrent = 20; // Amps
 
                 public static final TalonFXConfiguration kIndexerConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -304,7 +329,8 @@ public class Constants {
                 public static final DutyCycleOut indexerDutyCycle = new DutyCycleOut(0, true, false,
                                 false, false);
 
-                public static final TorqueCurrentFOC indexerTorqueControl = new TorqueCurrentFOC(0, 0.5, 0, false,
+                public static final TorqueCurrentFOC indexerTorqueControl = new TorqueCurrentFOC(0, indexerMaxDutyCycle,
+                                0, false,
                                 false,
                                 false);
 
@@ -316,6 +342,11 @@ public class Constants {
                 public static final String wristMotorCANBus = "canivore";
 
                 public static final double wristGearRatio = 75; // Sensor to Mechanism Ratio
+                public static final double timeBeforeEncoderReset = 1.5; // Seconds before the motor is initialized to
+                                                                         // the through bore;
+                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees(0); // 0 Should be
+                                                                                                  // straight forward
+                                                                                                  // towards the intake
 
                 /****
                  * Wrist is counter-clockwise (from the left side of the robot with intake
@@ -336,7 +367,7 @@ public class Constants {
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
-                                                .withKP(4)
+                                                .withKP(0)
                                                 .withKI(0)
                                                 .withKD(0)
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
@@ -384,7 +415,9 @@ public class Constants {
                                                 .withNeutralMode(NeutralModeValue.Coast)
                                                 .withInverted(InvertedValue.CounterClockwise_Positive))
                                 .withSlot0(new Slot0Configs()
-                                                .withKP(4)
+                                                .withKV(0)
+                                                .withKA(0)
+                                                .withKP(0)
                                                 .withKI(0)
                                                 .withKD(0)
                                                 .withGravityType(GravityTypeValue.Elevator_Static)

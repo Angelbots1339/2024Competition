@@ -10,19 +10,17 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.team254.math.PolynomialRegression;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.Mech2dManger;
 import frc.lib.util.TalonFXFactory;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.Robot;
-import frc.robot.regressions.SpeakerShotRegression;
 
 public class Wrist extends SubsystemBase {
 
@@ -31,9 +29,9 @@ public class Wrist extends SubsystemBase {
   private TalonFX wristFollowerMotor = configWristMotor(TalonFXFactory.createTalon(WristConstants.wristFollowerMotorID,
       WristConstants.wristMotorCANBus, WristConstants.kWristConfiguration));
 
-    // private final DutyCycleEncoder dutyCycleEncoder = new DutyCycleEncoder(23);
+  private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(23);
 
-
+  private final Timer throughBoreTimer = new Timer();
   private double targetPosition = 0;
 
   private MechanismLigament2d simWrist;
@@ -43,7 +41,9 @@ public class Wrist extends SubsystemBase {
 
     wristFollowerMotor.setControl(WristConstants.followerControl);
 
-     if(Robot.isSimulation()) {
+    wristEncoder.setDistancePerRotation(1);
+
+    if (Robot.isSimulation()) {
       simWrist = Mech2dManger.getInstance().getWrist();
       wristLeaderMotor.getSimState().setSupplyVoltage(12);
     }
@@ -58,7 +58,7 @@ public class Wrist extends SubsystemBase {
 
     wristLeaderMotor.setControl(WristConstants.wristPositionControl.withPosition(position));
     wristFollowerMotor.setControl(WristConstants.followerControl);
-    
+
     targetPosition = position;
   }
 
@@ -92,17 +92,23 @@ public class Wrist extends SubsystemBase {
     wristLeaderMotor.setControl(new VoltageOut(volts));
   }
 
-
-
   @Override
   public void simulationPeriodic() {
-    super.simulationPeriodic();
-      simWrist.setAngle(Rotation2d.fromRotations(wristLeaderMotor.getPosition().getValue() * 360));
+    simWrist.setAngle(Rotation2d.fromRotations(wristLeaderMotor.getPosition().getValue() * 360));
+  }
+
+  public void resetToAbsolute() {
+    wristLeaderMotor.setPosition(WristConstants.absoluteEncoderOffset.getRotations() - wristEncoder.getAbsolutePosition());
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (throughBoreTimer.get() >= WristConstants.timeBeforeEncoderReset) {
+      resetToAbsolute();
+      throughBoreTimer.reset();
+      throughBoreTimer.stop();
+    }
   }
 
   private TalonFX configWristMotor(TalonFX motor) {
