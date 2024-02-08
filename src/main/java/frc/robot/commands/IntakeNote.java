@@ -81,7 +81,7 @@ public class IntakeNote extends Command {
   public void end(boolean interrupted) {
 
     if (!indexer.isNotePresent() && intake.isNotePresent()) {
-      CommandScheduler.getInstance().schedule(new HandoffNote(intake, indexer, wrist, elevator));
+      CommandScheduler.getInstance().schedule(new HandOffNote(intake, indexer, wrist, elevator));
     } else {
       intake.disable();
       indexer.disable();

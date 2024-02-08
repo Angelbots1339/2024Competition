@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.383878846461396,
+        "x": 5.850818210895682,
         "y": 6.587093364001543
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.282661407915408,
+        "x": 6.749600772349694,
         "y": 6.036778332815925
       },
       "isLocked": false,
@@ -52,7 +52,31 @@
     }
   ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Pickup, Shoot",
+      "waypointRelativePos": 0.35,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intakeNote"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 6.21,
     "maxAcceleration": 3.0,

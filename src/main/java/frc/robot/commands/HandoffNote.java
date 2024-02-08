@@ -13,7 +13,7 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Wrist;
 
-public class HandoffNote extends Command {
+public class HandOffNote extends Command {
 
     private Intake intake;
   private Indexer indexer;
@@ -21,7 +21,7 @@ public class HandoffNote extends Command {
   private Elevator elevator;
 
   /** Creates a new HandoffNote. */
-  public HandoffNote(Intake intake, Indexer indexer, Wrist wrist, Elevator elevator) {
+  public HandOffNote(Intake intake, Indexer indexer, Wrist wrist, Elevator elevator) {
 
     this.intake = intake;
     this.indexer = indexer;

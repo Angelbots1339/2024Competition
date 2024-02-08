@@ -247,6 +247,8 @@ public class Constants {
 
                 public static final double shooterGearRatio = 0.5; // Sensor to Mechanism Ratio
 
+                public static final double shooterVelocityTolerance = 0.1; // Rotations per second
+
                 public static final TalonFXConfiguration kShooterConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
                                                 .withStatorCurrentLimit(80)

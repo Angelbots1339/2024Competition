@@ -38,6 +38,9 @@ public class Shooter extends SubsystemBase {
 
   private LoggedSubsystem logger;
 
+  private double topTargetVelocity = 0;
+  private double bottomTargetVelocity = 0;
+
   /** Creates a new Shooter. */
   public Shooter() {
 
@@ -71,6 +74,9 @@ public class Shooter extends SubsystemBase {
   public void shooterToVelocity(double speed) {
     shooterMotorTop.setControl(ShooterConstants.shooterControl.withVelocity(speed));
     shooterMotorBottom.setControl(ShooterConstants.shooterControl.withVelocity(speed));
+
+    topTargetVelocity = speed;
+    bottomTargetVelocity = speed;
   }
 
   /**
@@ -82,18 +88,30 @@ public class Shooter extends SubsystemBase {
   public void shooterToVelocity(double topSpeed, double bottomSpeed) {
     shooterMotorTop.setControl(ShooterConstants.shooterControl.withVelocity(topSpeed));
     shooterMotorBottom.setControl(ShooterConstants.shooterControl.withVelocity(bottomSpeed));
-  }
 
+    topTargetVelocity = topSpeed;
+    bottomTargetVelocity = bottomSpeed;
+  }
 
   public void setVoltage(double volts) {
     shooterMotorTop.setControl(new VoltageOut(volts));
     shooterMotorBottom.setControl(new VoltageOut(volts));
+
+    topTargetVelocity = 0;
+    bottomTargetVelocity = 0;
   }
 
+  public boolean isAtSetpoint() {
+    return Math.abs(shooterMotorTop.getVelocity().getValue() - topTargetVelocity) < ShooterConstants.shooterVelocityTolerance
+        && Math.abs(shooterMotorBottom.getVelocity().getValue() - bottomTargetVelocity) < ShooterConstants.shooterVelocityTolerance;
+  }
 
   public void disable() {
     shooterMotorTop.setControl(new DutyCycleOut(0));
     shooterMotorBottom.setControl(new DutyCycleOut(0));
+
+    topTargetVelocity = 0;
+    bottomTargetVelocity = 0;
   }
 
   @Override

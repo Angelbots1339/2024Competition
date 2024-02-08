@@ -1,12 +1,8 @@
-// Copyright (c) 2023 FRC 6328
+// All credit to FRC 6328
 // http://github.com/Mechanical-Advantage
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file at
-// the root directory of this project.
+
 
 package frc.lib.util;
-
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -34,20 +30,15 @@ public class Leds extends SubsystemBase {
 
   // Robot state tracking
   public int loopCycleCount = 0;
-  public HPGamePiece hpGamePiece = HPGamePiece.NONE;
-  public boolean hpConeTipped = false;
-  public boolean hpDoubleSubstation = false;
-  public boolean hpThrowGamePiece = false;
-  public boolean gripperStopped = false;
-  public boolean intakeReady = false;
-  public boolean autoScore = false;
-  public boolean autoSubstation = false;
+
+  public boolean intaking = false;
+  public boolean hasGamePiece = false;
+  public boolean shooting = false;
+
   public boolean distraction = false;
-  public boolean fallen = false;
+
   public boolean endgameAlert = false;
   public boolean sameBattery = false;
-  public boolean armCoast = false;
-  public boolean armEstopped = false;
   public boolean autoFinished = false;
   public double autoFinishedTime = 0.0;
   public boolean lowBatteryAlert = false;
@@ -62,27 +53,36 @@ public class Leds extends SubsystemBase {
   private final AddressableLED leds;
   private final AddressableLEDBuffer buffer;
   private final Notifier loadingNotifier;
+  
+  private final AddressableLED underglowLeds;
+  private final AddressableLEDBuffer underglowBuffer;
 
   // Constants
-  private static final boolean prideLeds = false;
   private static final int minLoopCycleCount = 10;
-  private static final int length = 43;
-  private static final int staticLength = 14;
-  private static final int staticSectionLength = 3;
   private static final double strobeFastDuration = 0.1;
   private static final double strobeSlowDuration = 0.2;
   private static final double breathDuration = 1.0;
+
   private static final double rainbowCycleLength = 25.0;
   private static final double rainbowDuration = 0.25;
+
   private static final double waveExponent = 0.4;
   private static final double waveFastCycleLength = 25.0;
   private static final double waveFastDuration = 0.25;
   private static final double waveSlowCycleLength = 25.0;
   private static final double waveSlowDuration = 3.0;
-  private static final double waveAllianceCycleLength = 15.0;
-  private static final double waveAllianceDuration = 2.0;
+
+  private static final double breathAllianceCycleLength = 15.0;
+
   private static final double autoFadeTime = 2.5; // 3s nominal
   private static final double autoFadeMaxTime = 5.0; // Return to normal
+
+  // LED Lengths
+  private static final int length = 43;
+  private static final int staticLength = 14;
+  private static final int staticSectionLength = 3;
+
+  private static final int underglowLength = 24;
 
   private Leds() {
     System.out.println("[Init] Creating LEDs");
@@ -91,20 +91,26 @@ public class Leds extends SubsystemBase {
     leds.setLength(length);
     leds.setData(buffer);
     leds.start();
-    loadingNotifier =
-        new Notifier(
-            () -> {
-              synchronized (this) {
-                breath(
-                    Section.STATIC_LOW,
-                    Color.kWhite,
-                    Color.kBlack,
-                    0.25,
-                    System.currentTimeMillis() / 1000.0);
-                leds.setData(buffer);
-              }
-            });
+    loadingNotifier = new Notifier(
+        () -> {
+          synchronized (this) {
+            breath(
+                Section.STATIC_LOW,
+                Color.kWhite,
+                Color.kBlack,
+                0.25,
+                System.currentTimeMillis() / 1000.0);
+            leds.setData(buffer);
+          }
+        });
     loadingNotifier.startPeriodic(0.02);
+
+
+    underglowLeds = new AddressableLED(1);
+    underglowBuffer = new AddressableLEDBuffer(underglowLength);
+    underglowLeds.setLength(underglowLength);
+    underglowLeds.setData(underglowBuffer);
+    underglowLeds.start();
   }
 
   public synchronized void periodic() {
@@ -137,6 +143,7 @@ public class Leds extends SubsystemBase {
 
     // Select LED mode
     solid(Section.FULL, Color.kBlack); // Default to off
+
     if (estopped) {
       solid(Section.FULL, Color.kRed);
     } else if (DriverStation.isDisabled()) {
@@ -148,65 +155,30 @@ public class Leds extends SubsystemBase {
         // Low battery
         solid(Section.FULL, Color.kOrangeRed);
 
-      } else if (prideLeds) {
-        // Pride stripes
-        stripes(
-            Section.FULL,
-            List.of(
-                Color.kBlack,
-                Color.kRed,
-                Color.kOrangeRed,
-                Color.kYellow,
-                Color.kGreen,
-                Color.kBlue,
-                Color.kPurple,
-                Color.kBlack,
-                new Color(0.15, 0.3, 1.0),
-                Color.kDeepPink,
-                Color.kWhite,
-                Color.kDeepPink,
-                new Color(0.15, 0.3, 1.0)),
-            3,
-            5.0);
-        switch (alliance.get()) {
-          case Red:
-            solid(Section.STATIC_LOW, Color.kRed);
-            buffer.setLED(staticSectionLength, Color.kBlack);
-            break;
-          case Blue:
-            solid(Section.STATIC_LOW, Color.kBlue);
-            buffer.setLED(staticSectionLength, Color.kBlack);
-            break;
-          default:
-            break;
-        }
-
       } else {
         // Default pattern
         switch (alliance.get()) {
           case Red:
-            wave(
+            breath(
                 Section.FULL,
                 Color.kRed,
                 Color.kBlack,
-                waveAllianceCycleLength,
-                waveAllianceDuration);
+                breathAllianceCycleLength,
+                System.currentTimeMillis() / 1000.0);
             break;
           case Blue:
-            wave(
+            breath(
                 Section.FULL,
                 Color.kBlue,
                 Color.kBlack,
-                waveAllianceCycleLength,
-                waveAllianceDuration);
+                breathAllianceCycleLength,
+                System.currentTimeMillis() / 1000.0);
             break;
           default:
             wave(Section.FULL, Color.kGold, Color.kDarkBlue, waveSlowCycleLength, waveSlowDuration);
             break;
         }
       }
-    } else if (fallen) {
-      strobe(Section.FULL, Color.kWhite, strobeFastDuration);
     } else if (DriverStation.isAutonomous()) {
       wave(Section.FULL, Color.kGold, Color.kDarkBlue, waveFastCycleLength, waveFastDuration);
       if (autoFinished) {
@@ -219,20 +191,17 @@ public class Leds extends SubsystemBase {
         wave(Section.FULL, Color.kGold, Color.kDarkBlue, waveSlowCycleLength, waveSlowDuration);
       }
 
-
       // Set special modes
-      if (distraction) {
-        strobe(Section.SHOULDER, Color.kWhite, strobeFastDuration);
-      } else if (endgameAlert) {
+      if (endgameAlert) {
         strobe(Section.SHOULDER, Color.kBlue, strobeSlowDuration);
-      } else if (autoScore) {
+      } else if (shooting) {
         rainbow(Section.SHOULDER, rainbowCycleLength, rainbowDuration);
-      } else if (gripperStopped) {
-        solid(Section.SHOULDER, Color.kGreen);
-      } else if (intakeReady) {
-        solid(Section.SHOULDER, Color.kPurple);
-      } else if (autoSubstation) {
-        rainbow(Section.SHOULDER, rainbowCycleLength, rainbowDuration);
+      } else if (intaking) {
+        if (hasGamePiece) {
+          strobe(Section.SHOULDER, Color.kGreen, strobeSlowDuration);
+        } else {
+          strobe(Section.SHOULDER, Color.kPurple, strobeSlowDuration);
+        }
       }
     }
 
@@ -243,6 +212,7 @@ public class Leds extends SubsystemBase {
 
     // Update LEDs
     leds.setData(buffer);
+    underglowLeds.setData(underglowBuffer);
   }
 
   private void solid(Section section, Color color) {
@@ -313,8 +283,7 @@ public class Leds extends SubsystemBase {
   private void stripes(Section section, List<Color> colors, int length, double duration) {
     int offset = (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
     for (int i = section.start(); i < section.end(); i++) {
-      int colorIndex =
-          (int) (Math.floor((double) (i - offset) / length) + colors.size()) % colors.size();
+      int colorIndex = (int) (Math.floor((double) (i - offset) / length) + colors.size()) % colors.size();
       colorIndex = colors.size() - 1 - colorIndex;
       buffer.setLED(i, colors.get(colorIndex));
     }

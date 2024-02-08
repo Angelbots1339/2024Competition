@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.Utils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -24,6 +24,8 @@ import frc.lib.util.tuning.GlobalVoltageTuning;
 import frc.lib.util.tuning.ShooterTuning;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.commands.IntakeNote;
+import frc.robot.commands.Shoot;
+import frc.robot.commands.Auto.AutoShoot;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -38,11 +40,11 @@ public class RobotContainer {
   
   /***** Instancing Subsystems *****/
   private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
-  // private final Intake intake = new Intake();
-  // private final Shooter shooter = new Shooter();
-  // private final Wrist wrist = new Wrist();
-  // private final Elevator elevator = new Elevator();
-  // private final Indexer indexer = new Indexer();
+  private final Intake intake = new Intake();
+  private final Shooter shooter = new Shooter();
+  private final Wrist wrist = new Wrist();
+  private final Elevator elevator = new Elevator();
+  private final Indexer indexer = new Indexer();
 
 
 
@@ -74,6 +76,7 @@ public class RobotContainer {
 
     // runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false));
 
+    // shoot.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, () -> false));
 
   }
 
@@ -89,6 +92,11 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser("");
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist, elevator, swerve, indexer));
+    NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer, wrist, elevator, () -> false));
+    NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNote(intake, indexer, wrist, elevator, () -> false));
+
 
     configDefaultCommands();
     configDriverBindings();
