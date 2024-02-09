@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.util.Leds;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.SuperstructureStates;
@@ -47,12 +48,14 @@ public class IntakeNote extends Command {
     indexer.runIndexerTorqueControl(IndexerConstants.indexingTargetCurrent);
     wrist.wristToPosition(SuperstructureStates.Handoff.angle);
     elevator.toHeight(SuperstructureStates.Handoff.height);
+
+    Leds.getInstance().intaking = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(intake.isNotePresent() || indexer.isNotePresent()) {
+    if (intake.isNotePresent() || indexer.isNotePresent()) {
       noteDetected = true;
     }
 
@@ -61,12 +64,11 @@ public class IntakeNote extends Command {
 
     if (!intake.isNotePresent() && !noteDetected) {
       intake.runIntakeTorqueControl(IntakeConstants.intakingTargetCurrent);
-    } else if(noteDetected && !wrist.isAtSetpoint() && !elevator.isAtSetpoint()) {
+    } else if (noteDetected && !wrist.isAtSetpoint() && !elevator.isAtSetpoint()) {
       intake.disable();
-    } else if(noteDetected && wrist.isAtSetpoint() && elevator.isAtSetpoint()){
+    } else if (noteDetected && wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
       intake.runIntakeTorqueControl(IntakeConstants.intakingTargetCurrent);
     }
-
 
     if (!indexer.isNotePresent()) {
       indexer.runIndexerTorqueControl(IndexerConstants.indexingTargetCurrent);
@@ -88,6 +90,8 @@ public class IntakeNote extends Command {
       wrist.disable();
       elevator.disable();
     }
+    Leds.getInstance().intaking = false;
+
   }
 
   // Returns true when the command should end.

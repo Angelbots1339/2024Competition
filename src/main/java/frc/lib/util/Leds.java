@@ -1,7 +1,6 @@
 // All credit to FRC 6328
 // http://github.com/Mechanical-Advantage
 
-
 package frc.lib.util;
 
 import edu.wpi.first.math.MathUtil;
@@ -38,11 +37,9 @@ public class Leds extends SubsystemBase {
   public boolean distraction = false;
 
   public boolean endgameAlert = false;
-  public boolean sameBattery = false;
   public boolean autoFinished = false;
   public double autoFinishedTime = 0.0;
   public boolean lowBatteryAlert = false;
-  public boolean demoMode = false;
 
   private Optional<Alliance> alliance = Optional.empty();
   private boolean lastEnabledAuto = false;
@@ -53,7 +50,7 @@ public class Leds extends SubsystemBase {
   private final AddressableLED leds;
   private final AddressableLEDBuffer buffer;
   private final Notifier loadingNotifier;
-  
+
   private final AddressableLED underglowLeds;
   private final AddressableLEDBuffer underglowBuffer;
 
@@ -72,6 +69,11 @@ public class Leds extends SubsystemBase {
   private static final double waveSlowCycleLength = 25.0;
   private static final double waveSlowDuration = 3.0;
 
+  private static final double stripeSlowDuration = 5.0;
+  private static final int stripesSmallLength = 3;
+  private static final double stripeFastDuration = 2;
+  private static final int stripesLongLength = 10;
+
   private static final double breathAllianceCycleLength = 15.0;
 
   private static final double autoFadeTime = 2.5; // 3s nominal
@@ -79,8 +81,7 @@ public class Leds extends SubsystemBase {
 
   // LED Lengths
   private static final int length = 43;
-  private static final int staticLength = 14;
-  private static final int staticSectionLength = 3;
+  private static final int bottomLength = 14;
 
   private static final int underglowLength = 24;
 
@@ -95,7 +96,7 @@ public class Leds extends SubsystemBase {
         () -> {
           synchronized (this) {
             breath(
-                Section.STATIC_LOW,
+                Section.STATIC,
                 Color.kWhite,
                 Color.kBlack,
                 0.25,
@@ -104,7 +105,6 @@ public class Leds extends SubsystemBase {
           }
         });
     loadingNotifier.startPeriodic(0.02);
-
 
     underglowLeds = new AddressableLED(1);
     underglowBuffer = new AddressableLEDBuffer(underglowLength);
@@ -142,7 +142,8 @@ public class Leds extends SubsystemBase {
     loadingNotifier.stop();
 
     // Select LED mode
-    solid(Section.FULL, Color.kBlack); // Default to off
+    // solid(Section.FULL, Color.kBlack); // Default to off
+    wave(Section.FULL, Color.kOrange, Color.kDeepPink, waveSlowCycleLength, waveSlowDuration); // Default to wave
 
     if (estopped) {
       solid(Section.FULL, Color.kRed);
@@ -154,7 +155,6 @@ public class Leds extends SubsystemBase {
       } else if (lowBatteryAlert) {
         // Low battery
         solid(Section.FULL, Color.kOrangeRed);
-
       } else {
         // Default pattern
         switch (alliance.get()) {
@@ -163,59 +163,68 @@ public class Leds extends SubsystemBase {
                 Section.FULL,
                 Color.kRed,
                 Color.kBlack,
-                breathAllianceCycleLength,
-                System.currentTimeMillis() / 1000.0);
+                breathAllianceCycleLength);
             break;
           case Blue:
             breath(
                 Section.FULL,
-                Color.kBlue,
+                Color.kLightCyan,
                 Color.kBlack,
-                breathAllianceCycleLength,
-                System.currentTimeMillis() / 1000.0);
+                breathAllianceCycleLength);
             break;
           default:
-            wave(Section.FULL, Color.kGold, Color.kDarkBlue, waveSlowCycleLength, waveSlowDuration);
+            wave(Section.FULL, Color.kOrange, Color.kDeepPink, waveSlowCycleLength, waveSlowDuration);
             break;
         }
       }
     } else if (DriverStation.isAutonomous()) {
-      wave(Section.FULL, Color.kGold, Color.kDarkBlue, waveFastCycleLength, waveFastDuration);
-      if (autoFinished) {
-        double fullTime = (double) length / waveFastCycleLength * waveFastDuration;
-        solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
+      switch (alliance.get()) {
+        case Red:
+          wave(Section.FULL, Color.kRed, Color.kDarkRed, waveSlowCycleLength, waveSlowDuration);
+          break;
+        case Blue:
+          wave(Section.FULL, Color.kLightCyan, Color.kDarkCyan, waveSlowCycleLength, waveSlowDuration);
+          break;
+        default:
+          wave(Section.FULL, Color.kOrange, Color.kDeepPink, waveSlowCycleLength, waveSlowDuration);
+          break;
       }
-    } else {
-      // Demo mode background
-      if (demoMode) {
-        wave(Section.FULL, Color.kGold, Color.kDarkBlue, waveSlowCycleLength, waveSlowDuration);
+          if (autoFinished) {
+            double fullTime = (double) length / waveFastCycleLength * waveFastDuration;
+            solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
+          }
       }
+    
 
-      // Set special modes
-      if (endgameAlert) {
-        strobe(Section.SHOULDER, Color.kBlue, strobeSlowDuration);
-      } else if (shooting) {
-        rainbow(Section.SHOULDER, rainbowCycleLength, rainbowDuration);
-      } else if (intaking) {
-        if (hasGamePiece) {
-          strobe(Section.SHOULDER, Color.kGreen, strobeSlowDuration);
-        } else {
-          strobe(Section.SHOULDER, Color.kPurple, strobeSlowDuration);
-        }
+    // Set special modes
+    if (endgameAlert) {
+      strobe(Section.TOP, Color.kOrange, strobeSlowDuration);
+    } else if (shooting) {
+      rainbow(Section.TOP, rainbowCycleLength, rainbowDuration);
+    } else if (intaking) {
+      if (hasGamePiece) {
+        strobe(Section.TOP, Color.kGreen, strobeFastDuration);
+      } else {
+        strobe(Section.TOP, Color.kPurple, strobeSlowDuration);
       }
     }
+  
 
-    // Same battery alert
-    if (sameBattery) {
-      breath(Section.STATIC_LOW, Color.kRed, Color.kBlack, breathDuration);
-    }
+  // Update underglow
+  solid(null, Color.kBlue, underglowBuffer);
+    
 
     // Update LEDs
     leds.setData(buffer);
     underglowLeds.setData(underglowBuffer);
   }
 
+
   private void solid(Section section, Color color) {
+    solid(section, color, buffer);
+  }
+
+  private void solid(Section section, Color color, AddressableLEDBuffer buffer) {
     if (color != null) {
       for (int i = section.start(); i < section.end(); i++) {
         buffer.setLED(i, color);
@@ -224,30 +233,51 @@ public class Leds extends SubsystemBase {
   }
 
   private void solid(double percent, Color color) {
+    solid(percent, color, buffer);
+  }
+
+  private void solid(double percent, Color color, AddressableLEDBuffer buffer) {
     for (int i = 0; i < MathUtil.clamp(length * percent, 0, length); i++) {
       buffer.setLED(i, color);
     }
   }
 
   private void strobe(Section section, Color color, double duration) {
+    strobe(section, color, duration, buffer);
+  }
+
+  private void strobe(Section section, Color color, double duration, AddressableLEDBuffer buffer) {
     boolean on = ((Timer.getFPGATimestamp() % duration) / duration) > 0.5;
     solid(section, on ? color : Color.kBlack);
   }
 
   private void breath(Section section, Color c1, Color c2, double duration) {
-    breath(section, c1, c2, duration, Timer.getFPGATimestamp());
+    breath(section, c1, c2, duration, Timer.getFPGATimestamp(), buffer);
+  }
+
+  private void breath(Section section, Color c1, Color c2, double duration, AddressableLEDBuffer buffer) {
+    breath(section, c1, c2, duration, Timer.getFPGATimestamp(), buffer);
   }
 
   private void breath(Section section, Color c1, Color c2, double duration, double timestamp) {
+    breath(section, c1, c2, duration, timestamp, buffer);
+  }
+
+  private void breath(Section section, Color c1, Color c2, double duration, double timestamp,
+      AddressableLEDBuffer buffer) {
     double x = ((timestamp % breathDuration) / breathDuration) * 2.0 * Math.PI;
     double ratio = (Math.sin(x) + 1.0) / 2.0;
     double red = (c1.red * (1 - ratio)) + (c2.red * ratio);
     double green = (c1.green * (1 - ratio)) + (c2.green * ratio);
     double blue = (c1.blue * (1 - ratio)) + (c2.blue * ratio);
-    solid(section, new Color(red, green, blue));
+    solid(section, new Color(red, green, blue), buffer);
   }
 
   private void rainbow(Section section, double cycleLength, double duration) {
+    rainbow(section, cycleLength, duration, buffer);
+  }
+
+  private void rainbow(Section section, double cycleLength, double duration, AddressableLEDBuffer buffer) {
     double x = (1 - ((Timer.getFPGATimestamp() / duration) % 1.0)) * 180.0;
     double xDiffPerLed = 180.0 / cycleLength;
     for (int i = 0; i < section.end(); i++) {
@@ -260,6 +290,11 @@ public class Leds extends SubsystemBase {
   }
 
   private void wave(Section section, Color c1, Color c2, double cycleLength, double duration) {
+    wave(section, c1, c2, cycleLength, duration, buffer);
+  }
+
+  private void wave(Section section, Color c1, Color c2, double cycleLength, double duration,
+      AddressableLEDBuffer buffer) {
     double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
     double xDiffPerLed = (2.0 * Math.PI) / cycleLength;
     for (int i = 0; i < section.end(); i++) {
@@ -281,6 +316,10 @@ public class Leds extends SubsystemBase {
   }
 
   private void stripes(Section section, List<Color> colors, int length, double duration) {
+    stripes(section, colors, length, duration, buffer);
+  }
+
+  private void stripes(Section section, List<Color> colors, int length, double duration, AddressableLEDBuffer buffer) {
     int offset = (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
     for (int i = section.start(); i < section.end(); i++) {
       int colorIndex = (int) (Math.floor((double) (i - offset) / length) + colors.size()) % colors.size();
@@ -289,34 +328,19 @@ public class Leds extends SubsystemBase {
     }
   }
 
-  public static enum HPGamePiece {
-    NONE,
-    CUBE,
-    CONE
-  }
-
   private static enum Section {
     STATIC,
-    SHOULDER,
-    FULL,
-    STATIC_LOW,
-    STATIC_MID,
-    STATIC_HIGH;
+    TOP,
+    FULL;
 
     private int start() {
       switch (this) {
         case STATIC:
           return 0;
-        case SHOULDER:
-          return staticLength;
+        case TOP:
+          return bottomLength;
         case FULL:
           return 0;
-        case STATIC_LOW:
-          return 0;
-        case STATIC_MID:
-          return staticSectionLength;
-        case STATIC_HIGH:
-          return staticLength - staticSectionLength;
         default:
           return 0;
       }
@@ -325,17 +349,11 @@ public class Leds extends SubsystemBase {
     private int end() {
       switch (this) {
         case STATIC:
-          return staticLength;
-        case SHOULDER:
+          return bottomLength;
+        case TOP:
           return length;
         case FULL:
           return length;
-        case STATIC_LOW:
-          return staticSectionLength;
-        case STATIC_MID:
-          return staticLength - staticSectionLength;
-        case STATIC_HIGH:
-          return staticLength;
         default:
           return length;
       }

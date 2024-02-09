@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.FieldUtil;
+import frc.lib.util.Leds;
 import frc.lib.util.PoseEstimation;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.regressions.SpeakerShotRegression;
@@ -28,7 +29,6 @@ public class AutoShoot extends Command {
   private Swerve swerve;
   private Indexer indexer;
 
-
   /** Creates a new AutoShoot. */
   public AutoShoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer) {
     this.shooter = shooter;
@@ -45,13 +45,16 @@ public class AutoShoot extends Command {
   @Override
   public void initialize() {
 
-        Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-        Math.atan((PoseEstimation.getEstimatedPose().getX() - PoseEstimation.calculateVirtualSpeakerOffset(FieldUtil.getAllianceSpeakerPosition()).getX())
-            / (PoseEstimation.getEstimatedPose().getY() - PoseEstimation.calculateVirtualSpeakerOffset(FieldUtil.getAllianceSpeakerPosition()).getY())))
+    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+        Math.atan((PoseEstimation.getEstimatedPose().getX()
+            - PoseEstimation.calculateVirtualSpeakerOffset(FieldUtil.getAllianceSpeakerPosition()).getX())
+            / (PoseEstimation.getEstimatedPose().getY()
+                - PoseEstimation.calculateVirtualSpeakerOffset(FieldUtil.getAllianceSpeakerPosition()).getY())))
         .plus(Rotation2d.fromRadians(Math.PI));
 
-        swerve.setAutoOverrideRotation(true, robotAngle);
+    swerve.setAutoOverrideRotation(true, robotAngle);
 
+    Leds.getInstance().shooting = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -67,11 +70,10 @@ public class AutoShoot extends Command {
     elevator.home();
     shooter.shooterToRMP(SpeakerShotRegression.flywheelRegression.predict(targetDistance));
 
-
     if (indexer.isNotePresent() && shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
       indexer.runIndexerTorqueControl(IndexerConstants.indexingTargetCurrent);
-    } else if(!indexer.isNotePresent()) {
+    } else if (!indexer.isNotePresent()) {
       indexer.disable();
     }
   }
@@ -85,6 +87,9 @@ public class AutoShoot extends Command {
     elevator.home();
 
     swerve.setAutoOverrideRotation(false);
+
+    Leds.getInstance().shooting = false;
+
   }
 
   // Returns true when the command should end.

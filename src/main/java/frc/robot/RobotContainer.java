@@ -11,15 +11,19 @@ import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.util.Leds;
 import frc.lib.util.tuning.GlobalVoltageTuning;
 import frc.lib.util.tuning.ShooterTuning;
 import frc.robot.Constants.DriverConstants;
@@ -37,7 +41,7 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
   private TuningMode tuningMode = TuningMode.DISABLED;
-  
+
   /***** Instancing Subsystems *****/
   private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
   private final Intake intake = new Intake();
@@ -46,12 +50,9 @@ public class RobotContainer {
   private final Elevator elevator = new Elevator();
   private final Indexer indexer = new Indexer();
 
-
-
-
-
   /***** Driver Controls *****/
   private final XboxController driveController = new XboxController(0);
+  private final XboxController operatorController = new XboxController(1);
 
   private Supplier<Double> translationX = () -> DriverConstants
       .fixTranslationJoystickValues(-driveController.getLeftY(), true);
@@ -68,24 +69,26 @@ public class RobotContainer {
 
   private Trigger resetGyro = new JoystickButton(driveController, XboxController.Button.kStart.value);
 
-  
   private void configDriverBindings() {
     resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
-    // runIntake.whileTrue(new StartEndCommand(() -> intake.runIntakeDutyCycle(0.75), () -> intake.runIntakeDutyCycle(0), intake));
-    // runOuttake.whileTrue(new StartEndCommand(() -> intake.runIntakeDutyCycle(-0.75), () -> intake.runIntakeDutyCycle(0), intake));
+    // runIntake.whileTrue(new StartEndCommand(() ->
+    // intake.runIntakeDutyCycle(0.75), () -> intake.runIntakeDutyCycle(0),
+    // intake));
+    // runOuttake.whileTrue(new StartEndCommand(() ->
+    // intake.runIntakeDutyCycle(-0.75), () -> intake.runIntakeDutyCycle(0),
+    // intake));
 
-    // runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false));
+    // runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () ->
+    // false));
 
-    // shoot.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, () -> false));
+    // shoot.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer,
+    // translationX, translationY, () -> false));
 
   }
 
   private void configOperatorBindings() {
 
   }
-
-
-
 
   /***** Initialization *****/
   public RobotContainer() {
@@ -97,11 +100,11 @@ public class RobotContainer {
     NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer, wrist, elevator, () -> false));
     NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNote(intake, indexer, wrist, elevator, () -> false));
 
-
     configDefaultCommands();
     configDriverBindings();
     configOperatorBindings();
-    
+    initializeEndgameAlerts();
+
   }
 
   private void configDefaultCommands() {
@@ -113,13 +116,68 @@ public class RobotContainer {
     // shooter.setDefaultCommand(new RunCommand(() -> shooter.disable(), shooter));
   }
 
+  private void initializeEndgameAlerts() {
+    new Trigger(() -> {
+      return DriverStation.isTeleopEnabled()
+          && DriverStation.getMatchTime() > 0.0
+          && DriverStation.getMatchTime() <= Math.round(DriverConstants.endgameAlert1);
+    })
+        .onTrue(
+            Commands.run(
+                () -> {
+                  Leds.getInstance().endgameAlert = true;
+                  driveController.setRumble(RumbleType.kBothRumble, 1.0);
+                  operatorController.setRumble(RumbleType.kBothRumble, 1.0);
+                })
+                .withTimeout(1.5)
+                .andThen(
+                    Commands.run(
+                        () -> {
+                          Leds.getInstance().endgameAlert = false;
+                          driveController.setRumble(RumbleType.kBothRumble, 0.0);
+                          operatorController.setRumble(RumbleType.kBothRumble, 0.0);
+                        })
+                        .withTimeout(1.0)));
+
+    new Trigger(
+        () -> DriverStation.isTeleopEnabled()
+            && DriverStation.getMatchTime() > 0.0
+            && DriverStation.getMatchTime() <= Math.round(DriverConstants.endgameAlert2))
+        .onTrue(
+            Commands.sequence(
+                Commands.run(
+                    () -> {
+                      Leds.getInstance().endgameAlert = true;
+                      driveController.setRumble(RumbleType.kBothRumble, 1.0);
+                      operatorController.setRumble(RumbleType.kBothRumble, 1.0);
+                    })
+                    .withTimeout(0.25),
+                Commands.run(
+                    () -> {
+                      Leds.getInstance().endgameAlert = false;
+                      driveController.setRumble(RumbleType.kBothRumble, 0.0);
+                      operatorController.setRumble(RumbleType.kBothRumble, 0.0);
+                    })
+                    .withTimeout(0.1),
+                Commands.run(
+                    () -> {
+                      Leds.getInstance().endgameAlert = true;
+                      driveController.setRumble(RumbleType.kBothRumble, 1.0);
+                      operatorController.setRumble(RumbleType.kBothRumble, 1.0);
+                    })
+                    .withTimeout(0.25),
+                Commands.run(
+                    () -> {
+                      Leds.getInstance().endgameAlert = false;
+                      driveController.setRumble(RumbleType.kBothRumble, 0.0);
+                      operatorController.setRumble(RumbleType.kBothRumble, 0.0);
+                    })
+                    .withTimeout(1.0)));
+  }
+
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
-
-
-
-
 
   /***** Tuning *****/
 
@@ -129,14 +187,14 @@ public class RobotContainer {
   public void tuningInitialization() {
 
     // if (tuningMode == TuningMode.VOLTAGE) {
-    //   GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
+    // GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
     // } else if (tuningMode == TuningMode.SHOOTER) {
-    //   ShooterTuning.initialize(shooter);
+    // ShooterTuning.initialize(shooter);
     // }
   }
 
   /**
-   * Call periodically to run  tuning
+   * Call periodically to run tuning
    */
   public void tuningPeriodic() {
     if (tuningMode == TuningMode.VOLTAGE) {
@@ -156,7 +214,6 @@ public class RobotContainer {
       ShooterTuning.end();
     }
   }
-
 
   private enum TuningMode {
     DISABLED, VOLTAGE, SHOOTER

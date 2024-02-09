@@ -202,6 +202,10 @@ public class Constants {
                 public static final double angularDriveKS = 0.7; // radians per sec
                 public static final double angularDriveTolerance = 2; // Degrees
 
+
+                public static final double endgameAlert1 = 30;
+                public static final double endgameAlert2 = 15;
+
                 /**
                  * 
                  * @param val         The joystick value

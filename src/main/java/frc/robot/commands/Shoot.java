@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.FieldUtil;
+import frc.lib.util.Leds;
 import frc.lib.util.PoseEstimation;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.regressions.SpeakerShotRegression;
@@ -52,6 +53,7 @@ public class Shoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Leds.getInstance().shooting = true;
 
   }
 
@@ -90,6 +92,9 @@ public class Shoot extends Command {
     indexer.disable();
     wrist.home();
     elevator.home();
+
+    Leds.getInstance().shooting = false;
+
   }
 
   // Returns true when the command should end.
