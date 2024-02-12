@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -21,6 +22,7 @@ import frc.lib.util.TalonFXFactory;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ScoringConstants;
 
 public class Elevator extends SubsystemBase {
 
@@ -75,7 +77,7 @@ public class Elevator extends SubsystemBase {
    * Move elevator to home position (0)
    */
   public void home() {
-      toHeight(0);
+      toHeight(ScoringConstants.Home.height);
   }
 
   /**
@@ -101,6 +103,10 @@ public class Elevator extends SubsystemBase {
 
   public double getSetpointError() {
     return ElevatorConstants.elevatorRotationsToMeters(elevatorMotorLeader.getClosedLoopError().getValue());
+  }
+
+  public double getPosition() {
+    return ElevatorConstants.elevatorRotationsToMeters(elevatorMotorLeader.getPosition().getValue());
   }
 
   public boolean isAtSetpoint() {

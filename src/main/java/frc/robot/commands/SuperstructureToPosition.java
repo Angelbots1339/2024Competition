@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.WristElevatorState;
 import frc.robot.subsystems.Elevator;
@@ -13,10 +15,10 @@ public class SuperstructureToPosition extends Command {
 
   Elevator elevator;
   Wrist wrist;
-  WristElevatorState state;
+  Supplier<WristElevatorState> state;
 
   /** Creates a new SuperstructureToPosition. */
-  public SuperstructureToPosition(Elevator elevator, Wrist wrist, WristElevatorState state) {
+  public SuperstructureToPosition(Elevator elevator, Wrist wrist, Supplier<WristElevatorState> state) {
 
     this.elevator = elevator;
     this.wrist = wrist;
@@ -29,24 +31,27 @@ public class SuperstructureToPosition extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.toHeight(state.height);
-    wrist.wristToPosition(state.angle);
+    elevator.toHeight(state.get().height);
+    wrist.toAngle(state.get().angle);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    elevator.toHeight(state.get().height);
+    wrist.toAngle(state.get().angle);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     elevator.home();
-    
+    wrist.home();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return elevator.isAtSetpoint() && wrist.isAtSetpoint();
   }
 }

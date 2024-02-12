@@ -14,6 +14,7 @@ import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
 import frc.lib.util.PoseEstimation;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.Constants.ScoringConstants;
 import frc.robot.regressions.SpeakerShotRegression;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
@@ -66,13 +67,13 @@ public class AutoShoot extends Command {
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(virtualTarget);
 
-    wrist.wristToPosition(SpeakerShotRegression.wristRegression.predict(targetDistance));
+    wrist.toAngle(SpeakerShotRegression.wristRegression.predict(targetDistance));
     elevator.home();
     shooter.shooterToRMP(SpeakerShotRegression.flywheelRegression.predict(targetDistance));
 
     if (indexer.isNotePresent() && shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
-      indexer.runIndexerTorqueControl(IndexerConstants.indexingTargetCurrent);
+      indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
     } else if (!indexer.isNotePresent()) {
       indexer.disable();
     }

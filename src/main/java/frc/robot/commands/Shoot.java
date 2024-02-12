@@ -13,6 +13,7 @@ import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
 import frc.lib.util.PoseEstimation;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.Constants.ScoringConstants;
 import frc.robot.regressions.SpeakerShotRegression;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
@@ -70,7 +71,7 @@ public class Shoot extends Command {
             / (PoseEstimation.getEstimatedPose().getY() - virtualTarget.getY())))
         .plus(Rotation2d.fromRadians(Math.PI));
 
-    wrist.wristToPosition(SpeakerShotRegression.wristRegression.predict(targetDistance));
+    wrist.toAngle(SpeakerShotRegression.wristRegression.predict(targetDistance));
     elevator.home();
     shooter.shooterToRMP(SpeakerShotRegression.flywheelRegression.predict(targetDistance));
 
@@ -78,7 +79,7 @@ public class Shoot extends Command {
 
     if ((indexer.isNotePresent() || overrideIndexerSensor.get()) && shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
-      indexer.runIndexerTorqueControl(IndexerConstants.indexingTargetCurrent);
+      indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
     } else {
       indexer.disable();
     }

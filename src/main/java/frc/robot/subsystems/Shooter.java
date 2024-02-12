@@ -26,9 +26,9 @@ import frc.robot.regressions.SpeakerShotRegression;
 
 public class Shooter extends SubsystemBase {
 
-  private TalonFX shooterMotorTop = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorTopID,
+  private TalonFX shooterMotorLeft = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorTopID,
       ShooterConstants.shooterMotorCANBus, ShooterConstants.kShooterConfiguration));
-  private TalonFX shooterMotorBottom = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorTopID,
+  private TalonFX shooterMotorRight = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorTopID,
       ShooterConstants.shooterMotorCANBus,
       ShooterConstants.kShooterConfiguration.withMotorOutput(new MotorOutputConfigs()
           .withInverted(ShooterConstants.kShooterConfiguration.MotorOutput.Inverted == InvertedValue.Clockwise_Positive
@@ -38,8 +38,8 @@ public class Shooter extends SubsystemBase {
 
   private LoggedSubsystem logger;
 
-  private double topTargetVelocity = 0;
-  private double bottomTargetVelocity = 0;
+  private double leftTargetVelocity = 0;
+  private double rightTargetVelocity = 0;
 
   /** Creates a new Shooter. */
   public Shooter() {
@@ -72,46 +72,62 @@ public class Shooter extends SubsystemBase {
    * @param speed rotations per second
    */
   public void shooterToVelocity(double speed) {
-    shooterMotorTop.setControl(ShooterConstants.shooterControl.withVelocity(speed));
-    shooterMotorBottom.setControl(ShooterConstants.shooterControl.withVelocity(speed));
+    shooterMotorLeft.setControl(ShooterConstants.shooterControl.withVelocity(speed));
+    shooterMotorRight.setControl(ShooterConstants.shooterControl.withVelocity(speed));
 
-    topTargetVelocity = speed;
-    bottomTargetVelocity = speed;
+    leftTargetVelocity = speed;
+    rightTargetVelocity = speed;
   }
 
   /**
    * Set shooter motors to speed
    * 
-   * @param topSpeed    rotations per second
-   * @param bottomSpeed rotations per second
+   * @param leftSpeed  rotations per second
+   * @param rightSpeed rotations per second
    */
-  public void shooterToVelocity(double topSpeed, double bottomSpeed) {
-    shooterMotorTop.setControl(ShooterConstants.shooterControl.withVelocity(topSpeed));
-    shooterMotorBottom.setControl(ShooterConstants.shooterControl.withVelocity(bottomSpeed));
+  public void shooterToVelocity(double leftSpeed, double rightSpeed) {
+    shooterMotorLeft.setControl(ShooterConstants.shooterControl.withVelocity(leftSpeed));
+    shooterMotorRight.setControl(ShooterConstants.shooterControl.withVelocity(rightSpeed));
 
-    topTargetVelocity = topSpeed;
-    bottomTargetVelocity = bottomSpeed;
+    leftTargetVelocity = leftSpeed;
+    rightTargetVelocity = rightSpeed;
   }
 
   public void setVoltage(double volts) {
-    shooterMotorTop.setControl(new VoltageOut(volts));
-    shooterMotorBottom.setControl(new VoltageOut(volts));
+    shooterMotorLeft.setControl(new VoltageOut(volts));
+    shooterMotorRight.setControl(new VoltageOut(volts));
 
-    topTargetVelocity = 0;
-    bottomTargetVelocity = 0;
+    leftTargetVelocity = 0;
+    rightTargetVelocity = 0;
   }
 
   public boolean isAtSetpoint() {
-    return Math.abs(shooterMotorTop.getVelocity().getValue() - topTargetVelocity) < ShooterConstants.shooterVelocityTolerance
-        && Math.abs(shooterMotorBottom.getVelocity().getValue() - bottomTargetVelocity) < ShooterConstants.shooterVelocityTolerance;
+    return Math.abs(shooterMotorLeft.getVelocity().getValue() - leftTargetVelocity) < ShooterConstants.shooterVelocityTolerance
+        && Math.abs(shooterMotorRight.getVelocity().getValue() - rightTargetVelocity) < ShooterConstants.shooterVelocityTolerance;
+  }
+
+  /**
+   * Get the current velocity of the shooter motors
+   * @return [left, right]
+   */
+  public double[] getVelocity() {
+    return new double[] { shooterMotorLeft.getVelocity().getValue(), shooterMotorRight.getVelocity().getValue() };
+  }
+
+  public double getLeftVelocity() {
+    return shooterMotorLeft.getVelocity().getValue();
+  }
+
+  public double getRightVelocity() {
+    return shooterMotorRight.getVelocity().getValue();
   }
 
   public void disable() {
-    shooterMotorTop.setControl(new DutyCycleOut(0));
-    shooterMotorBottom.setControl(new DutyCycleOut(0));
+    shooterMotorLeft.setControl(new DutyCycleOut(0));
+    shooterMotorRight.setControl(new DutyCycleOut(0));
 
-    topTargetVelocity = 0;
-    bottomTargetVelocity = 0;
+    leftTargetVelocity = 0;
+    rightTargetVelocity = 0;
   }
 
   @Override
@@ -136,8 +152,8 @@ public class Shooter extends SubsystemBase {
 
     logger = new LoggedSubsystem("Shooter");
 
-    logger.add(new LoggedFalcon("TopShooterMotor", logger, shooterMotorTop, ShooterLogging.Motor));
-    logger.add(new LoggedFalcon("BottomShooterMotor", logger, shooterMotorBottom, ShooterLogging.Motor));
+    logger.add(new LoggedFalcon("LeftShooterMotor", logger, shooterMotorLeft, ShooterLogging.Motor));
+    logger.add(new LoggedFalcon("RightShooterMotor", logger, shooterMotorRight, ShooterLogging.Motor));
 
   }
 

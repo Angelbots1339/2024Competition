@@ -19,6 +19,7 @@ import frc.lib.util.Mech2dManger;
 import frc.lib.util.TalonFXFactory;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ScoringConstants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.Robot;
 
@@ -54,7 +55,7 @@ public class Wrist extends SubsystemBase {
    * 
    * @param rotations 0 to 1 rotations
    */
-  public void wristToPosition(double position) {
+  public void toAngle(double position) {
 
     wristLeaderMotor.setControl(WristConstants.wristPositionControl.withPosition(position));
     wristFollowerMotor.setControl(WristConstants.followerControl);
@@ -63,17 +64,17 @@ public class Wrist extends SubsystemBase {
   }
 
   /**
-   * Move Wrist to position
+   * PID Wrist to position
    * 
    * @param rotations Rotation 2d
    */
-  public void wristToPosition(Rotation2d position) {
+  public void toAngle(Rotation2d position) {
 
-    wristToPosition(position.getRotations());
+    toAngle(position.getRotations());
   }
 
   public void home() {
-    wristToPosition(Rotation2d.fromDegrees(90));
+    toAngle(ScoringConstants.Home.angle);
   }
 
   public double getSetpointError() {
@@ -82,6 +83,14 @@ public class Wrist extends SubsystemBase {
 
   public boolean isAtSetpoint() {
     return Math.abs(targetPosition - getSetpointError()) <= ElevatorConstants.heightErrorTolerance;
+  }
+
+  public Rotation2d getAngle() {
+    return Rotation2d.fromRotations(wristLeaderMotor.getPosition().getValue());
+  }
+
+  public Rotation2d getAbsoluteEncoderPosition() {
+    return Rotation2d.fromRotations(wristEncoder.getAbsolutePosition());
   }
 
   public void disable() {

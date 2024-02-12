@@ -7,7 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.SuperstructureStates;
+import frc.robot.Constants.ScoringConstants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -40,18 +40,18 @@ public class HandOffNote extends Command {
   @Override
   public void execute() {
     
-    wrist.wristToPosition(SuperstructureStates.Handoff.angle);
-    elevator.toHeight(SuperstructureStates.Handoff.height);
+    wrist.toAngle(ScoringConstants.Handoff.angle);
+    elevator.toHeight(ScoringConstants.Handoff.height);
 
  
     if(wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
-      intake.runIntakeTorqueControl(IntakeConstants.intakingTargetCurrent);
+      intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
     } else {
       intake.disable();
     }
 
     if (!indexer.isNotePresent()) {
-      indexer.runIndexerTorqueControl(IndexerConstants.indexingTargetCurrent);
+      indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
     } else {
       indexer.disable();
     }

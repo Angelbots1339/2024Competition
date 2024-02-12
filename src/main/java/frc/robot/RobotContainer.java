@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.Leds;
 import frc.lib.util.tuning.GlobalVoltageTuning;
 import frc.lib.util.tuning.ShooterTuning;
+import frc.lib.util.tuning.SuperstructureTuning;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.commands.IntakeNote;
 import frc.robot.commands.Shoot;
@@ -186,21 +187,41 @@ public class RobotContainer {
    */
   public void tuningInitialization() {
 
-    // if (tuningMode == TuningMode.VOLTAGE) {
-    // GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
-    // } else if (tuningMode == TuningMode.SHOOTER) {
-    // ShooterTuning.initialize(shooter);
-    // }
+    switch (tuningMode) {
+      case DISABLED:
+        break;
+      case VOLTAGE:
+        GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
+        break;
+      case SHOOTER:
+      ShooterTuning.initialize(shooter, indexer);
+        break;
+      case SUPERSTRUCTURE:
+        SuperstructureTuning.initialize(elevator, wrist);
+        break;
+      default:
+        break;
+    }
   }
 
   /**
    * Call periodically to run tuning
    */
   public void tuningPeriodic() {
-    if (tuningMode == TuningMode.VOLTAGE) {
-      GlobalVoltageTuning.periodic();
-    } else if (tuningMode == TuningMode.SHOOTER) {
+        switch (tuningMode) {
+      case DISABLED:
+        break;
+      case VOLTAGE:
+        GlobalVoltageTuning.periodic();
+        break;
+      case SHOOTER:
       ShooterTuning.periodic(driveController);
+        break;
+      case SUPERSTRUCTURE:
+        SuperstructureTuning.periodic(driveController);
+        break;
+      default:
+        break;
     }
   }
 
@@ -208,14 +229,24 @@ public class RobotContainer {
    * Call at the end of test mode to end tuning
    */
   public void tuningEnd() {
-    if (tuningMode == TuningMode.VOLTAGE) {
-      GlobalVoltageTuning.end();
-    } else if (tuningMode == TuningMode.SHOOTER) {
+    switch (tuningMode) {
+      case DISABLED:
+        break;
+      case VOLTAGE:
+        GlobalVoltageTuning.end();
+        break;
+      case SHOOTER:
       ShooterTuning.end();
+        break;
+      case SUPERSTRUCTURE:
+        SuperstructureTuning.end();
+        break;
+      default:
+        break;
     }
   }
 
   private enum TuningMode {
-    DISABLED, VOLTAGE, SHOOTER
+    DISABLED, VOLTAGE, SHOOTER, SUPERSTRUCTURE
   }
 }

@@ -23,21 +23,22 @@ public class ShooterTuning {
     private static Shooter shooter;
     private static Indexer indexer;
 
-    private static GenericEntry topSpeed;
-    private static GenericEntry bottomSpeed;
+    private static GenericEntry leftSpeed;
+    private static GenericEntry rightSpeed;
 
-    public static void initialize(Shooter shooterInstance) {
+    public static void initialize(Shooter shooterInstance, Indexer indexerInstance) {
 
-        topSpeed = Shuffleboard.getTab("Testing").add("Shooter Top Wheel Speed", 1)
+        leftSpeed = Shuffleboard.getTab("ShooterTuning").add("ShooterLeftRPM", 0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
                 .withProperties(Map.of("min", 0, "max", 6000))
                 .getEntry();
-        bottomSpeed = Shuffleboard.getTab("Testing").add("Shooter Bottom Wheel Speed", 1)
+        rightSpeed = Shuffleboard.getTab("ShooterTuning").add("ShooterRightRPM", 0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
                 .withProperties(Map.of("min", 0, "max", 6000))
                 .getEntry();
 
         shooter = shooterInstance;
+        indexer = indexerInstance;
     }
 
     public static void periodic(XboxController controller) {
@@ -51,15 +52,23 @@ public class ShooterTuning {
         }
 
         if (controller.getAButton()) {
-            shooter.shooterToRMP(topSpeed.getDouble(0), bottomSpeed.getDouble(0));
+            shooter.shooterToRMP(leftSpeed.getDouble(0), rightSpeed.getDouble(0));
         } else {
             shooter.disable();
         }
 
-        Shuffleboard.getTab("Tuning").addDouble("Estimated Target Distance",
+        Shuffleboard.getTab("ShooterTuning").addDouble("Estimated Target Distance",
                 () -> PoseEstimation.getEstimatedPose().getTranslation()
                         .getDistance(FieldUtil.getAllianceSpeakerPosition()))
                 .withWidget(BuiltInWidgets.kTextView);
+        Shuffleboard.getTab("ShooterTuning").addDouble("LeftVelocityShooter",
+                () -> shooter.getLeftVelocity())
+                .withWidget(BuiltInWidgets.kTextView);
+        Shuffleboard.getTab("ShooterTuning").addDouble("RightVelocityShooter",
+                () -> shooter.getRightVelocity())
+                .withWidget(BuiltInWidgets.kTextView);
+
+        
 
     }
 
@@ -67,8 +76,8 @@ public class ShooterTuning {
         shooter.disable();
         indexer.disable();
 
-        topSpeed.unpublish();
-        bottomSpeed.unpublish();
+        leftSpeed.unpublish();
+        rightSpeed.unpublish();
     }
 
 }

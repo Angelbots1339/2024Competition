@@ -6,6 +6,8 @@ package frc.robot.commands.Auto;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.Leds;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ScoringConstants;
 import frc.robot.subsystems.Intake;
 
 public class IntakeNoHandoff extends Command {
@@ -29,11 +31,17 @@ public class IntakeNoHandoff extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if(intake.isNotePresent()) {
+      intake.disable();;
+    } else {
+      intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    intake.disable();
     Leds.getInstance().intaking = false;
   }
 

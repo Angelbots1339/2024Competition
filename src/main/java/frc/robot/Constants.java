@@ -202,7 +202,6 @@ public class Constants {
                 public static final double angularDriveKS = 0.7; // radians per sec
                 public static final double angularDriveTolerance = 2; // Degrees
 
-
                 public static final double endgameAlert1 = 30;
                 public static final double endgameAlert2 = 15;
 
@@ -288,7 +287,6 @@ public class Constants {
                 public static final double isNotePresentThreshold = 5; // Milimeters
 
                 private static final double intakeMaxDutyCycle = 0.5;
-                public static final double intakingTargetCurrent = 20; // Amps
 
                 public static final TalonFXConfiguration kIntakeConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -320,7 +318,6 @@ public class Constants {
                 public static final double isNotePresentThreshold = 5; // Milimeters
 
                 private static final double indexerMaxDutyCycle = 0.5;
-                public static final double indexingTargetCurrent = 20; // Amps
 
                 public static final TalonFXConfiguration kIndexerConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -474,10 +471,17 @@ public class Constants {
                 }
         }
 
-        public static class SuperstructureStates {
+        public static class ScoringConstants {
 
                 public static final WristElevatorState Handoff = new WristElevatorState(0, 0);
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(0, 0);
+                public static final WristElevatorState Home = new WristElevatorState(90, 0);
+
+                public static final double indexingTargetCurrent = 10; // Amps
+                public static final double ampScoringCurrentIndexer = 10; // Amps
+
+                public static final double intakingTargetCurrent = 20; // Amps
+
 
         }
 
