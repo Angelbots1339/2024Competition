@@ -41,14 +41,14 @@ import frc.robot.subsystems.Wrist;
 public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-  private TuningMode tuningMode = TuningMode.DISABLED;
+  private TuningMode tuningMode = TuningMode.SHOOTER;
 
   /***** Instancing Subsystems *****/
   private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
-  private final Wrist wrist = new Wrist();
-  private final Elevator elevator = new Elevator();
+  // private final Wrist wrist = new Wrist();
+  // private final Elevator elevator = new Elevator();
   private final Indexer indexer = new Indexer();
 
   /***** Driver Controls *****/
@@ -73,11 +73,29 @@ public class RobotContainer {
   private void configDriverBindings() {
     resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
     // runIntake.whileTrue(new StartEndCommand(() ->
-    // intake.runIntakeDutyCycle(0.75), () -> intake.runIntakeDutyCycle(0),
+    // intake.runIntakeDutyCycle(0.1), () -> intake.runIntakeDutyCycle(0),
     // intake));
     // runOuttake.whileTrue(new StartEndCommand(() ->
-    // intake.runIntakeDutyCycle(-0.75), () -> intake.runIntakeDutyCycle(0),
+    // intake.runIntakeDutyCycle(-0.1), () -> intake.runIntakeDutyCycle(0),
     // intake));
+
+    runIntake.whileTrue(new StartEndCommand(() -> {
+      intake.runIntakeDutyCycle(0.4);
+      indexer.runIndexerDutyCycle(0.5);
+    }, () -> {
+      intake.runIntakeDutyCycle(0);
+      indexer.runIndexerDutyCycle(0);
+    },
+        intake));
+        
+    runOuttake.whileTrue(new StartEndCommand(() -> {
+      intake.runIntakeDutyCycle(-0.4);
+      indexer.runIndexerDutyCycle(-0.5);
+    }, () -> {
+      intake.runIntakeDutyCycle(0);
+      indexer.runIndexerDutyCycle(0);
+    },
+        intake));
 
     // runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () ->
     // false));
@@ -97,9 +115,12 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser("");
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist, elevator, swerve, indexer));
-    NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer, wrist, elevator, () -> false));
-    NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNote(intake, indexer, wrist, elevator, () -> false));
+    // NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
+    // elevator, swerve, indexer));
+    // NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
+    // wrist, elevator, () -> false));
+    // NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNote(intake,
+    // indexer, wrist, elevator, () -> false));
 
     configDefaultCommands();
     configDriverBindings();
@@ -191,13 +212,13 @@ public class RobotContainer {
       case DISABLED:
         break;
       case VOLTAGE:
-        GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
+        // GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
         break;
       case SHOOTER:
-      ShooterTuning.initialize(shooter, indexer);
+        ShooterTuning.initialize(shooter, indexer);
         break;
       case SUPERSTRUCTURE:
-        SuperstructureTuning.initialize(elevator, wrist);
+        // SuperstructureTuning.initialize(elevator, wrist);
         break;
       default:
         break;
@@ -208,17 +229,17 @@ public class RobotContainer {
    * Call periodically to run tuning
    */
   public void tuningPeriodic() {
-        switch (tuningMode) {
+    switch (tuningMode) {
       case DISABLED:
         break;
       case VOLTAGE:
         GlobalVoltageTuning.periodic();
         break;
       case SHOOTER:
-      ShooterTuning.periodic(driveController);
+        ShooterTuning.periodic();
         break;
       case SUPERSTRUCTURE:
-        SuperstructureTuning.periodic(driveController);
+        SuperstructureTuning.periodic();
         break;
       default:
         break;
@@ -236,7 +257,7 @@ public class RobotContainer {
         GlobalVoltageTuning.end();
         break;
       case SHOOTER:
-      ShooterTuning.end();
+        ShooterTuning.end();
         break;
       case SUPERSTRUCTURE:
         SuperstructureTuning.end();

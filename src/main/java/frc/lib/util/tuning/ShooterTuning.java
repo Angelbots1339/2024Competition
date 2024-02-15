@@ -26,7 +26,15 @@ public class ShooterTuning {
     private static GenericEntry leftSpeed;
     private static GenericEntry rightSpeed;
 
+    
+    private static XboxController testController;
+    private static boolean hasBeenInitialized = false;
+
+
     public static void initialize(Shooter shooterInstance, Indexer indexerInstance) {
+
+        if (!hasBeenInitialized) {
+            testController = new XboxController(2);
 
         leftSpeed = Shuffleboard.getTab("ShooterTuning").add("ShooterLeftRPM", 0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
@@ -37,38 +45,43 @@ public class ShooterTuning {
                 .withProperties(Map.of("min", 0, "max", 6000))
                 .getEntry();
 
+        Shuffleboard.getTab("ShooterTuning").addDouble("Estimated Target Distance",
+                () -> PoseEstimation.getEstimatedPose().getTranslation()
+                        .getDistance(FieldUtil.getAllianceSpeakerPosition()))
+                .withWidget(BuiltInWidgets.kTextView);
+        Shuffleboard.getTab("ShooterTuning").addDouble("LeftRPMShooter",
+                () -> shooter.getLeftVelocity() * 60)
+                .withWidget(BuiltInWidgets.kTextView);
+        Shuffleboard.getTab("ShooterTuning").addDouble("RightRPMShooter",
+                () -> shooter.getRightVelocity() * 60)
+                .withWidget(BuiltInWidgets.kTextView);
+
         shooter = shooterInstance;
         indexer = indexerInstance;
+
+        hasBeenInitialized = true;
+        }
+
     }
 
-    public static void periodic(XboxController controller) {
+    public static void periodic() {
 
-        if (controller.getLeftBumper()) {
+        if (testController.getLeftBumper()) {
             indexer.runIndexerDutyCycle(0.3);
-        } else if (controller.getRightBumper()) {
+        } else if (testController.getRightBumper()) {
             indexer.runIndexerDutyCycle(-0.3);
         } else {
             indexer.disable();
         }
 
-        if (controller.getAButton()) {
-            shooter.shooterToRMP(leftSpeed.getDouble(0), rightSpeed.getDouble(0));
+        if (testController.getAButton()) {
+            shooter.shooterToRMP(leftSpeed.getDouble(3000), rightSpeed.getDouble(3000));
         } else {
             shooter.disable();
         }
 
-        Shuffleboard.getTab("ShooterTuning").addDouble("Estimated Target Distance",
-                () -> PoseEstimation.getEstimatedPose().getTranslation()
-                        .getDistance(FieldUtil.getAllianceSpeakerPosition()))
-                .withWidget(BuiltInWidgets.kTextView);
-        Shuffleboard.getTab("ShooterTuning").addDouble("LeftVelocityShooter",
-                () -> shooter.getLeftVelocity())
-                .withWidget(BuiltInWidgets.kTextView);
-        Shuffleboard.getTab("ShooterTuning").addDouble("RightVelocityShooter",
-                () -> shooter.getRightVelocity())
-                .withWidget(BuiltInWidgets.kTextView);
-
-        
+        // indexer.runIndexerDutyCycle(0.3);
+        // shooter.shooterToRMP(leftSpeed.getDouble(0), rightSpeed.getDouble(0));
 
     }
 
@@ -76,8 +89,8 @@ public class ShooterTuning {
         shooter.disable();
         indexer.disable();
 
-        leftSpeed.unpublish();
-        rightSpeed.unpublish();
+        // leftSpeed.unpublish();
+        // rightSpeed.unpublish();
     }
 
 }

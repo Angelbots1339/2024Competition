@@ -26,9 +26,9 @@ import frc.robot.regressions.SpeakerShotRegression;
 
 public class Shooter extends SubsystemBase {
 
-  private TalonFX shooterMotorLeft = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorTopID,
+  private TalonFX shooterMotorLeft = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorLeftID,
       ShooterConstants.shooterMotorCANBus, ShooterConstants.kShooterConfiguration));
-  private TalonFX shooterMotorRight = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorTopID,
+  private TalonFX shooterMotorRight = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorRightID,
       ShooterConstants.shooterMotorCANBus,
       ShooterConstants.kShooterConfiguration.withMotorOutput(new MotorOutputConfigs()
           .withInverted(ShooterConstants.kShooterConfiguration.MotorOutput.Inverted == InvertedValue.Clockwise_Positive

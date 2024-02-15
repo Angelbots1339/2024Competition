@@ -29,7 +29,6 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackTy
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -244,8 +243,8 @@ public class Constants {
 
         public static final class ShooterConstants {
 
-                public static final int shooterMotorTopID = 16; // TODO Set these
-                public static final int shooterMotorBottomID = 17; // TODO Set these
+                public static final int shooterMotorLeftID = 16; // TODO Set these
+                public static final int shooterMotorRightID = 17; // TODO Set these
                 public static final String shooterMotorCANBus = "rio";
 
                 public static final double shooterGearRatio = 0.5; // Sensor to Mechanism Ratio
@@ -260,9 +259,9 @@ public class Constants {
                                                 .withSupplyCurrentLimitEnable(true))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Brake)
-                                                .withInverted(InvertedValue.Clockwise_Positive))
+                                                .withInverted(InvertedValue.CounterClockwise_Positive))
                                 .withSlot0(new Slot0Configs()
-                                                .withKP(0)
+                                                .withKP(0.75)
                                                 .withKI(0)
                                                 .withKD(0))
                                 .withFeedback(new FeedbackConfigs()
@@ -278,10 +277,10 @@ public class Constants {
 
         public static final class IntakeConstants {
                 public static final int intakeMotorID = 18; // TODO Set these
-                public static final String intakeMotorCANBus = "rio";
+                public static final String intakeMotorCANBus = "";
 
                 public static final int intakeSensorID = 26; // TODO Set these
-                public static final RangingMode intakeSensorRange = RangingMode.Short;
+                // public static final RangingMode intakeSensorRange = RangingMode.Short;
                 public static final double intakeSampleTime = 100;
 
                 public static final double isNotePresentThreshold = 5; // Milimeters
@@ -296,7 +295,7 @@ public class Constants {
                                                 .withSupplyCurrentLimitEnable(true))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
-                                                .withInverted(InvertedValue.Clockwise_Positive));
+                                                .withInverted(InvertedValue.CounterClockwise_Positive));
 
                 public static final DutyCycleOut intakeDutyCycle = new DutyCycleOut(0, true, false,
                                 false, false);
@@ -312,7 +311,7 @@ public class Constants {
                 public static final String indexerMotorCANBus = "rio";
 
                 public static final int indexerSensorID = 27; // TODO Set these
-                public static final RangingMode indexerSensorRange = RangingMode.Short;
+                // public static final RangingMode indexerSensorRange = RangingMode.Short;
                 public static final double indexerSampleTime = 100;
 
                 public static final double isNotePresentThreshold = 5; // Milimeters
@@ -327,7 +326,7 @@ public class Constants {
                                                 .withSupplyCurrentLimitEnable(true))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
-                                                .withInverted(InvertedValue.Clockwise_Positive));
+                                                .withInverted(InvertedValue.CounterClockwise_Positive));
 
                 public static final DutyCycleOut indexerDutyCycle = new DutyCycleOut(0, true, false,
                                 false, false);

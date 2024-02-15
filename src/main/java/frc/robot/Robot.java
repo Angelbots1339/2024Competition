@@ -113,8 +113,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {
-    CommandScheduler.getInstance().cancelAll();
     m_robotContainer.tuningEnd();
+    CommandScheduler.getInstance().cancelAll();
   }
 
   @Override

@@ -49,7 +49,7 @@ public final class LoggingConstants {
 
         public class ShooterLogging {
                 public static LoggingLevel Main = LoggingLevel.NONE;
-                public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel Motor = LoggingLevel.NONE;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }
 

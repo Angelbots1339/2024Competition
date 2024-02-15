@@ -6,9 +6,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.playingwithfusion.TimeOfFlight;
 
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.TalonFXFactory;
@@ -21,7 +20,7 @@ public class Intake extends SubsystemBase {
   private TalonFX intakeMotor = configIntakeMotor(TalonFXFactory.createTalon(IntakeConstants.intakeMotorID,
       IntakeConstants.intakeMotorCANBus, IntakeConstants.kIntakeConfiguration));
 
-  private TimeOfFlight intakeSensor = new TimeOfFlight(IntakeConstants.intakeSensorID);
+  // private TimeOfFlight intakeSensor = new TimeOfFlight(IntakeConstants.intakeSensorID);
 
   // private CANSparkMax intakeMotorLeft = new CANSparkMax(20,
   // MotorType.kBrushless);
@@ -31,8 +30,8 @@ public class Intake extends SubsystemBase {
   /** Creates a new intake. */
   public Intake() {
 
-    intakeSensor.setRangingMode(IntakeConstants.intakeSensorRange, IntakeConstants.intakeSampleTime);
-    intakeSensor.setRangeOfInterest(8, 8, 12, 12);
+    // intakeSensor.setRangingMode(IntakeConstants.intakeSensorRange, IntakeConstants.intakeSampleTime);
+    // intakeSensor.setRangeOfInterest(8, 8, 12, 12);
 
     // intakeMotorLeft.setIdleMode(IdleMode.kBrake);
     // intakeMotorRight.setIdleMode(IdleMode.kBrake);
@@ -61,12 +60,14 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isNotePresent() {
-    return intakeSensor.getRange() < IntakeConstants.isNotePresentThreshold;
+    // return intakeSensor.getRange() < IntakeConstants.isNotePresentThreshold;
+    return false;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // SmartDashboard.putBoolean("TOF Sensor", intakeSensor.getStatus() == Status.Valid);
   }
 
   private TalonFX configIntakeMotor(TalonFX motor) {

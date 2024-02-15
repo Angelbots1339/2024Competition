@@ -22,64 +22,70 @@ import frc.robot.subsystems.Wrist;
  */
 public class SuperstructureTuning {
 
-    private static Elevator elevator;
-    private static Wrist wrist;
+        private static Elevator elevator;
+        private static Wrist wrist;
 
-    private static GenericEntry wristTargetAngle;
-    private static GenericEntry elevatorTargetHeight;
+        private static GenericEntry wristTargetAngle;
+        private static GenericEntry elevatorTargetHeight;
 
-    public static void initialize(Elevator elevatorInstance, Wrist wristInstance) {
+        private static XboxController testController;
+        private static boolean hasBeenInitialized = false;
 
-        wristTargetAngle = Shuffleboard.getTab("SuperstructureTuning").add("WristTargetAngle", 90)
-                .withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("min", 0, "max", 180))
-                .getEntry();
-        elevatorTargetHeight = Shuffleboard.getTab("SuperstructureTuning").add("ElevatorTargetHeight", 0)
-                .withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("min", 0, "max", 1))
-                .getEntry();
+        public static void initialize(Elevator elevatorInstance, Wrist wristInstance) {
 
-        elevator = elevatorInstance;
-        wrist = wristInstance;
-    }
+                if (!hasBeenInitialized) {
+                        testController = new XboxController(2);
 
-    public static void periodic(XboxController controller) {
+                        wristTargetAngle = Shuffleboard.getTab("SuperstructureTuning").add("WristTargetAngle", 90)
+                                        .withWidget(BuiltInWidgets.kNumberSlider)
+                                        .withProperties(Map.of("min", 0, "max", 180))
+                                        .getEntry();
+                        elevatorTargetHeight = Shuffleboard.getTab("SuperstructureTuning")
+                                        .add("ElevatorTargetHeight", 0)
+                                        .withWidget(BuiltInWidgets.kNumberSlider)
+                                        .withProperties(Map.of("min", 0, "max", 1))
+                                        .getEntry();
 
-        if (controller.getAButton()) {
-            elevator.toHeight(elevatorTargetHeight.getDouble(0));
-            wrist.toAngle(wristTargetAngle.getDouble(0));
-        } else {
-            elevator.disable();
-            wrist.disable();
+                        elevator = elevatorInstance;
+                        wrist = wristInstance;
+
+                        hasBeenInitialized = true;
+
+                }
         }
 
-        Shuffleboard.getTab("SuperstructureTuning").addDouble("WristSetpointError",
-                () -> wrist.getSetpointError())
-                .withWidget(BuiltInWidgets.kTextView);
-        Shuffleboard.getTab("SuperstructureTuning").addDouble("WristAngle",
-                () -> wrist.getAngle().getDegrees())
-                .withWidget(BuiltInWidgets.kTextView);
-        Shuffleboard.getTab("SuperstructureTuning").addDouble("WristEncoderAbsolutePosition",
-                () -> wrist.getAbsoluteEncoderPosition().getDegrees())
-                .withWidget(BuiltInWidgets.kTextView);
+        public static void periodic() {
 
-        Shuffleboard.getTab("SuperstructureTuning").addDouble("ElevatorSetpointError",
-                () -> elevator.getSetpointError())
-                .withWidget(BuiltInWidgets.kTextView);
-        Shuffleboard.getTab("SuperstructureTuning").addDouble("ElevatorPosition",
-                () -> elevator.getPosition())
-                .withWidget(BuiltInWidgets.kTextView);
+                if (testController.getAButton()) {
+                        elevator.toHeight(elevatorTargetHeight.getDouble(0));
+                        wrist.toAngle(wristTargetAngle.getDouble(0));
+                } else {
+                        elevator.disable();
+                        wrist.disable();
+                }
 
+                Shuffleboard.getTab("SuperstructureTuning").addDouble("WristSetpointError",
+                                () -> wrist.getSetpointError())
+                                .withWidget(BuiltInWidgets.kTextView);
+                Shuffleboard.getTab("SuperstructureTuning").addDouble("WristAngle",
+                                () -> wrist.getAngle().getDegrees())
+                                .withWidget(BuiltInWidgets.kTextView);
+                Shuffleboard.getTab("SuperstructureTuning").addDouble("WristEncoderAbsolutePosition",
+                                () -> wrist.getAbsoluteEncoderPosition().getDegrees())
+                                .withWidget(BuiltInWidgets.kTextView);
 
+                Shuffleboard.getTab("SuperstructureTuning").addDouble("ElevatorSetpointError",
+                                () -> elevator.getSetpointError())
+                                .withWidget(BuiltInWidgets.kTextView);
+                Shuffleboard.getTab("SuperstructureTuning").addDouble("ElevatorPosition",
+                                () -> elevator.getPosition())
+                                .withWidget(BuiltInWidgets.kTextView);
 
-    }
+        }
 
-    public static void end() {
-        elevator.disable();
-        wrist.disable();
-
-        wristTargetAngle.unpublish();
-        elevatorTargetHeight.unpublish();
-    }
+        public static void end() {
+                elevator.disable();
+                wrist.disable();
+        }
 
 }

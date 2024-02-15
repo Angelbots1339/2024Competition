@@ -7,6 +7,7 @@ package frc.lib.util.tuning;
 import java.util.Map;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,39 +32,48 @@ public class GlobalVoltageTuning {
   private static GenericEntry intakeVolts;
   private static GenericEntry indexerVolts;
 
+  private static boolean hasBeenInitialized = false;
+
+  private static XboxController testController;
+
   public static void initialize(Elevator elevatorInstance, Wrist wristInstance, Shooter shooterInstance,
       Intake intakeInstance, Indexer indexerInstance) {
 
-    elevatorVolts = Shuffleboard.getTab("Tuning").add("Elevator Volts", 0)
-        .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", -12, "max", 12))
-        .getEntry();
+    if (!hasBeenInitialized) {
+      testController = new XboxController(2);
+      elevatorVolts = Shuffleboard.getTab("Tuning").add("Elevator Volts", 0)
+          .withWidget(BuiltInWidgets.kNumberSlider)
+          .withProperties(Map.of("min", -12, "max", 12))
+          .getEntry();
 
-    wristVolts = Shuffleboard.getTab("Tuning").add("Wrist Volts", 0)
-        .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", -12, "max", 12))
-        .getEntry();
+      wristVolts = Shuffleboard.getTab("Tuning").add("Wrist Volts", 0)
+          .withWidget(BuiltInWidgets.kNumberSlider)
+          .withProperties(Map.of("min", -12, "max", 12))
+          .getEntry();
 
-    shooterVolts = Shuffleboard.getTab("Tuning").add("Shooter Volts", 0)
-        .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", -12, "max", 12))
-        .getEntry();
+      shooterVolts = Shuffleboard.getTab("Tuning").add("Shooter Volts", 0)
+          .withWidget(BuiltInWidgets.kNumberSlider)
+          .withProperties(Map.of("min", -12, "max", 12))
+          .getEntry();
 
-    intakeVolts = Shuffleboard.getTab("Tuning").add("Intake Volts", 0)
-        .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", -12, "max", 12))
-        .getEntry();
+      intakeVolts = Shuffleboard.getTab("Tuning").add("Intake Volts", 0)
+          .withWidget(BuiltInWidgets.kNumberSlider)
+          .withProperties(Map.of("min", -12, "max", 12))
+          .getEntry();
 
-    indexerVolts = Shuffleboard.getTab("Tuning").add("Indexer Volts", 0)
-        .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", -12, "max", 12))
-        .getEntry();
+      indexerVolts = Shuffleboard.getTab("Tuning").add("Indexer Volts", 0)
+          .withWidget(BuiltInWidgets.kNumberSlider)
+          .withProperties(Map.of("min", -12, "max", 12))
+          .getEntry();
 
-    elevator = elevatorInstance;
-    wrist = wristInstance;
-    shooter = shooterInstance;
-    intake = intakeInstance;
-    indexer = indexerInstance;
+      elevator = elevatorInstance;
+      wrist = wristInstance;
+      shooter = shooterInstance;
+      intake = intakeInstance;
+      indexer = indexerInstance;
+
+      hasBeenInitialized = true;
+    }
   }
 
   public static void periodic() {
@@ -83,12 +93,6 @@ public class GlobalVoltageTuning {
     intake.disable();
     indexer.disable();
 
-
-    elevatorVolts.unpublish();
-    wristVolts.unpublish();
-    shooterVolts.unpublish();
-    intakeVolts.unpublish();
-    indexerVolts.unpublish();
   }
 
 }
