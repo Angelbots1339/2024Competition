@@ -10,11 +10,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import frc.lib.util.FieldUtil;
-import frc.lib.util.PoseEstimation;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Wrist;
 
 /**

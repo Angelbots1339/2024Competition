@@ -24,7 +24,8 @@ public class PoseEstimation {
 
     private static SwerveDrivePoseEstimator poseEstimatorNonVision;
 
-    public static void initNonVisionPoseEstimator(Rotation2d rot, SwerveDriveKinematics kinematics, SwerveModulePosition[] positions) {
+    public static void initNonVisionPoseEstimator(Rotation2d rot, SwerveDriveKinematics kinematics,
+            SwerveModulePosition[] positions) {
         poseEstimatorNonVision = new SwerveDrivePoseEstimator(kinematics, rot, positions, estimatedPose);
     }
 
@@ -34,7 +35,8 @@ public class PoseEstimation {
      * 
      * @param state
      */
-    public static void updateEstimatedPose(SwerveDriveState state, SwerveModulePosition[] modulePositions, Swerve swerve) {
+    public static void updateEstimatedPose(SwerveDriveState state, SwerveModulePosition[] modulePositions,
+            Swerve swerve) {
 
         double currentTime = Utils.getCurrentTimeSeconds();
         double diffTime = currentTime - lastTime;
@@ -46,8 +48,8 @@ public class PoseEstimation {
         estimatedVelocity = velocities;
         estimatedPose = state.Pose;
 
-        
-        // poseEstimatorNonVision.update(Rotation2d.fromDegrees(swerve.getPigeon2().getYaw().getValue()), swerve.getModulePositions());
+        // poseEstimatorNonVision.update(Rotation2d.fromDegrees(swerve.getPigeon2().getYaw().getValue()),
+        // swerve.getModulePositions());
         // poseEstimatorNonVision.update(Rotation2d.fromDegrees(0), modulePositions);
 
     }
@@ -70,6 +72,13 @@ public class PoseEstimation {
         return estimatedVelocity;
     }
 
+    public static PolarPose getVirtualSpeakerPolar() {
+
+        
+
+        return new PolarPose(0, Rotation2d.fromDegrees(0));
+    }
+
     /**
      * Used for shooting while moving to make a virtual target offset based on the
      * robot's current velocity
@@ -79,8 +88,6 @@ public class PoseEstimation {
     public static Translation2d calculateVirtualSpeakerOffset(Translation2d targetPosition) {
 
         // TODO Do math here
-
-        
 
         return targetPosition;
     }
@@ -115,6 +122,17 @@ public class PoseEstimation {
     public static Pose2d getAutoTargetPoseError() {
 
         return new Pose2d().transformBy(targetAutoPose.minus(estimatedPose));
+    }
+
+    public static class PolarPose {
+
+        public double distance;
+        public Rotation2d angle;
+
+        public PolarPose(double distance, Rotation2d angle) {
+            this.distance = distance;
+            this.angle = angle;
+        }
     }
 
 }

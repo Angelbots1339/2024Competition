@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
@@ -30,7 +31,7 @@ public class Wrist extends SubsystemBase {
   private TalonFX wristFollowerMotor = configWristMotor(TalonFXFactory.createTalon(WristConstants.wristFollowerMotorID,
       WristConstants.wristMotorCANBus, WristConstants.kWristConfiguration));
 
-  private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(23);
+  private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(WristConstants.wristEncoderPort);
 
   private final Timer throughBoreTimer = new Timer();
   private double targetPosition = 0;
@@ -43,6 +44,9 @@ public class Wrist extends SubsystemBase {
     wristFollowerMotor.setControl(WristConstants.followerControl);
 
     wristEncoder.setDistancePerRotation(1);
+    // wristEncoder.setPositionOffset(WristConstants.absoluteEncoderOffset.getRotations() % 1);
+
+    throughBoreTimer.start();
 
     if (Robot.isSimulation()) {
       simWrist = Mech2dManger.getInstance().getWrist();
@@ -90,7 +94,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public Rotation2d getAbsoluteEncoderPosition() {
-    return Rotation2d.fromRotations(wristEncoder.getAbsolutePosition());
+    return Rotation2d.fromRotations(wristEncoder.getAbsolutePosition()).minus(Rotation2d.fromRotations(WristConstants.absoluteEncoderOffset.getRotations()));
   }
 
   public void disable() {
@@ -107,7 +111,8 @@ public class Wrist extends SubsystemBase {
   }
 
   public void resetToAbsolute() {
-    wristLeaderMotor.setPosition(WristConstants.absoluteEncoderOffset.getRotations() - wristEncoder.getAbsolutePosition());
+    wristLeaderMotor.setPosition(getAbsoluteEncoderPosition().getRotations());
+    wristFollowerMotor.setPosition(getAbsoluteEncoderPosition().getRotations());
   }
 
   @Override
@@ -118,21 +123,28 @@ public class Wrist extends SubsystemBase {
       throughBoreTimer.reset();
       throughBoreTimer.stop();
     }
+
+    SmartDashboard.putNumber("Through Bore Transformed", getAbsoluteEncoderPosition().getRotations());
+    SmartDashboard.putNumber("Wrist Position", wristLeaderMotor.getPosition().getValue());
+
   }
 
   private TalonFX configWristMotor(TalonFX motor) {
-    ErrorCheckUtil.checkError(
-        motor.getPosition().setUpdateFrequency(WristConstants.kWristPositionUpdateFrequency,
-            Constants.kConfigTimeoutSeconds),
-        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
-    ErrorCheckUtil.checkError(
-        motor.getClosedLoopError().setUpdateFrequency(WristConstants.kWristErrorUpdateFrequency,
-            Constants.kConfigTimeoutSeconds),
-        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
 
-    ErrorCheckUtil.checkError(
-        motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
-        CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
+    // TODO Figure out what status signals Follower control needs to work
+
+    // ErrorCheckUtil.checkError(
+    //     motor.getPosition().setUpdateFrequency(WristConstants.kWristPositionUpdateFrequency,
+    //         Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    // ErrorCheckUtil.checkError(
+    //     motor.getClosedLoopError().setUpdateFrequency(WristConstants.kWristErrorUpdateFrequency,
+    //         Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+
+    // ErrorCheckUtil.checkError(
+    //     motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
   }

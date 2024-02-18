@@ -30,11 +30,10 @@ public class Shooter extends SubsystemBase {
       ShooterConstants.shooterMotorCANBus, ShooterConstants.kShooterConfiguration));
   private TalonFX shooterMotorRight = configShooterMotor(TalonFXFactory.createTalon(ShooterConstants.shooterMotorRightID,
       ShooterConstants.shooterMotorCANBus,
-      ShooterConstants.kShooterConfiguration.withMotorOutput(new MotorOutputConfigs()
+      ShooterConstants.kShooterConfiguration.withMotorOutput(ShooterConstants.kShooterConfiguration.MotorOutput
           .withInverted(ShooterConstants.kShooterConfiguration.MotorOutput.Inverted == InvertedValue.Clockwise_Positive
               ? InvertedValue.CounterClockwise_Positive // Make motors spin opposite directions
-              : InvertedValue.Clockwise_Positive)
-          .withNeutralMode(ShooterConstants.kShooterConfiguration.MotorOutput.NeutralMode))));
+              : InvertedValue.Clockwise_Positive))));
 
   private LoggedSubsystem logger;
 

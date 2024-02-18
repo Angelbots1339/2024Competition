@@ -4,9 +4,11 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,6 +16,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.Mech2dManger;
@@ -26,15 +29,18 @@ import frc.robot.Constants.ScoringConstants;
 
 public class Elevator extends SubsystemBase {
 
-  private TalonFX elevatorMotorLeader = configElevatorMotor(
+  private TalonFX elevatorLeaderMotor = configElevatorMotor(
       TalonFXFactory.createTalon(ElevatorConstants.elevatorLeaderMotorID,
           ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration));
-  private TalonFX elevatorMotorFollower = configElevatorMotor(
+  private TalonFX elevatorFollowerMotor = configElevatorMotor(
       TalonFXFactory.createTalon(ElevatorConstants.elevatorFollowerMotorID,
-          ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration));
+          ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration.withMotorOutput(ElevatorConstants.kElevatorConfiguration.MotorOutput
+          .withInverted(ElevatorConstants.kElevatorConfiguration.MotorOutput.Inverted == InvertedValue.Clockwise_Positive
+              ? InvertedValue.CounterClockwise_Positive // Make motors spin opposite directions
+              : InvertedValue.Clockwise_Positive))));
 
-  private TalonFXSimState leaderSim = elevatorMotorLeader.getSimState();
-  private TalonFXSimState followerSim = elevatorMotorFollower.getSimState();
+  private TalonFXSimState leaderSim = elevatorLeaderMotor.getSimState();
+  private TalonFXSimState followerSim = elevatorFollowerMotor.getSimState();
 
   private MechanismLigament2d elevatorMech;
   private ElevatorSim elevatorSim;
@@ -43,7 +49,7 @@ public class Elevator extends SubsystemBase {
 
   /** Creates a new Elevator. */
   public Elevator() {
-    elevatorMotorFollower.setControl(ElevatorConstants.followerControl);
+    elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
 
     if (Robot.isSimulation()) {
       elevatorMech = Mech2dManger.getInstance().getElevator();
@@ -61,14 +67,14 @@ public class Elevator extends SubsystemBase {
   public void toHeight(double height) {
 
     if (!isAtSetpoint()) {
-      elevatorMotorLeader.setControl(
+      elevatorLeaderMotor.setControl(
           ElevatorConstants.elevatorPositionControl.withPosition(ElevatorConstants.elevatorMetersToRotations(height)));
     } else { 
       // Let the elevator rest while at 0 (stop outputting Kg)
-      elevatorMotorLeader.setControl(new DutyCycleOut(0));
+      elevatorLeaderMotor.setControl(new DutyCycleOut(0));
     }
 
-    elevatorMotorFollower.setControl(ElevatorConstants.followerControl);
+    elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
 
     targetHeight = height;
   }
@@ -84,7 +90,8 @@ public class Elevator extends SubsystemBase {
    * Set all outputs to 0
    */
   public void disable() {
-    elevatorMotorLeader.setControl(new DutyCycleOut(0));
+    elevatorLeaderMotor.setControl(new DutyCycleOut(0));
+    // elevatorFollowerMotor.setControl(new DutyCycleOut(0));
   }
 
   /**
@@ -94,19 +101,23 @@ public class Elevator extends SubsystemBase {
    */
   public void setVoltage(double volts) {
 
-    elevatorMotorLeader.setControl(new VoltageOut(volts));
+    elevatorLeaderMotor.setControl(new VoltageOut(volts));
+    // elevatorFollowerMotor.setControl(new VoltageOut(volts));
+    // elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
+
   }
 
   public void resetEncoderPosition(double height) {
-    elevatorMotorLeader.setPosition(ElevatorConstants.elevatorMetersToRotations(height));
+    elevatorLeaderMotor.setPosition(ElevatorConstants.elevatorMetersToRotations(height));
+    elevatorFollowerMotor.setPosition(ElevatorConstants.elevatorMetersToRotations(height));
   }
 
   public double getSetpointError() {
-    return ElevatorConstants.elevatorRotationsToMeters(elevatorMotorLeader.getClosedLoopError().getValue());
+    return ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getClosedLoopError().getValue());
   }
 
   public double getPosition() {
-    return ElevatorConstants.elevatorRotationsToMeters(elevatorMotorLeader.getPosition().getValue());
+    return ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getPosition().getValue());
   }
 
   public boolean isAtSetpoint() {
@@ -128,22 +139,40 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    SmartDashboard.putNumber("Elevator Height", ElevatorConstants.elevatorMetersToRotations(elevatorLeaderMotor.getPosition().getValue()));
+    SmartDashboard.putNumber("Follower Elevator Height", ElevatorConstants.elevatorMetersToRotations(elevatorFollowerMotor.getPosition().getValue()));
+
+
+    SmartDashboard.putString("ControlMode", elevatorLeaderMotor.getControlMode().getValue().toString());
   }
 
   private TalonFX configElevatorMotor(TalonFX motor) {
 
-    ErrorCheckUtil.checkError(
-        motor.getPosition().setUpdateFrequency(ElevatorConstants.kElevatorPositionUpdateFrequency,
-            Constants.kConfigTimeoutSeconds),
-        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
-    ErrorCheckUtil.checkError(
-        motor.getClosedLoopError().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
-            Constants.kConfigTimeoutSeconds),
-        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    // TODO Figure out what status signals Follower control needs to work
 
-    ErrorCheckUtil.checkError(
-        motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
-        CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
+
+    // ErrorCheckUtil.checkError(
+    //     motor.getPosition().setUpdateFrequency(ElevatorConstants.kElevatorPositionUpdateFrequency,
+    //         Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    // ErrorCheckUtil.checkError(
+    //     motor.getClosedLoopError().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
+    //         Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    // ErrorCheckUtil.checkError(
+    //     motor.getStatorCurrent().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
+    //         Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    // ErrorCheckUtil.checkError(
+    //     motor.getControlMode().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
+    //         Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+
+
+    // ErrorCheckUtil.checkError(
+    //     motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
   }

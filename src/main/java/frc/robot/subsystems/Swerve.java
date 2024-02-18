@@ -185,7 +185,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     }
 
     /**
-     * Builds a ChassisSpeeds with the given translation and the output of the anularPID for rotation
+     * Builds a ChassisSpeeds with the given translation and the output of the
+     * anularPID for rotation
      * 
      * @param translationX
      * @param translationY
@@ -277,13 +278,14 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     }
 
     /**
-     * Hijacks the robot's rotation but keeps PathPlanner translation. Used for shooting while following the path
+     * Hijacks the robot's rotation but keeps PathPlanner translation. Used for
+     * shooting while following the path
      * 
      * @param speeds
      */
     public void setChassisSpeedsAuto(ChassisSpeeds speeds) {
         if (overrideAutoRotation) {
-            
+
             ChassisSpeeds newSpeeds = angularPIDCalc(() -> speeds.vxMetersPerSecond, () -> speeds.vyMetersPerSecond,
                     autoRotation);
 
@@ -321,11 +323,13 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     }
 
     public void zeroGyro() {
-        if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-            setGyroYaw(Rotation2d.fromDegrees(0));
-        } else {
-            setGyroYaw(Rotation2d.fromDegrees(180));
-        }
+        // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+        // setGyroYaw(Rotation2d.fromDegrees(0));
+        // } else {
+        // setGyroYaw(Rotation2d.fromDegrees(180));
+        // }
+
+        setGyroYaw(Rotation2d.fromDegrees(0));
     }
 
     private String command = "None";

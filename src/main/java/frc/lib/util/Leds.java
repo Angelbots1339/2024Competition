@@ -37,6 +37,7 @@ public class Leds extends SubsystemBase {
   public boolean intaking = false;
   public boolean hasGamePiece = false;
   public boolean shooting = false;
+  public boolean scoringAmp = false;
 
   public boolean distraction = false;
 
@@ -91,7 +92,7 @@ public class Leds extends SubsystemBase {
 
   private Leds() {
     System.out.println("[Init] Creating LEDs");
-    leds = new AddressableLED(0);
+    leds = new AddressableLED(1);
     buffer = new AddressableLEDBuffer(length);
     leds.setLength(length);
     leds.setData(buffer);
@@ -100,7 +101,7 @@ public class Leds extends SubsystemBase {
         () -> {
           synchronized (this) {
             breath(
-                Section.STATIC,
+                Section.BOTTOM,
                 Color.kWhite,
                 Color.kBlack,
                 0.25,
@@ -110,7 +111,7 @@ public class Leds extends SubsystemBase {
         });
     loadingNotifier.startPeriodic(0.02);
 
-    underglowLeds = new AddressableLED(1);
+    underglowLeds = new AddressableLED(2);
     underglowBuffer = new AddressableLEDBuffer(underglowLength);
     underglowLeds.setLength(underglowLength);
     underglowLeds.setData(underglowBuffer);
@@ -193,36 +194,35 @@ public class Leds extends SubsystemBase {
           wave(Section.FULL, Color.kOrange, Color.kDeepPink, waveSlowCycleLength, waveSlowDuration);
           break;
       }
-          if (autoFinished) {
-            double fullTime = (double) length / waveFastCycleLength * waveFastDuration;
-            solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
-          }
-      }
-    
-
-    // Set special modes
-    if (endgameAlert) {
-      strobe(Section.TOP, Color.kOrange, strobeSlowDuration);
-    } else if (shooting) {
-      rainbow(Section.TOP, rainbowCycleLength, rainbowDuration);
-    } else if (intaking) {
-      if (hasGamePiece) {
-        strobe(Section.TOP, Color.kGreen, strobeFastDuration);
-      } else {
-        strobe(Section.TOP, Color.kPurple, strobeSlowDuration);
+      if (autoFinished) {
+        double fullTime = (double) length / waveFastCycleLength * waveFastDuration;
+        solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
       }
     }
-  
 
-  // Update underglow
-  solid(null, Color.kBlue, underglowBuffer);
-    
+    if (endgameAlert) {
+      strobe(Section.TOP, Color.kOrange, strobeSlowDuration);
+    } else if (intaking) {
+      if (hasGamePiece) {
+        strobe(Section.FULL, Color.kGreen, strobeFastDuration);
+      } else {
+        strobe(Section.FULL, Color.kPurple, strobeSlowDuration);
+      }
+    } else if (shooting) {
+      rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
+    } else if (scoringAmp) {
+      rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
+    }
+
+
+
+    // Set underglow
+    solid(Section.UNDERGLOW, Color.kBlue, underglowBuffer);
 
     // Update LEDs
     leds.setData(buffer);
     underglowLeds.setData(underglowBuffer);
   }
-
 
   private void solid(Section section, Color color) {
     solid(section, color, buffer);
@@ -333,16 +333,19 @@ public class Leds extends SubsystemBase {
   }
 
   private static enum Section {
-    STATIC,
+    BOTTOM,
     TOP,
+    UNDERGLOW,
     FULL;
 
     private int start() {
       switch (this) {
-        case STATIC:
+        case BOTTOM:
           return 0;
         case TOP:
           return bottomLength;
+        case UNDERGLOW:
+          return 0;
         case FULL:
           return 0;
         default:
@@ -352,10 +355,12 @@ public class Leds extends SubsystemBase {
 
     private int end() {
       switch (this) {
-        case STATIC:
+        case BOTTOM:
           return bottomLength;
         case TOP:
           return length;
+        case UNDERGLOW:
+          return underglowLength;
         case FULL:
           return length;
         default:

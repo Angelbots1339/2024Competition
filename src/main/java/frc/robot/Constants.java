@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
@@ -29,6 +30,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackTy
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -245,7 +247,7 @@ public class Constants {
 
                 public static final int shooterMotorLeftID = 16; // TODO Set these
                 public static final int shooterMotorRightID = 17; // TODO Set these
-                public static final String shooterMotorCANBus = "rio";
+                public static final String shooterMotorCANBus = "";
 
                 public static final double shooterGearRatio = 0.5; // Sensor to Mechanism Ratio
 
@@ -280,10 +282,10 @@ public class Constants {
                 public static final String intakeMotorCANBus = "";
 
                 public static final int intakeSensorID = 26; // TODO Set these
-                // public static final RangingMode intakeSensorRange = RangingMode.Short;
+                public static final RangingMode intakeSensorRange = RangingMode.Short;
                 public static final double intakeSampleTime = 100;
 
-                public static final double isNotePresentThreshold = 5; // Milimeters
+                public static final double isNotePresentThreshold = 40; // Milimeters
 
                 private static final double intakeMaxDutyCycle = 0.5;
 
@@ -308,13 +310,13 @@ public class Constants {
 
         public static final class IndexerConstants {
                 public static final int indexerMotorID = 19; // TODO Set these
-                public static final String indexerMotorCANBus = "rio";
+                public static final String indexerMotorCANBus = "";
 
                 public static final int indexerSensorID = 27; // TODO Set these
-                // public static final RangingMode indexerSensorRange = RangingMode.Short;
+                public static final RangingMode indexerSensorRange = RangingMode.Short;
                 public static final double indexerSampleTime = 100;
 
-                public static final double isNotePresentThreshold = 5; // Milimeters
+                public static final double isNotePresentThreshold = 40; // Milimeters
 
                 private static final double indexerMaxDutyCycle = 0.5;
 
@@ -341,20 +343,23 @@ public class Constants {
         public static final class WristConstants {
                 public static final int wristLeaderMotorID = 20; // TODO Set these
                 public static final int wristFollowerMotorID = 21; // TODO Set these
-                public static final String wristMotorCANBus = "canivore";
-
-                public static final double wristGearRatio = 75; // Sensor to Mechanism Ratio
+                public static final String wristMotorCANBus = "";
+                
+                public static final double wristGearRatio = 15 * 2; // Sensor to Mechanism Ratio
                 public static final double timeBeforeEncoderReset = 1.5; // Seconds before the motor is initialized to
-                                                                         // the through bore;
-                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees(0); // 0 Should be
+                // the through bore;
+
+                public static final int wristEncoderPort = 0; // TODO Set these
+                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees(105); // 0 Should be
                                                                                                   // straight forward
                                                                                                   // towards the intake
+                                                                                                  
 
                 /****
                  * Wrist is counter-clockwise (from the left side of the robot with intake
                  * forward) with 0 being horizontal towards the intake
                  ****/
-                public static final Rotation2d wristMinAngle = Rotation2d.fromDegrees(0);
+                public static final Rotation2d wristMinAngle = Rotation2d.fromDegrees(-25);
                 public static final Rotation2d wristMaxAngle = Rotation2d.fromDegrees(180);
 
                 public static final TalonFXConfiguration kWristConfiguration = new TalonFXConfiguration()
@@ -373,7 +378,7 @@ public class Constants {
                                                 .withKI(0)
                                                 .withKD(0)
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
-                                                .withKG(0))
+                                                .withKG(-0.66))
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
@@ -400,12 +405,12 @@ public class Constants {
         public static final class ElevatorConstants {
                 public static final int elevatorLeaderMotorID = 22; // TODO Set these
                 public static final int elevatorFollowerMotorID = 23;
-                public static final String elevatorMotorCANBus = "canivore";
+                public static final String elevatorMotorCANBus = "";
 
-                public static final double elevatorGearRatio = 15; // Sensor to Mechanism Ratio
-                public static final double elevatorPinionRadius = 0.05; // Meters
+                public static final double elevatorGearRatio = 25; // Sensor to Mechanism Ratio
+                public static final double elevatorPinionRadius = Units.inchesToMeters(0.75); // Meters
 
-                public static final double maxElevatorHeight = 1; // Meters
+                public static final double maxElevatorHeight = 0.5; // Meters
 
                 public static final TalonFXConfiguration kElevatorConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -415,7 +420,7 @@ public class Constants {
                                                 .withSupplyCurrentLimitEnable(true))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
-                                                .withInverted(InvertedValue.CounterClockwise_Positive))
+                                                .withInverted(InvertedValue.Clockwise_Positive))
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
@@ -452,7 +457,7 @@ public class Constants {
                                 false,
                                 false, false);
 
-                public static final Follower followerControl = new Follower(elevatorLeaderMotorID, true);
+                public static final StrictFollower followerControl = new StrictFollower(elevatorLeaderMotorID);
 
                 public static final double heightErrorTolerance = 0.02; // Meters
 

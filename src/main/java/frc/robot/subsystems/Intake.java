@@ -6,10 +6,13 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight.Status;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
+import frc.lib.util.Leds;
 import frc.lib.util.TalonFXFactory;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.robot.Constants;
@@ -20,28 +23,14 @@ public class Intake extends SubsystemBase {
   private TalonFX intakeMotor = configIntakeMotor(TalonFXFactory.createTalon(IntakeConstants.intakeMotorID,
       IntakeConstants.intakeMotorCANBus, IntakeConstants.kIntakeConfiguration));
 
-  // private TimeOfFlight intakeSensor = new TimeOfFlight(IntakeConstants.intakeSensorID);
-
-  // private CANSparkMax intakeMotorLeft = new CANSparkMax(20,
-  // MotorType.kBrushless);
-  // private CANSparkMax intakeMotorRight = new CANSparkMax(21,
-  // MotorType.kBrushless);
+  private TimeOfFlight intakeSensor = new TimeOfFlight(IntakeConstants.intakeSensorID);
 
   /** Creates a new intake. */
   public Intake() {
 
-    // intakeSensor.setRangingMode(IntakeConstants.intakeSensorRange, IntakeConstants.intakeSampleTime);
-    // intakeSensor.setRangeOfInterest(8, 8, 12, 12);
-
-    // intakeMotorLeft.setIdleMode(IdleMode.kBrake);
-    // intakeMotorRight.setIdleMode(IdleMode.kBrake);
-
+    intakeSensor.setRangingMode(IntakeConstants.intakeSensorRange, IntakeConstants.intakeSampleTime);
+    intakeSensor.setRangeOfInterest(8, 8, 12, 12);
   }
-
-  // public void spinner(double speed) {
-  // intakeMotorRight.set(speed);
-  // intakeMotorLeft.set(speed);
-  // }
 
   public void disable() {
     intakeMotor.setControl(IntakeConstants.intakeDutyCycle.withOutput(0));
@@ -60,14 +49,14 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isNotePresent() {
-    // return intakeSensor.getRange() < IntakeConstants.isNotePresentThreshold;
-    return false;
+    return intakeSensor.getRange() < IntakeConstants.isNotePresentThreshold;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // SmartDashboard.putBoolean("TOF Sensor", intakeSensor.getStatus() == Status.Valid);
+    SmartDashboard.putNumber("TOF Sensor", intakeSensor.getRange());
+
   }
 
   private TalonFX configIntakeMotor(TalonFX motor) {

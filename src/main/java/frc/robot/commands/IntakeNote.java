@@ -57,6 +57,8 @@ public class IntakeNote extends Command {
   public void execute() {
     if (intake.isNotePresent() || indexer.isNotePresent()) {
       noteDetected = true;
+      Leds.getInstance().hasGamePiece = noteDetected;
+
     }
 
     wrist.toAngle(ScoringConstants.Handoff.angle);
@@ -91,6 +93,7 @@ public class IntakeNote extends Command {
       elevator.disable();
     }
     Leds.getInstance().intaking = false;
+    Leds.getInstance().hasGamePiece = false;
 
   }
 

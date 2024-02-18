@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.util.Leds;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.subsystems.Elevator;
@@ -15,14 +16,12 @@ import frc.robot.subsystems.Wrist;
 
 public class ScoreAmp extends Command {
 
-
   private Elevator elevator;
   private Wrist wrist;
   private Indexer indexer;
   private Swerve swerve;
 
   private Timer timer = new Timer();
-
 
   /** Creates a new ScoreAmp. */
   public ScoreAmp(Elevator elevator, Wrist wrist, Indexer indexer, Swerve swerve) {
@@ -38,7 +37,10 @@ public class ScoreAmp extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    Leds.getInstance().scoringAmp = true;
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -46,20 +48,22 @@ public class ScoreAmp extends Command {
     elevator.toHeight(ScoringConstants.ScoreAmp.height);
     wrist.toAngle(ScoringConstants.ScoreAmp.angle);
 
-    if(elevator.isAtSetpoint() && wrist.isAtSetpoint()){
+    if (elevator.isAtSetpoint() && wrist.isAtSetpoint()) {
       timer.start();
 
-      if(timer.get() > 0.5){
+      if (timer.get() > 0.5) {
         indexer.runIndexerTorqueControl(ScoringConstants.ampScoringCurrentIndexer);
       }
     }
-    
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    Leds.getInstance().scoringAmp = false;
+
+  }
 
   // Returns true when the command should end.
   @Override

@@ -6,8 +6,6 @@ package frc.robot;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.Utils;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -19,7 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -28,6 +25,7 @@ import frc.lib.util.tuning.GlobalVoltageTuning;
 import frc.lib.util.tuning.ShooterTuning;
 import frc.lib.util.tuning.SuperstructureTuning;
 import frc.robot.Constants.DriverConstants;
+import frc.robot.Constants.ScoringConstants;
 import frc.robot.commands.IntakeNote;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Auto.AutoShoot;
@@ -41,14 +39,14 @@ import frc.robot.subsystems.Wrist;
 public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-  private TuningMode tuningMode = TuningMode.SHOOTER;
+  private TuningMode tuningMode = TuningMode.VOLTAGE;
 
   /***** Instancing Subsystems *****/
   private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
-  // private final Wrist wrist = new Wrist();
-  // private final Elevator elevator = new Elevator();
+  private final Wrist wrist = new Wrist();
+  private final Elevator elevator = new Elevator();
   private final Indexer indexer = new Indexer();
 
   /***** Driver Controls *****/
@@ -81,24 +79,31 @@ public class RobotContainer {
 
     runIntake.whileTrue(new StartEndCommand(() -> {
       intake.runIntakeDutyCycle(0.4);
-      indexer.runIndexerDutyCycle(0.5);
+      // indexer.runIndexerDutyCycle(0.5);
     }, () -> {
       intake.runIntakeDutyCycle(0);
-      indexer.runIndexerDutyCycle(0);
+      // indexer.runIndexerDutyCycle(0);
     },
         intake));
         
     runOuttake.whileTrue(new StartEndCommand(() -> {
       intake.runIntakeDutyCycle(-0.4);
-      indexer.runIndexerDutyCycle(-0.5);
+      // indexer.runIndexerDutyCycle(-0.5);
     }, () -> {
       intake.runIntakeDutyCycle(0);
-      indexer.runIndexerDutyCycle(0);
+      // indexer.runIndexerDutyCycle(0);
     },
         intake));
 
+
+    
+
     // runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () ->
     // false));
+
+    // runOuttake.whileTrue(new StartEndCommand(() ->
+    // intake.runIntakeTorqueControl(-ScoringConstants.intakingTargetCurrent), () -> intake.disable(),
+    // intake));
 
     // shoot.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer,
     // translationX, translationY, () -> false));
@@ -115,12 +120,12 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser("");
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    // NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
-    // elevator, swerve, indexer));
-    // NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
-    // wrist, elevator, () -> false));
-    // NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNote(intake,
-    // indexer, wrist, elevator, () -> false));
+    NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
+    elevator, swerve, indexer));
+    NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
+    wrist, elevator, () -> false));
+    NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNote(intake,
+    indexer, wrist, elevator, () -> false));
 
     configDefaultCommands();
     configDriverBindings();
@@ -212,13 +217,13 @@ public class RobotContainer {
       case DISABLED:
         break;
       case VOLTAGE:
-        // GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
+        GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
         break;
       case SHOOTER:
         ShooterTuning.initialize(shooter, indexer);
         break;
       case SUPERSTRUCTURE:
-        // SuperstructureTuning.initialize(elevator, wrist);
+        SuperstructureTuning.initialize(elevator, wrist);
         break;
       default:
         break;

@@ -36,6 +36,8 @@ public class IntakeNoHandoff extends Command {
     } else {
       intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
     }
+
+    Leds.getInstance().hasGamePiece = intake.isNotePresent();
   }
 
   // Called once the command ends or is interrupted.
@@ -43,6 +45,7 @@ public class IntakeNoHandoff extends Command {
   public void end(boolean interrupted) {
     intake.disable();
     Leds.getInstance().intaking = false;
+    Leds.getInstance().hasGamePiece = false;
   }
 
   // Returns true when the command should end.

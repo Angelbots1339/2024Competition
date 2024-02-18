@@ -71,6 +71,10 @@ public class Shoot extends Command {
             / (PoseEstimation.getEstimatedPose().getY() - virtualTarget.getY())))
         .plus(Rotation2d.fromRadians(Math.PI));
 
+
+        
+
+
     wrist.toAngle(SpeakerShotRegression.wristRegression.predict(targetDistance));
     elevator.home();
     shooter.shooterToRMP(SpeakerShotRegression.flywheelRegression.predict(targetDistance));
