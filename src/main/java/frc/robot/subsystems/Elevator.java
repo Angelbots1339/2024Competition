@@ -32,12 +32,16 @@ public class Elevator extends SubsystemBase {
   private TalonFX elevatorLeaderMotor = configElevatorMotor(
       TalonFXFactory.createTalon(ElevatorConstants.elevatorLeaderMotorID,
           ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration));
+
   private TalonFX elevatorFollowerMotor = configElevatorMotor(
       TalonFXFactory.createTalon(ElevatorConstants.elevatorFollowerMotorID,
-          ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration.withMotorOutput(ElevatorConstants.kElevatorConfiguration.MotorOutput
-          .withInverted(ElevatorConstants.kElevatorConfiguration.MotorOutput.Inverted == InvertedValue.Clockwise_Positive
-              ? InvertedValue.CounterClockwise_Positive // Make motors spin opposite directions
-              : InvertedValue.Clockwise_Positive))));
+          ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration));
+  // private TalonFX elevatorFollowerMotor = configElevatorMotor(
+  //     TalonFXFactory.createTalon(ElevatorConstants.elevatorFollowerMotorID,
+  //         ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration.withMotorOutput(ElevatorConstants.kElevatorConfiguration.MotorOutput
+  //         .withInverted(ElevatorConstants.kElevatorConfiguration.MotorOutput.Inverted == InvertedValue.Clockwise_Positive
+  //             ? InvertedValue.CounterClockwise_Positive // Make motors spin opposite directions
+  //             : InvertedValue.Clockwise_Positive))));
 
   private TalonFXSimState leaderSim = elevatorLeaderMotor.getSimState();
   private TalonFXSimState followerSim = elevatorFollowerMotor.getSimState();
@@ -140,8 +144,8 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("Elevator Height", ElevatorConstants.elevatorMetersToRotations(elevatorLeaderMotor.getPosition().getValue()));
-    SmartDashboard.putNumber("Follower Elevator Height", ElevatorConstants.elevatorMetersToRotations(elevatorFollowerMotor.getPosition().getValue()));
+    SmartDashboard.putNumber("Elevator Height", ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getPosition().getValue()));
+    SmartDashboard.putNumber("Follower Elevator Height", ElevatorConstants.elevatorRotationsToMeters(elevatorFollowerMotor.getPosition().getValue()));
 
 
     SmartDashboard.putString("ControlMode", elevatorLeaderMotor.getControlMode().getValue().toString());
@@ -152,22 +156,22 @@ public class Elevator extends SubsystemBase {
     // TODO Figure out what status signals Follower control needs to work
 
 
-    // ErrorCheckUtil.checkError(
-    //     motor.getPosition().setUpdateFrequency(ElevatorConstants.kElevatorPositionUpdateFrequency,
-    //         Constants.kConfigTimeoutSeconds),
-    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
-    // ErrorCheckUtil.checkError(
-    //     motor.getClosedLoopError().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
-    //         Constants.kConfigTimeoutSeconds),
-    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
-    // ErrorCheckUtil.checkError(
-    //     motor.getStatorCurrent().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
-    //         Constants.kConfigTimeoutSeconds),
-    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
-    // ErrorCheckUtil.checkError(
-    //     motor.getControlMode().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
-    //         Constants.kConfigTimeoutSeconds),
-    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    ErrorCheckUtil.checkError(
+        motor.getPosition().setUpdateFrequency(ElevatorConstants.kElevatorPositionUpdateFrequency,
+            Constants.kConfigTimeoutSeconds),
+        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    ErrorCheckUtil.checkError(
+        motor.getClosedLoopError().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
+            Constants.kConfigTimeoutSeconds),
+        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    ErrorCheckUtil.checkError(
+        motor.getStatorCurrent().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
+            Constants.kConfigTimeoutSeconds),
+        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    ErrorCheckUtil.checkError(
+        motor.getControlMode().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
+            Constants.kConfigTimeoutSeconds),
+        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
 
 
     // ErrorCheckUtil.checkError(

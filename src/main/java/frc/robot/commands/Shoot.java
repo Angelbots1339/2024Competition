@@ -61,25 +61,25 @@ public class Shoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Translation2d virtualTarget = PoseEstimation.calculateVirtualSpeakerOffset(FieldUtil.getAllianceSpeakerPosition());
+
+    Translation2d target = ScoringConstants.shootWhileMoving
+        ? PoseEstimation.calculateVirtualSpeakerOffset(FieldUtil.getAllianceSpeakerPosition())
+        : FieldUtil.getAllianceSpeakerPosition();
 
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
-        .getDistance(virtualTarget);
+        .getDistance(target);
 
     Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-        Math.atan((PoseEstimation.getEstimatedPose().getX() - virtualTarget.getX())
-            / (PoseEstimation.getEstimatedPose().getY() - virtualTarget.getY())))
+        Math.atan((PoseEstimation.getEstimatedPose().getX() - target.getX())
+            / (PoseEstimation.getEstimatedPose().getY() - target.getY())))
         .plus(Rotation2d.fromRadians(Math.PI));
-
-
-        
-
 
     wrist.toAngle(SpeakerShotRegression.wristRegression.predict(targetDistance));
     elevator.home();
     shooter.shooterToRMP(SpeakerShotRegression.flywheelRegression.predict(targetDistance));
 
-    swerve.angularDrive(translationX, translationY, robotAngle, () -> true, () -> true);
+    swerve.angularDrive(() -> translationX.get() * ScoringConstants.shootingDriveScalar,
+        () -> translationY.get() * ScoringConstants.shootingDriveScalar, robotAngle, () -> true, () -> true);
 
     if ((indexer.isNotePresent() || overrideIndexerSensor.get()) && shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {

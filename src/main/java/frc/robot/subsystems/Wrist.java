@@ -93,6 +93,10 @@ public class Wrist extends SubsystemBase {
     return Rotation2d.fromRotations(wristLeaderMotor.getPosition().getValue());
   }
 
+  public double getVoltageOut() {
+    return wristLeaderMotor.getMotorVoltage().getValue();
+  }
+
   public Rotation2d getAbsoluteEncoderPosition() {
     return Rotation2d.fromRotations(wristEncoder.getAbsolutePosition()).minus(Rotation2d.fromRotations(WristConstants.absoluteEncoderOffset.getRotations()));
   }
@@ -103,6 +107,7 @@ public class Wrist extends SubsystemBase {
 
   public void setVoltage(double volts) {
     wristLeaderMotor.setControl(new VoltageOut(volts));
+    wristFollowerMotor.setControl(WristConstants.followerControl);
   }
 
   @Override
@@ -124,8 +129,10 @@ public class Wrist extends SubsystemBase {
       throughBoreTimer.stop();
     }
 
-    SmartDashboard.putNumber("Through Bore Transformed", getAbsoluteEncoderPosition().getRotations());
-    SmartDashboard.putNumber("Wrist Position", wristLeaderMotor.getPosition().getValue());
+    SmartDashboard.putNumber("Through Bore Transformed", getAbsoluteEncoderPosition().getDegrees());
+    SmartDashboard.putNumber("Wrist Position", getAngle().getDegrees());
+
+    SmartDashboard.putNumber("WristSetpoint", wristLeaderMotor.getClosedLoopReference().getValue());
 
   }
 
@@ -133,14 +140,14 @@ public class Wrist extends SubsystemBase {
 
     // TODO Figure out what status signals Follower control needs to work
 
-    // ErrorCheckUtil.checkError(
-    //     motor.getPosition().setUpdateFrequency(WristConstants.kWristPositionUpdateFrequency,
-    //         Constants.kConfigTimeoutSeconds),
-    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
-    // ErrorCheckUtil.checkError(
-    //     motor.getClosedLoopError().setUpdateFrequency(WristConstants.kWristErrorUpdateFrequency,
-    //         Constants.kConfigTimeoutSeconds),
-    //     CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    ErrorCheckUtil.checkError(
+        motor.getPosition().setUpdateFrequency(WristConstants.kWristPositionUpdateFrequency,
+            Constants.kConfigTimeoutSeconds),
+        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
+    ErrorCheckUtil.checkError(
+        motor.getClosedLoopError().setUpdateFrequency(WristConstants.kWristErrorUpdateFrequency,
+            Constants.kConfigTimeoutSeconds),
+        CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
 
     // ErrorCheckUtil.checkError(
     //     motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),

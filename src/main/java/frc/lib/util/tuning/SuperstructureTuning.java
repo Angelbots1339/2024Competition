@@ -6,10 +6,13 @@ package frc.lib.util.tuning;
 
 import java.util.Map;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.WristConstants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Wrist;
 
@@ -34,13 +37,34 @@ public class SuperstructureTuning {
 
                         wristTargetAngle = Shuffleboard.getTab("SuperstructureTuning").add("WristTargetAngle", 90)
                                         .withWidget(BuiltInWidgets.kNumberSlider)
-                                        .withProperties(Map.of("min", 0, "max", 180))
+                                        .withProperties(Map.of("min", WristConstants.wristMinAngle.getDegrees(), "max",
+                                                        WristConstants.wristMaxAngle.getDegrees()))
                                         .getEntry();
                         elevatorTargetHeight = Shuffleboard.getTab("SuperstructureTuning")
                                         .add("ElevatorTargetHeight", 0)
                                         .withWidget(BuiltInWidgets.kNumberSlider)
-                                        .withProperties(Map.of("min", 0, "max", 1))
+                                        .withProperties(Map.of("min", 0, "max", ElevatorConstants.maxElevatorHeight))
                                         .getEntry();
+
+                        Shuffleboard.getTab("SuperstructureTuning").addDouble("WristSetpointError",
+                                        () -> wrist.getSetpointError())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        Shuffleboard.getTab("SuperstructureTuning").addDouble("WristAngle",
+                                        () -> wrist.getAngle().getDegrees())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        Shuffleboard.getTab("SuperstructureTuning").addDouble("WristEncoderAbsolutePosition",
+                                        () -> wrist.getAbsoluteEncoderPosition().getDegrees())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        Shuffleboard.getTab("SuperstructureTuning").addDouble("WristVoltsOUt",
+                                        () -> wrist.getVoltageOut())
+                                        .withWidget(BuiltInWidgets.kTextView);
+
+                        Shuffleboard.getTab("SuperstructureTuning").addDouble("ElevatorSetpointError",
+                                        () -> elevator.getSetpointError())
+                                        .withWidget(BuiltInWidgets.kTextView);
+                        Shuffleboard.getTab("SuperstructureTuning").addDouble("ElevatorPosition",
+                                        () -> elevator.getPosition())
+                                        .withWidget(BuiltInWidgets.kTextView);
 
                         elevator = elevatorInstance;
                         wrist = wristInstance;
@@ -60,22 +84,8 @@ public class SuperstructureTuning {
                         wrist.disable();
                 }
 
-                Shuffleboard.getTab("SuperstructureTuning").addDouble("WristSetpointError",
-                                () -> wrist.getSetpointError())
-                                .withWidget(BuiltInWidgets.kTextView);
-                Shuffleboard.getTab("SuperstructureTuning").addDouble("WristAngle",
-                                () -> wrist.getAngle().getDegrees())
-                                .withWidget(BuiltInWidgets.kTextView);
-                Shuffleboard.getTab("SuperstructureTuning").addDouble("WristEncoderAbsolutePosition",
-                                () -> wrist.getAbsoluteEncoderPosition().getDegrees())
-                                .withWidget(BuiltInWidgets.kTextView);
-
-                Shuffleboard.getTab("SuperstructureTuning").addDouble("ElevatorSetpointError",
-                                () -> elevator.getSetpointError())
-                                .withWidget(BuiltInWidgets.kTextView);
-                Shuffleboard.getTab("SuperstructureTuning").addDouble("ElevatorPosition",
-                                () -> elevator.getPosition())
-                                .withWidget(BuiltInWidgets.kTextView);
+                elevator.toHeight(elevatorTargetHeight.getDouble(0));
+                wrist.toAngle(Rotation2d.fromDegrees(wristTargetAngle.getDouble(0)));
 
         }
 

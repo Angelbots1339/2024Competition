@@ -39,7 +39,7 @@ import frc.robot.subsystems.Wrist;
 public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-  private TuningMode tuningMode = TuningMode.VOLTAGE;
+  private TuningMode tuningMode = TuningMode.SUPERSTRUCTURE;
 
   /***** Instancing Subsystems *****/
   private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
@@ -95,6 +95,11 @@ public class RobotContainer {
     },
         intake));
 
+
+        // shoot.whileTrue(new StartEndCommand(() -> wrist.toAngle(0.5), () -> wrist.disable(), wrist));
+        // scoreAmp.whileTrue(new StartEndCommand(() -> wrist.toAngle(0), () -> wrist.disable(), wrist));
+        shoot.whileTrue(new StartEndCommand(() -> elevator.toHeight(0.3), () -> wrist.disable(), wrist));
+        scoreAmp.whileTrue(new StartEndCommand(() -> elevator.toHeight(0), () -> wrist.disable(), wrist));
 
     
 

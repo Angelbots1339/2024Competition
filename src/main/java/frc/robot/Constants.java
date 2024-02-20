@@ -374,26 +374,28 @@ public class Constants {
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
-                                                .withKP(0)
+                                                .withKP(25)
                                                 .withKI(0)
                                                 .withKD(0)
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
-                                                .withKG(-0.66))
+                                                .withKG(-0.4)
+                                                .withKS(0))
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
-                                                .withMotionMagicCruiseVelocity(0) // TODO Tune
-                                                .withMotionMagicAcceleration(0)
+                                                .withMotionMagicCruiseVelocity(10) // TODO Tune
+                                                .withMotionMagicAcceleration(15)
                                                 .withMotionMagicJerk(0))
                                 .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
                                                 .withForwardSoftLimitEnable(true)
                                                 .withReverseSoftLimitEnable(true)
-                                                .withForwardSoftLimitThreshold(wristMaxAngle.getDegrees())
+                                                .withForwardSoftLimitThreshold(wristMaxAngle.getRotations())
                                                 .withReverseSoftLimitThreshold(wristMinAngle.getRotations()));
 
-                public static final MotionMagicVoltage wristPositionControl = new MotionMagicVoltage(0, true, 0, 0,
+                public static final MotionMagicVoltage wristPositionControl = new MotionMagicVoltage(0, false, 0, 0,
                                 false,
                                 false, false);
+                // public static final PositionVoltage wristPositionControl = new PositionVoltage(0, 0, true, 0, 0, false, false, false);
 
                 public static final Follower followerControl = new Follower(wristLeaderMotorID, true);
 
@@ -408,9 +410,9 @@ public class Constants {
                 public static final String elevatorMotorCANBus = "";
 
                 public static final double elevatorGearRatio = 25; // Sensor to Mechanism Ratio
-                public static final double elevatorPinionRadius = Units.inchesToMeters(0.75); // Meters
+                public static final double elevatorPinionRadius = Units.inchesToMeters(1); // Meters
 
-                public static final double maxElevatorHeight = 0.5; // Meters
+                public static final double maxElevatorHeight = 0.3; // Meters
 
                 public static final TalonFXConfiguration kElevatorConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -424,16 +426,16 @@ public class Constants {
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
-                                                .withKP(0)
+                                                .withKP(2)
                                                 .withKI(0)
                                                 .withKD(0)
                                                 .withGravityType(GravityTypeValue.Elevator_Static)
-                                                .withKG(0))
+                                                .withKG(0.35))
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(elevatorGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
-                                                .withMotionMagicCruiseVelocity(0) // TODO Tune
-                                                .withMotionMagicAcceleration(0)
+                                                .withMotionMagicCruiseVelocity(1) // TODO Tune
+                                                .withMotionMagicAcceleration(1)
                                                 .withMotionMagicJerk(0))
                                 .withHardwareLimitSwitch(new HardwareLimitSwitchConfigs()
                                                 .withForwardLimitEnable(true)
@@ -457,7 +459,7 @@ public class Constants {
                                 false,
                                 false, false);
 
-                public static final StrictFollower followerControl = new StrictFollower(elevatorLeaderMotorID);
+                public static final Follower followerControl = new Follower(elevatorLeaderMotorID, true);
 
                 public static final double heightErrorTolerance = 0.02; // Meters
 
@@ -485,6 +487,13 @@ public class Constants {
                 public static final double ampScoringCurrentIndexer = 10; // Amps
 
                 public static final double intakingTargetCurrent = 20; // Amps
+
+                public static final double kAccelCompFactor = 0; // Seconds
+                public static final double gamePieceVelocity = 0; // Meters per second
+
+                public static final double shootingDriveScalar = 0.5;
+
+                public static final boolean shootWhileMoving = false; 
 
 
         }

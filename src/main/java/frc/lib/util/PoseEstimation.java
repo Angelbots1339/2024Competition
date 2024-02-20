@@ -11,16 +11,20 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import frc.robot.Constants.ScoringConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Swerve;
 
 public class PoseEstimation {
 
     private static Pose2d estimatedPose = new Pose2d();
     private static Pose2d estimatedVelocity = new Pose2d();
+    private static Pose2d estimatedAcceleration = new Pose2d();
     private static Pose2d targetAutoPose = new Pose2d();
 
     private static double lastTime = 0;
     private static Pose2d lastPose = new Pose2d();
+    private static Pose2d lastVelocity = new Pose2d();
 
     private static SwerveDrivePoseEstimator poseEstimatorNonVision;
 
@@ -42,11 +46,13 @@ public class PoseEstimation {
         double diffTime = currentTime - lastTime;
         lastTime = currentTime;
         Pose2d distanceDiff = new Pose2d().transformBy(state.Pose.minus(lastPose));
-        lastPose = state.Pose;
         Pose2d velocities = distanceDiff.div(diffTime);
 
         estimatedVelocity = velocities;
         estimatedPose = state.Pose;
+
+        lastPose = state.Pose;
+        lastVelocity = velocities;
 
         // poseEstimatorNonVision.update(Rotation2d.fromDegrees(swerve.getPigeon2().getYaw().getValue()),
         // swerve.getModulePositions());
@@ -72,13 +78,6 @@ public class PoseEstimation {
         return estimatedVelocity;
     }
 
-    public static PolarPose getVirtualSpeakerPolar() {
-
-        
-
-        return new PolarPose(0, Rotation2d.fromDegrees(0));
-    }
-
     /**
      * Used for shooting while moving to make a virtual target offset based on the
      * robot's current velocity
@@ -89,7 +88,12 @@ public class PoseEstimation {
 
         // TODO Do math here
 
-        return targetPosition;
+        double virtualGoalX = targetPosition.getX()
+                - (estimatedPose.getTranslation().getDistance(targetPosition) / ScoringConstants.gamePieceVelocity) * (estimatedVelocity.getX() + estimatedAcceleration.getX() * ScoringConstants.kAccelCompFactor);
+        double virtualGoalY = targetPosition.getY()
+                - ScoringConstants.gamePieceVelocity * (estimatedVelocity.getY() + estimatedAcceleration.getY() * ScoringConstants.kAccelCompFactor);
+
+        return new Translation2d(virtualGoalX, virtualGoalY);
     }
 
     /**
@@ -122,17 +126,6 @@ public class PoseEstimation {
     public static Pose2d getAutoTargetPoseError() {
 
         return new Pose2d().transformBy(targetAutoPose.minus(estimatedPose));
-    }
-
-    public static class PolarPose {
-
-        public double distance;
-        public Rotation2d angle;
-
-        public PolarPose(double distance, Rotation2d angle) {
-            this.distance = distance;
-            this.angle = angle;
-        }
     }
 
 }
