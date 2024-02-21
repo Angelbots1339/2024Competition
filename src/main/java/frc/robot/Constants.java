@@ -75,7 +75,7 @@ public class Constants {
                 public static final double kSpeedAt12VoltsMps = 6.21;
 
                 public static final double maxSpeed = 6; // Used for driving
-                public static final double maxAngularRate = 1.5 * Math.PI;
+                public static final double maxAngularRate = 2 * Math.PI;
 
                 // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
                 // This may need to be tuned to your individual robot
@@ -297,7 +297,7 @@ public class Constants {
                                                 .withSupplyCurrentLimitEnable(true))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
-                                                .withInverted(InvertedValue.CounterClockwise_Positive));
+                                                .withInverted(InvertedValue.Clockwise_Positive));
 
                 public static final DutyCycleOut intakeDutyCycle = new DutyCycleOut(0, true, false,
                                 false, false);
@@ -344,16 +344,16 @@ public class Constants {
                 public static final int wristLeaderMotorID = 20; // TODO Set these
                 public static final int wristFollowerMotorID = 21; // TODO Set these
                 public static final String wristMotorCANBus = "";
-                
+
                 public static final double wristGearRatio = 15 * 2; // Sensor to Mechanism Ratio
                 public static final double timeBeforeEncoderReset = 1.5; // Seconds before the motor is initialized to
                 // the through bore;
 
                 public static final int wristEncoderPort = 0; // TODO Set these
                 public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees(105); // 0 Should be
-                                                                                                  // straight forward
-                                                                                                  // towards the intake
-                                                                                                  
+                                                                                                    // straight forward
+                                                                                                    // towards the
+                                                                                                    // intake
 
                 /****
                  * Wrist is counter-clockwise (from the left side of the robot with intake
@@ -378,7 +378,7 @@ public class Constants {
                                                 .withKI(0)
                                                 .withKD(0)
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
-                                                .withKG(-0.4)
+                                                .withKG(-0.4) // Negative b/c of wrist direction & how CTRE uses it
                                                 .withKS(0))
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
@@ -395,12 +395,15 @@ public class Constants {
                 public static final MotionMagicVoltage wristPositionControl = new MotionMagicVoltage(0, false, 0, 0,
                                 false,
                                 false, false);
-                // public static final PositionVoltage wristPositionControl = new PositionVoltage(0, 0, true, 0, 0, false, false, false);
+                // public static final PositionVoltage wristPositionControl = new
+                // PositionVoltage(0, 0, true, 0, 0, false, false, false);
 
                 public static final Follower followerControl = new Follower(wristLeaderMotorID, true);
 
                 public static final double kWristPositionUpdateFrequency = 10; // Hertz
                 public static final double kWristErrorUpdateFrequency = 20; // Hertz
+
+                public static final Rotation2d angleErrorTolerance = Rotation2d.fromDegrees(1); // Degrees
 
         }
 
@@ -412,7 +415,7 @@ public class Constants {
                 public static final double elevatorGearRatio = 25; // Sensor to Mechanism Ratio
                 public static final double elevatorPinionRadius = Units.inchesToMeters(1); // Meters
 
-                public static final double maxElevatorHeight = 0.3; // Meters
+                public static final double maxElevatorHeight = 0.45; // Meters
 
                 public static final TalonFXConfiguration kElevatorConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -426,7 +429,7 @@ public class Constants {
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
-                                                .withKP(2)
+                                                .withKP(15)
                                                 .withKI(0)
                                                 .withKD(0)
                                                 .withGravityType(GravityTypeValue.Elevator_Static)
@@ -434,8 +437,8 @@ public class Constants {
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(elevatorGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
-                                                .withMotionMagicCruiseVelocity(1) // TODO Tune
-                                                .withMotionMagicAcceleration(1)
+                                                .withMotionMagicCruiseVelocity(6) // TODO Tune
+                                                .withMotionMagicAcceleration(18)
                                                 .withMotionMagicJerk(0))
                                 .withHardwareLimitSwitch(new HardwareLimitSwitchConfigs()
                                                 .withForwardLimitEnable(true)
@@ -461,7 +464,7 @@ public class Constants {
 
                 public static final Follower followerControl = new Follower(elevatorLeaderMotorID, true);
 
-                public static final double heightErrorTolerance = 0.02; // Meters
+                public static final double heightErrorTolerance = 0.005; // Meters
 
                 public static final double kElevatorPositionUpdateFrequency = 10; // Hertz
                 public static final double kElevatorErrorUpdateFrequency = 20; // Hertz
@@ -479,8 +482,8 @@ public class Constants {
 
         public static class ScoringConstants {
 
-                public static final WristElevatorState Handoff = new WristElevatorState(0, 0);
-                public static final WristElevatorState ScoreAmp = new WristElevatorState(0, 0);
+                public static final WristElevatorState Handoff = new WristElevatorState(135, 0);
+                public static final WristElevatorState ScoreAmp = new WristElevatorState(18, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
 
                 public static final double indexingTargetCurrent = 10; // Amps
@@ -493,8 +496,7 @@ public class Constants {
 
                 public static final double shootingDriveScalar = 0.5;
 
-                public static final boolean shootWhileMoving = false; 
-
+                public static final boolean shootWhileMoving = false;
 
         }
 

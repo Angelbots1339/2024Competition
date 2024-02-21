@@ -13,9 +13,9 @@ import frc.robot.subsystems.Wrist;
 
 public class SuperstructureToPosition extends Command {
 
-  Elevator elevator;
-  Wrist wrist;
-  Supplier<WristElevatorState> state;
+  private Elevator elevator;
+  private Wrist wrist;
+  private Supplier<WristElevatorState> state;
 
   /** Creates a new SuperstructureToPosition. */
   public SuperstructureToPosition(Elevator elevator, Wrist wrist, Supplier<WristElevatorState> state) {
@@ -32,14 +32,18 @@ public class SuperstructureToPosition extends Command {
   @Override
   public void initialize() {
     elevator.toHeight(state.get().height);
-    wrist.toAngle(state.get().angle);
+    // wrist.toAngle(state.get().angle);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     elevator.toHeight(state.get().height);
-    wrist.toAngle(state.get().angle);
+
+    if(state.get().angle.getDegrees() > 90 || elevator.getPosition() > 0.15){
+
+      wrist.toAngle(state.get().angle);
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -52,6 +56,6 @@ public class SuperstructureToPosition extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return elevator.isAtSetpoint() && wrist.isAtSetpoint();
+    return false;
   }
 }

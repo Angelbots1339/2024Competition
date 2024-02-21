@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Wrist;
 
 /**
@@ -23,14 +24,16 @@ public class SuperstructureTuning {
 
         private static Elevator elevator;
         private static Wrist wrist;
+        private static Indexer indexer;
 
         private static GenericEntry wristTargetAngle;
         private static GenericEntry elevatorTargetHeight;
+        private static GenericEntry indexerSpeed;
 
         private static XboxController testController;
         private static boolean hasBeenInitialized = false;
 
-        public static void initialize(Elevator elevatorInstance, Wrist wristInstance) {
+        public static void initialize(Elevator elevatorInstance, Wrist wristInstance, Indexer indexerInstance) {
 
                 if (!hasBeenInitialized) {
                         testController = new XboxController(2);
@@ -45,9 +48,14 @@ public class SuperstructureTuning {
                                         .withWidget(BuiltInWidgets.kNumberSlider)
                                         .withProperties(Map.of("min", 0, "max", ElevatorConstants.maxElevatorHeight))
                                         .getEntry();
+                        indexerSpeed = Shuffleboard.getTab("SuperstructureTuning")
+                                        .add("IndexerVolts", 0)
+                                        .withWidget(BuiltInWidgets.kNumberSlider)
+                                        .withProperties(Map.of("min", -1, "max", 1))
+                                        .getEntry();
 
                         Shuffleboard.getTab("SuperstructureTuning").addDouble("WristSetpointError",
-                                        () -> wrist.getSetpointError())
+                                        () -> wrist.getSetpointError().getDegrees())
                                         .withWidget(BuiltInWidgets.kTextView);
                         Shuffleboard.getTab("SuperstructureTuning").addDouble("WristAngle",
                                         () -> wrist.getAngle().getDegrees())
@@ -68,6 +76,7 @@ public class SuperstructureTuning {
 
                         elevator = elevatorInstance;
                         wrist = wristInstance;
+                        indexer = indexerInstance;
 
                         hasBeenInitialized = true;
 
@@ -77,21 +86,23 @@ public class SuperstructureTuning {
         public static void periodic() {
 
                 if (testController.getAButton()) {
-                        elevator.toHeight(elevatorTargetHeight.getDouble(0));
-                        wrist.toAngle(wristTargetAngle.getDouble(0));
+                        // elevator.toHeight(elevatorTargetHeight.getDouble(0));
+                        // wrist.toAngle(wristTargetAngle.getDouble(0));
                 } else {
-                        elevator.disable();
-                        wrist.disable();
+                        // elevator.disable();
+                        // wrist.disable();
                 }
-
+                
+                indexer.runIndexerDutyCycle(indexerSpeed.getDouble(0));
                 elevator.toHeight(elevatorTargetHeight.getDouble(0));
                 wrist.toAngle(Rotation2d.fromDegrees(wristTargetAngle.getDouble(0)));
-
+                System.out.println(wristTargetAngle.getDouble(0));
         }
 
         public static void end() {
                 elevator.disable();
                 wrist.disable();
+                indexer.disable();
         }
 
 }

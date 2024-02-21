@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -28,6 +29,7 @@ import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.commands.IntakeNote;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.SuperstructureToPosition;
 import frc.robot.commands.Auto.AutoShoot;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
@@ -39,7 +41,7 @@ import frc.robot.subsystems.Wrist;
 public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-  private TuningMode tuningMode = TuningMode.SUPERSTRUCTURE;
+  private TuningMode tuningMode = TuningMode.VOLTAGE;
 
   /***** Instancing Subsystems *****/
   private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
@@ -60,16 +62,26 @@ public class RobotContainer {
   private Supplier<Double> rotation = () -> DriverConstants.fixRotationJoystickValues(-driveController.getRightX(),
       false);
 
-  private Trigger runIntake = new JoystickButton(driveController, XboxController.Button.kLeftBumper.value);
-  private Trigger runOuttake = new JoystickButton(driveController, XboxController.Button.kRightBumper.value);
+  private boolean climbMode = false;
 
-  private Trigger shoot = new JoystickButton(driveController, XboxController.Button.kA.value);
-  private Trigger scoreAmp = new JoystickButton(driveController, XboxController.Button.kB.value);
+  private Trigger runIntake = new Trigger(() -> driveController.getLeftBumper() && !climbMode);
+  private Trigger runOuttake = new Trigger(() -> driveController.getRightBumper() && !climbMode);
 
-  private Trigger resetGyro = new JoystickButton(driveController, XboxController.Button.kStart.value);
+  private Trigger shoot = new Trigger(() -> driveController.getAButton() && !climbMode);
+  private Trigger scoreAmp = new Trigger(() -> driveController.getBButton() && !climbMode);
+
+  private Trigger resetGyro = new Trigger(() -> driveController.getStartButton());
+  private Trigger toggleClimbMode = new Trigger(() -> driveController.getBackButton());
+
+  private Trigger extendClimb = new Trigger(() -> driveController.getLeftTriggerAxis() > 0.2 && climbMode);
+  private Trigger retractClimb = new Trigger(() -> driveController.getRightTriggerAxis() > 0.2 && climbMode);
 
   private void configDriverBindings() {
     resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
+    toggleClimbMode.onTrue(new InstantCommand(() -> {
+      climbMode = !climbMode;
+      // Leds.getInstance().climbing = climbMode;
+    }));
     // runIntake.whileTrue(new StartEndCommand(() ->
     // intake.runIntakeDutyCycle(0.1), () -> intake.runIntakeDutyCycle(0),
     // intake));
@@ -77,37 +89,42 @@ public class RobotContainer {
     // intake.runIntakeDutyCycle(-0.1), () -> intake.runIntakeDutyCycle(0),
     // intake));
 
-    runIntake.whileTrue(new StartEndCommand(() -> {
+    runIntake.whileTrue(new RunCommand(() -> {
       intake.runIntakeDutyCycle(0.4);
-      // indexer.runIndexerDutyCycle(0.5);
-    }, () -> {
-      intake.runIntakeDutyCycle(0);
-      // indexer.runIndexerDutyCycle(0);
+      indexer.runIndexerDutyCycle(0.3);
     },
         intake));
-        
-    runOuttake.whileTrue(new StartEndCommand(() -> {
+
+    runOuttake.whileTrue(new RunCommand(() -> {
       intake.runIntakeDutyCycle(-0.4);
-      // indexer.runIndexerDutyCycle(-0.5);
-    }, () -> {
-      intake.runIntakeDutyCycle(0);
-      // indexer.runIndexerDutyCycle(0);
+      indexer.runIndexerDutyCycle(-0.3);
     },
         intake));
 
+    // shoot.whileTrue(new StartEndCommand(() -> wrist.toAngle(0.5), () ->
+    // wrist.disable(), wrist));
+    // scoreAmp.whileTrue(new StartEndCommand(() -> wrist.toAngle(0), () ->
+    // wrist.disable(), wrist));
+    // shoot.whileTrue(new StartEndCommand(() -> elevator.toHeight(0.45), () ->
+    // elevator.disable(), elevator));
+    // scoreAmp.whileTrue(new StartEndCommand(() -> elevator.toHeight(0), () ->
+    // elevator.disable(), elevator));
 
-        // shoot.whileTrue(new StartEndCommand(() -> wrist.toAngle(0.5), () -> wrist.disable(), wrist));
-        // scoreAmp.whileTrue(new StartEndCommand(() -> wrist.toAngle(0), () -> wrist.disable(), wrist));
-        shoot.whileTrue(new StartEndCommand(() -> elevator.toHeight(0.3), () -> wrist.disable(), wrist));
-        scoreAmp.whileTrue(new StartEndCommand(() -> elevator.toHeight(0), () -> wrist.disable(), wrist));
+    shoot.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.ScoreAmp));
+    scoreAmp.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.Handoff));
 
-    
+
+    extendClimb.whileTrue(new StartEndCommand(() -> elevator.setVoltage(driveController.getLeftTriggerAxis() * 8),
+        () -> elevator.disable(), elevator));
+    retractClimb.whileTrue(new StartEndCommand(() -> elevator.setVoltage(-driveController.getRightTriggerAxis() * 8),
+        () -> elevator.disable(), elevator));
 
     // runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () ->
     // false));
 
     // runOuttake.whileTrue(new StartEndCommand(() ->
-    // intake.runIntakeTorqueControl(-ScoringConstants.intakingTargetCurrent), () -> intake.disable(),
+    // intake.runIntakeTorqueControl(-ScoringConstants.intakingTargetCurrent), () ->
+    // intake.disable(),
     // intake));
 
     // shoot.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer,
@@ -126,11 +143,11 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
-    elevator, swerve, indexer));
+        elevator, swerve, indexer));
     NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
-    wrist, elevator, () -> false));
+        wrist, elevator, () -> false));
     NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNote(intake,
-    indexer, wrist, elevator, () -> false));
+        indexer, wrist, elevator, () -> false));
 
     configDefaultCommands();
     configDriverBindings();
@@ -142,10 +159,16 @@ public class RobotContainer {
   private void configDefaultCommands() {
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
     // wrist.setDefaultCommand(new RunCommand(wrist::home, wrist));
-    // elevator.setDefaultCommand(new RunCommand(elevator::home, elevator));
-    // intake.setDefaultCommand(new RunCommand(() -> intake.disable(), intake));
-    // indexer.setDefaultCommand(new RunCommand(() -> indexer.disable(), indexer));
-    // shooter.setDefaultCommand(new RunCommand(() -> shooter.disable(), shooter));
+    elevator.setDefaultCommand(new RunCommand(() -> {
+      if (climbMode) {
+        elevator.holdPosition();
+      } else {
+        // elevator.home();
+      }
+    }, elevator));
+    intake.setDefaultCommand(new RunCommand(() -> intake.disable(), intake));
+    indexer.setDefaultCommand(new RunCommand(() -> indexer.disable(), indexer));
+    shooter.setDefaultCommand(new RunCommand(() -> shooter.disable(), shooter));
   }
 
   private void initializeEndgameAlerts() {
@@ -225,10 +248,10 @@ public class RobotContainer {
         GlobalVoltageTuning.initialize(elevator, wrist, shooter, intake, indexer);
         break;
       case SHOOTER:
-        ShooterTuning.initialize(shooter, indexer);
+        ShooterTuning.initialize(shooter, indexer, wrist);
         break;
       case SUPERSTRUCTURE:
-        SuperstructureTuning.initialize(elevator, wrist);
+        SuperstructureTuning.initialize(elevator, wrist, indexer);
         break;
       default:
         break;

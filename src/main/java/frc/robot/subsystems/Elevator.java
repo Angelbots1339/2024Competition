@@ -37,11 +37,14 @@ public class Elevator extends SubsystemBase {
       TalonFXFactory.createTalon(ElevatorConstants.elevatorFollowerMotorID,
           ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration));
   // private TalonFX elevatorFollowerMotor = configElevatorMotor(
-  //     TalonFXFactory.createTalon(ElevatorConstants.elevatorFollowerMotorID,
-  //         ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration.withMotorOutput(ElevatorConstants.kElevatorConfiguration.MotorOutput
-  //         .withInverted(ElevatorConstants.kElevatorConfiguration.MotorOutput.Inverted == InvertedValue.Clockwise_Positive
-  //             ? InvertedValue.CounterClockwise_Positive // Make motors spin opposite directions
-  //             : InvertedValue.Clockwise_Positive))));
+  // TalonFXFactory.createTalon(ElevatorConstants.elevatorFollowerMotorID,
+  // ElevatorConstants.elevatorMotorCANBus,
+  // ElevatorConstants.kElevatorConfiguration.withMotorOutput(ElevatorConstants.kElevatorConfiguration.MotorOutput
+  // .withInverted(ElevatorConstants.kElevatorConfiguration.MotorOutput.Inverted
+  // == InvertedValue.Clockwise_Positive
+  // ? InvertedValue.CounterClockwise_Positive // Make motors spin opposite
+  // directions
+  // : InvertedValue.Clockwise_Positive))));
 
   private TalonFXSimState leaderSim = elevatorLeaderMotor.getSimState();
   private TalonFXSimState followerSim = elevatorFollowerMotor.getSimState();
@@ -70,12 +73,12 @@ public class Elevator extends SubsystemBase {
    */
   public void toHeight(double height) {
 
-    if (!isAtSetpoint()) {
+    if (isAtSetpoint() && targetHeight == 0) {
+      elevatorLeaderMotor.setControl(new DutyCycleOut(0));
+    } else {
       elevatorLeaderMotor.setControl(
           ElevatorConstants.elevatorPositionControl.withPosition(ElevatorConstants.elevatorMetersToRotations(height)));
-    } else { 
       // Let the elevator rest while at 0 (stop outputting Kg)
-      elevatorLeaderMotor.setControl(new DutyCycleOut(0));
     }
 
     elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
@@ -87,7 +90,12 @@ public class Elevator extends SubsystemBase {
    * Move elevator to home position (0)
    */
   public void home() {
-      toHeight(ScoringConstants.Home.height);
+    toHeight(ScoringConstants.Home.height);
+  }
+
+  public void holdPosition() {
+    elevatorLeaderMotor.setControl(new VoltageOut(ElevatorConstants.kElevatorConfiguration.Slot0.kG));
+    elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
   }
 
   /**
@@ -125,7 +133,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean isAtSetpoint() {
-    return Math.abs(targetHeight - getSetpointError()) < ElevatorConstants.heightErrorTolerance;
+    return Math.abs(getSetpointError()) < ElevatorConstants.heightErrorTolerance;
   }
 
   @Override
@@ -144,17 +152,18 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("Elevator Height", ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getPosition().getValue()));
-    SmartDashboard.putNumber("Follower Elevator Height", ElevatorConstants.elevatorRotationsToMeters(elevatorFollowerMotor.getPosition().getValue()));
-
+    SmartDashboard.putNumber("Elevator Height",
+        ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getPosition().getValue()));
+    SmartDashboard.putNumber("Follower Elevator Height",
+        ElevatorConstants.elevatorRotationsToMeters(elevatorFollowerMotor.getPosition().getValue()));
 
     SmartDashboard.putString("ControlMode", elevatorLeaderMotor.getControlMode().getValue().toString());
+    SmartDashboard.putBoolean("ElevatorAtSetpoint", isAtSetpoint());
   }
 
   private TalonFX configElevatorMotor(TalonFX motor) {
 
     // TODO Figure out what status signals Follower control needs to work
-
 
     ErrorCheckUtil.checkError(
         motor.getPosition().setUpdateFrequency(ElevatorConstants.kElevatorPositionUpdateFrequency,
@@ -173,10 +182,9 @@ public class Elevator extends SubsystemBase {
             Constants.kConfigTimeoutSeconds),
         CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
 
-
     // ErrorCheckUtil.checkError(
-    //     motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
-    //     CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
+    // motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
+    // CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
   }

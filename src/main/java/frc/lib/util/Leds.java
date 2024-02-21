@@ -38,6 +38,7 @@ public class Leds extends SubsystemBase {
   public boolean hasGamePiece = false;
   public boolean shooting = false;
   public boolean scoringAmp = false;
+  public boolean climbing = false;
 
   public boolean distraction = false;
 

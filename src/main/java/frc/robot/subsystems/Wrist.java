@@ -64,6 +64,8 @@ public class Wrist extends SubsystemBase {
     wristLeaderMotor.setControl(WristConstants.wristPositionControl.withPosition(position));
     wristFollowerMotor.setControl(WristConstants.followerControl);
 
+    System.out.println(position * 360);
+
     targetPosition = position;
   }
 
@@ -81,12 +83,12 @@ public class Wrist extends SubsystemBase {
     toAngle(ScoringConstants.Home.angle);
   }
 
-  public double getSetpointError() {
-    return ElevatorConstants.elevatorRotationsToMeters(wristLeaderMotor.getClosedLoopError().getValue());
+  public Rotation2d getSetpointError() {
+    return Rotation2d.fromRotations(wristLeaderMotor.getClosedLoopError().getValue());
   }
 
   public boolean isAtSetpoint() {
-    return Math.abs(targetPosition - getSetpointError()) <= ElevatorConstants.heightErrorTolerance;
+    return Math.abs(getSetpointError().getDegrees()) <= WristConstants.angleErrorTolerance.getDegrees();
   }
 
   public Rotation2d getAngle() {
@@ -133,6 +135,7 @@ public class Wrist extends SubsystemBase {
     SmartDashboard.putNumber("Wrist Position", getAngle().getDegrees());
 
     SmartDashboard.putNumber("WristSetpoint", wristLeaderMotor.getClosedLoopReference().getValue());
+    SmartDashboard.putBoolean("WristAtSetpoint", isAtSetpoint());
 
   }
 
