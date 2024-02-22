@@ -59,11 +59,11 @@ public class Shooter extends SubsystemBase {
   /**
    * Set shooter speeds
    * 
-   * @param topRMP
-   * @param bottomRPM
+   * @param leftRMP
+   * @param rightRPM
    */
-  public void shooterToRMP(double topRMP, double bottomRPM) {
-    shooterToVelocity(topRMP / 60, bottomRPM / 60);
+  public void shooterToRMP(double leftRMP, double rightRPM) {
+    shooterToVelocity(leftRMP / 60, rightRPM / 60);
   }
 
   /**

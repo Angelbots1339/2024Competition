@@ -31,6 +31,7 @@ import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.commands.IntakeNote;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.ShootFromSubwoofer;
 import frc.robot.commands.SuperstructureToPosition;
 import frc.robot.commands.Auto.AutoShoot;
 import frc.robot.commands.Auto.IntakeNoHandoff;
@@ -87,18 +88,6 @@ public class RobotContainer {
       climbMode = !climbMode;
       // Leds.getInstance().climbing = climbMode;
     }));
-    // runIntake.whileTrue(new StartEndCommand(() ->
-    // intake.runIntakeDutyCycle(0.1), () -> intake.runIntakeDutyCycle(0),
-    // intake));
-    // runOuttake.whileTrue(new StartEndCommand(() ->
-    // intake.runIntakeDutyCycle(-0.1), () -> intake.runIntakeDutyCycle(0),
-    // intake));
-
-    // runIntake.whileTrue(new RunCommand(() -> {
-    //   intake.runIntakeDutyCycle(0.4);
-    //   indexer.runIndexerDutyCycle(0.3);
-    // },
-    //     intake));
 
     runOuttake.whileTrue(new RunCommand(() -> {
       intake.runIntakeDutyCycle(-0.4);
@@ -106,41 +95,12 @@ public class RobotContainer {
     },
         intake));
 
-    // shoot.whileTrue(new StartEndCommand(() -> wrist.toAngle(0.5), () ->
-    // wrist.disable(), wrist));
-    // scoreAmp.whileTrue(new StartEndCommand(() -> wrist.toAngle(0), () ->
-    // wrist.disable(), wrist));
-    // shoot.whileTrue(new StartEndCommand(() -> elevator.toHeight(0.45), () ->
-    // elevator.disable(), elevator));
-    // scoreAmp.whileTrue(new StartEndCommand(() -> elevator.toHeight(0), () ->
-    // elevator.disable(), elevator));
+        scoreAmp.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.ScoreAmp));
+        shoot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, indexer));
+        
 
-
-    // shoot.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.Handoff));
-    scoreAmp.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.ScoreAmp));
-    
-    shoot.whileTrue(new InstantCommand(() -> {
-
-      wrist.toAngle(Rotation2d.fromDegrees(145));
-      elevator.home();
-      shooter.shooterToRMP(6000, 5000);
-
-      shootTimer.start();
-
-    }).andThen(new RunCommand(() -> {
-
-      if(wrist.isAtSetpoint() && elevator.isAtSetpoint() && shooter.isAtSetpoint() && shootTimer.get() > 0.1){
-        indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
-      } else {
-        indexer.disable();
-      }
-
-    }, elevator, wrist, indexer, shooter)).finallyDo(() -> {
-      shootTimer.stop();
-      shootTimer.reset();
-    }));
-
-    // shoot.whileTrue(new StartEndCommand(() -> shooter.setVoltage(4), () -> shooter.disable(), shooter));
+        // shoot.whileTrue(new StartEndCommand(() -> shooter.setVoltage(4), () -> shooter.disable(), shooter));
+        // shoot.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.Handoff));
     
 
 
@@ -153,14 +113,6 @@ public class RobotContainer {
     runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () ->
     false));
 
-    // runOuttake.whileTrue(new StartEndCommand(() ->
-    // intake.runIntakeTorqueControl(-ScoringConstants.intakingTargetCurrent), () ->
-    // intake.disable(),
-    // intake));
-
-    // shoot.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer,
-    // translationX, translationY, () -> false));
-
   }
 
   private void configOperatorBindings() {
@@ -170,11 +122,11 @@ public class RobotContainer {
   /***** Initialization *****/
   public RobotContainer() {
 
-    // NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
-    //     elevator, swerve, indexer));
-    // NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
-    //     wrist, elevator, () -> false));
-    // NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNoHandoff(intake));
+    NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
+        elevator, swerve, indexer));
+    NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
+        wrist, elevator, () -> false));
+    NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNoHandoff(intake));
 
     autoChooser = AutoBuilder.buildAutoChooser("");
     SmartDashboard.putData("Auto Chooser", autoChooser);

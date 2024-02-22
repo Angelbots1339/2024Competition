@@ -29,6 +29,10 @@ public class ShooterTuning {
     private static GenericEntry leftSpeed;
     private static GenericEntry rightSpeed;
 
+    private static double leftRPM;
+    private static double rightRPM;
+    private static double wristTargetAngle;
+
     private static GenericEntry wristAngle;
 
     private static XboxController testController;
@@ -74,6 +78,19 @@ public class ShooterTuning {
 
     public static void periodic() {
 
+        if (leftSpeed.isValid()) {
+            leftRPM = leftSpeed.getDouble(0);
+        }
+        if (rightSpeed.isValid()) {
+            rightRPM = rightSpeed.getDouble(0);
+        }
+        if (wristAngle.isValid()) {
+            wristTargetAngle = wristAngle.getDouble(0);
+        }
+
+        shooter.shooterToRMP(leftRPM, rightRPM);
+        wrist.toAngle(Rotation2d.fromDegrees(wristTargetAngle));
+
         if (testController.getLeftBumper()) {
             indexer.runIndexerDutyCycle(0.3);
         } else if (testController.getRightBumper()) {
@@ -82,14 +99,15 @@ public class ShooterTuning {
             indexer.disable();
         }
 
-        if (testController.getAButton()) {
-            // shooter.shooterToRMP(leftSpeed.getDouble(6000), rightSpeed.getDouble(4500));
-            shooter.shooterToRMP(6000, 5000);
-            wrist.toAngle(Rotation2d.fromDegrees(wristAngle.getDouble(90)));
+        // if (testController.getAButton()) {
+        // // shooter.shooterToRMP(leftSpeed.getDouble(6000),
+        // rightSpeed.getDouble(4500));
+        // shooter.shooterToRMP(6000, 5000);
+        // wrist.toAngle(Rotation2d.fromDegrees(wristAngle.getDouble(90)));
 
-        } else {
-            shooter.disable();
-        }
+        // } else {
+        // shooter.disable();
+        // }
 
         // indexer.runIndexerDutyCycle(0.3);
         // shooter.shooterToRMP(leftSpeed.getDouble(0), rightSpeed.getDouble(0));

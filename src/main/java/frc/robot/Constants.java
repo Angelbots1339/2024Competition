@@ -493,12 +493,21 @@ public class Constants {
                 public static final WristElevatorState Handoff = new WristElevatorState(135, 0);
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(18, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
+                public static final WristElevatorState SubwooferShot = new WristElevatorState(90, 0);
+
+                public static final double[] shooterSetpoint = {6000, 4800}; // [Left, Right]
+                public static final double shootingWaitTime = 0.2; // Seconds to wait before shooting to make shooting predictable & consistent
+                
+                
+
+
 
                 public static final double indexingTargetCurrent = 10; // Amps
                 public static final double indexerScoringCurrent = 10; // Amps
 
                 public static final double indexingTargetPercent = 0.2; // Percent
                 public static final double indexerScoringPercent = 0.4; // Percent
+                public static final double indexerScoreAmpPercent = -0.4; // Percent
 
                 public static final double intakingTargetCurrent = 20; // Amps
                 public static final double intakingTargetPercent = 0.3; // Percent

@@ -34,6 +34,8 @@ public class Indexer extends SubsystemBase {
   public Indexer() {
     indexerSensor.setRangingMode(IndexerConstants.indexerSensorRange, IndexerConstants.indexerSampleTime);
     indexerSensor.setRangeOfInterest(8, 8, 12, 12);
+
+    initializeLogging();
   }
 
   public void runIndexerDutyCycle(double speed) {
