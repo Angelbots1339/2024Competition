@@ -13,8 +13,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.TalonFXFactory;
+import frc.lib.util.logging.LoggedSubsystem;
+import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.LoggingConstants.IndexerLogging;
+
 
 public class Indexer extends SubsystemBase {
 
@@ -22,6 +26,9 @@ public class Indexer extends SubsystemBase {
       IndexerConstants.indexerMotorCANBus, IndexerConstants.kIndexerConfiguration));
 
   private TimeOfFlight indexerSensor = new TimeOfFlight(IndexerConstants.indexerSensorID);
+
+  private LoggedSubsystem logger;
+
 
   /** Creates a new Indexer. */
   public Indexer() {
@@ -52,7 +59,6 @@ public class Indexer extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // SmartDashboard.putBoolean("IndexerNotePresent", isNotePresent());
 
   }
 
@@ -63,5 +69,17 @@ public class Indexer extends SubsystemBase {
         CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
+  }
+
+    private void initializeLogging() {
+
+    logger = new LoggedSubsystem("Indexer");
+
+    logger.add(new LoggedFalcon("IndexerMotor", logger, indexerMotor, IndexerLogging.Motor));
+
+    logger.addBoolean("NotePresent", () -> isNotePresent(), IndexerLogging.Main);
+    logger.addDouble("TOFSensor", () -> indexerSensor.getRange(), IndexerLogging.Main);
+
+
   }
 }

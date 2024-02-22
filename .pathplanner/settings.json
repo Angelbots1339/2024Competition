@@ -9,8 +9,9 @@
     "SourceSide"
   ],
   "autoFolders": [
-    "AmpSide",
-    "Center"
+    "AmpSideMoving",
+    "Center",
+    "AmpSide"
   ],
   "defaultMaxVel": 6.21,
   "defaultMaxAccel": 3.0,

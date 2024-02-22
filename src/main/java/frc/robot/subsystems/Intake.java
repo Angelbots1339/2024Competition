@@ -14,9 +14,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.Leds;
 import frc.lib.util.TalonFXFactory;
+import frc.lib.util.logging.LoggedSubsystem;
+import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.LoggingConstants.IntakeLogging;
 
 public class Intake extends SubsystemBase {
 
@@ -25,11 +28,15 @@ public class Intake extends SubsystemBase {
 
   private TimeOfFlight intakeSensor = new TimeOfFlight(IntakeConstants.intakeSensorID);
 
+  private LoggedSubsystem logger;
+
   /** Creates a new intake. */
   public Intake() {
 
     intakeSensor.setRangingMode(IntakeConstants.intakeSensorRange, IntakeConstants.intakeSampleTime);
     intakeSensor.setRangeOfInterest(8, 8, 12, 12);
+
+    initializeLogging();
   }
 
   public void disable() {
@@ -67,5 +74,17 @@ public class Intake extends SubsystemBase {
         CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
+  }
+
+  private void initializeLogging() {
+
+    logger = new LoggedSubsystem("Intake");
+
+    logger.add(new LoggedFalcon("IntakeMotor", logger, intakeMotor, IntakeLogging.Motor));
+
+    logger.addBoolean("NotePresent", () -> isNotePresent(), IntakeLogging.Main);
+    logger.addDouble("TOFSensor", () -> intakeSensor.getRange(), IntakeLogging.Main);
+
+
   }
 }

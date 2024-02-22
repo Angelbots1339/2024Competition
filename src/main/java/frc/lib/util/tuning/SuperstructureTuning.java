@@ -71,7 +71,7 @@ public class SuperstructureTuning {
                                         () -> elevator.getSetpointError())
                                         .withWidget(BuiltInWidgets.kTextView);
                         Shuffleboard.getTab("SuperstructureTuning").addDouble("ElevatorPosition",
-                                        () -> elevator.getPosition())
+                                        () -> elevator.getLeaderPosition())
                                         .withWidget(BuiltInWidgets.kTextView);
 
                         elevator = elevatorInstance;

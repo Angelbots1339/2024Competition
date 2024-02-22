@@ -199,9 +199,16 @@ public class Constants {
                 public static final double angularDriveKP = 0;
                 public static final double angularDriveKI = 0;
                 public static final double angularDriveKD = 0;
-
                 public static final double angularDriveKS = 0.7; // radians per sec
                 public static final double angularDriveTolerance = 2; // Degrees
+
+
+                public static final double pidToPoseKP = 0;
+                public static final double pidToPoseKD = 0;
+                public static final double pidToPoseKS = 0.21; 
+                public static final double pidToPoseTolerance = 0.05; // Meters
+
+
 
                 public static final double endgameAlert1 = 30;
                 public static final double endgameAlert2 = 15;
@@ -275,7 +282,7 @@ public class Constants {
 
                 public static final double kShooterVelocityUpdateFrequency = 10; // Hertz
 
-                public static final double gamePieceSpeedLeavingShooter = 2; // Meters/second
+                // public static final double gamePieceSpeedLeavingShooter = 2; // Meters/second
         }
 
         public static final class IntakeConstants {

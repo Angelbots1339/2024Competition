@@ -22,10 +22,13 @@ import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.Mech2dManger;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.TalonFXFactory;
+import frc.lib.util.logging.LoggedSubsystem;
+import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ScoringConstants;
+import frc.robot.LoggingConstants.ElevatorLogging;
 
 public class Elevator extends SubsystemBase {
 
@@ -54,9 +57,13 @@ public class Elevator extends SubsystemBase {
 
   private double targetHeight = 0;
 
+  private LoggedSubsystem logger;
+
   /** Creates a new Elevator. */
   public Elevator() {
     elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
+
+    initializeLogging();
 
     if (Robot.isSimulation()) {
       elevatorMech = Mech2dManger.getInstance().getElevator();
@@ -128,8 +135,12 @@ public class Elevator extends SubsystemBase {
     return ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getClosedLoopError().getValue());
   }
 
-  public double getPosition() {
+  public double getLeaderPosition() {
     return ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getPosition().getValue());
+  }
+
+  public double getFollowerPosition() {
+    return ElevatorConstants.elevatorRotationsToMeters(elevatorFollowerMotor.getPosition().getValue());
   }
 
   public boolean isAtSetpoint() {
@@ -152,13 +163,6 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    // SmartDashboard.putNumber("Elevator Height",
-    //     ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getPosition().getValue()));
-    // SmartDashboard.putNumber("Follower Elevator Height",
-    //     ElevatorConstants.elevatorRotationsToMeters(elevatorFollowerMotor.getPosition().getValue()));
-
-    // SmartDashboard.putString("ControlMode", elevatorLeaderMotor.getControlMode().getValue().toString());
-    // SmartDashboard.putBoolean("ElevatorAtSetpoint", isAtSetpoint());
   }
 
   private TalonFX configElevatorMotor(TalonFX motor) {
@@ -187,5 +191,23 @@ public class Elevator extends SubsystemBase {
     // CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
+  }
+
+  private void initializeLogging() {
+
+    logger = new LoggedSubsystem("Elevator");
+
+    logger.add(new LoggedFalcon("ElevatorLeader", logger, elevatorLeaderMotor, ElevatorLogging.Motor));
+    logger.add(new LoggedFalcon("ElevatorFollower", logger, elevatorFollowerMotor, ElevatorLogging.Motor));
+
+    logger.addBoolean("ElevatorAtSetpoint", () -> isAtSetpoint(), ElevatorLogging.Main);
+
+    logger.addDouble("ElevatorPosition", () -> ElevatorConstants.elevatorRotationsToMeters(getLeaderPosition()),
+        ElevatorLogging.Main);
+    logger.addDouble("ElevatorVelocity",
+        () -> ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getVelocity().getValue()),
+        ElevatorLogging.Main);
+
+
   }
 }

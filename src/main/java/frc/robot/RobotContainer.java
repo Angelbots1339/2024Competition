@@ -102,7 +102,7 @@ public class RobotContainer {
 
     runOuttake.whileTrue(new RunCommand(() -> {
       intake.runIntakeDutyCycle(-0.4);
-      indexer.runIndexerDutyCycle(-0.3);
+      indexer.runIndexerDutyCycle(-0.4);
     },
         intake));
 
@@ -196,8 +196,8 @@ public class RobotContainer {
         elevator.home();
       // }
     }, elevator));
-    intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
-    indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
+    // intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
+    // indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
     shooter.setDefaultCommand(new InstantCommand(() -> shooter.disable(), shooter));
   }
 

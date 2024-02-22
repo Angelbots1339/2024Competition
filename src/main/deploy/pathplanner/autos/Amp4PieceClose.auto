@@ -12,26 +12,38 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Amp3PieceMoving"
+            "name": "shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp4thPieceMoving"
+            "pathName": "Amp2Piece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp5thPieceMovingUnder"
+            "pathName": "Amp3rdPieceCloseShot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]
     }
   },
-  "folder": "AmpSideMoving",
+  "folder": "AmpSide",
   "choreoAuto": false
 }

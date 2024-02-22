@@ -47,6 +47,12 @@ public final class LoggingConstants {
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
+        public class IndexerLogging {
+                public static LoggingLevel Main = LoggingLevel.NONE;
+                public static LoggingLevel Motor = LoggingLevel.NONE;
+                public static LoggingLevel Default = LoggingLevel.NONE;
+        }
+
         public class ShooterLogging {
                 public static LoggingLevel Main = LoggingLevel.NONE;
                 public static LoggingLevel Motor = LoggingLevel.NONE;

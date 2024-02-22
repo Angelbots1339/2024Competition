@@ -3,52 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.343781456081431,
+        "x": 2.8043402336804677,
         "y": 5.565266371273484
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9811539854561193,
-        "y": 5.576786940610917
+        "x": 4.531237946735153,
+        "y": 4.848496928475339
       },
       "isLocked": false,
-      "linkedName": "CenterSideStart"
+      "linkedName": "Center2PieceEnd"
     },
     {
       "anchor": {
-        "x": 2.8043402336804677,
-        "y": 5.565266371273484
+        "x": 7.675640763318564,
+        "y": 4.125313972850168
       },
       "prevControl": {
-        "x": 2.433484792895512,
-        "y": 5.555943023923085
+        "x": 5.300217481849405,
+        "y": 3.745601451296443
+      },
+      "nextControl": {
+        "x": 8.469906819443269,
+        "y": 4.252277773074065
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.896418945615669,
+        "y": 5.295661295026294
+      },
+      "prevControl": {
+        "x": 6.078319763121009,
+        "y": 3.51513948861231
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center2PieceEnd"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "Intake",
-      "waypointRelativePos": 0.2,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "runIntakeNoHandoff"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.21,
     "maxAcceleration": 3.0,

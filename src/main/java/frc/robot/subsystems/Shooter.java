@@ -134,9 +134,9 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    // SmartDashboard.putNumber("ShooterVelocity", shooterMotorLeft.getVelocity().getValue() * 60);
-    // SmartDashboard.putNumber("ShooterError", Math.abs(shooterMotorLeft.getClosedLoopError().getValue()) * 60);
-    // SmartDashboard.putBoolean("ShooterAtSetpoint", isAtSetpoint());
+    SmartDashboard.putNumber("ShooterVelocity", shooterMotorLeft.getVelocity().getValue() * 60);
+    SmartDashboard.putNumber("ShooterError", Math.abs(shooterMotorLeft.getClosedLoopError().getValue()) * 60);
+    SmartDashboard.putBoolean("ShooterAtSetpoint", isAtSetpoint());
   }
 
   private TalonFX configShooterMotor(TalonFX motor) {
@@ -158,6 +158,14 @@ public class Shooter extends SubsystemBase {
 
     logger.add(new LoggedFalcon("LeftShooterMotor", logger, shooterMotorLeft, ShooterLogging.Motor));
     logger.add(new LoggedFalcon("RightShooterMotor", logger, shooterMotorRight, ShooterLogging.Motor));
+
+    logger.addBoolean("ShooterAtSetpoint", () -> isAtSetpoint(), ShooterLogging.Main);
+
+    logger.addDouble("LeftShooterRPM", () -> getLeftVelocity() * 60, ShooterLogging.Main);
+    logger.addDouble("RightShooterRPM", () -> getRightVelocity() * 60, ShooterLogging.Main);
+
+    logger.addDouble("LeftShooterError", () -> shooterMotorLeft.getClosedLoopError().getValue() * 60, ShooterLogging.Main);
+    logger.addDouble("RightShooterError", () -> shooterMotorRight.getClosedLoopError().getValue() * 60, ShooterLogging.Main);
 
   }
 

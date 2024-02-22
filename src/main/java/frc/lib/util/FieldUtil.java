@@ -8,8 +8,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class FieldUtil {
 
-    public static final Translation2d BlueSpeakerPose = new Translation2d(8.27 - 7.24310, 4.105 - 1.26019);
-    public static final Translation2d RedSpeakerPose = new Translation2d(8.27 + 8.308467, 4.105 + 1.442593);
+
+
+    public static final Translation2d BlueSpeakerPosition = new Translation2d(8.27 - 7.24310, 4.105 - 1.26019);
+    public static final Translation2d RedSpeakerPosition = new Translation2d(8.27 + 8.308467, 4.105 + 1.442593);
+
+    public static final Translation2d BlueAmpPosition = new Translation2d(8.27 -6.429375, 4.105 - 4.098925);
+    public static final Translation2d RedAmpPosition = new Translation2d(8.27 + 6.429883, 4.105 + 4.098925);
 
     /**
      * Get the position of whichever alliance you are on
@@ -22,9 +27,30 @@ public class FieldUtil {
 
         if (alliance.isPresent()) {
             if (alliance.get() == DriverStation.Alliance.Red) {
-                return RedSpeakerPose;
+                return RedSpeakerPosition;
             } else {
-                return BlueSpeakerPose;
+                return BlueSpeakerPosition;
+            }
+        }
+
+        return null;
+    }
+
+
+     /**
+     * Get the position of whichever alliance you are on
+     * 
+     * @return the speaker position
+     */
+    public static Translation2d getAllianceAmpPosition() {
+
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+
+        if (alliance.isPresent()) {
+            if (alliance.get() == DriverStation.Alliance.Red) {
+                return RedAmpPosition;
+            } else {
+                return BlueAmpPosition;
             }
         }
 

@@ -40,7 +40,7 @@ public class SuperstructureToPosition extends Command {
   public void execute() {
     elevator.toHeight(state.get().height);
 
-    if(state.get().angle.getDegrees() > 90 || elevator.getPosition() > 0.15){
+    if(state.get().angle.getDegrees() > 90 || elevator.getLeaderPosition() > 0.15){
 
       wrist.toAngle(state.get().angle);
     }

@@ -63,6 +63,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     private PIDController angularDrivePID = new PIDController(DriverConstants.angularDriveKP,
             DriverConstants.angularDriveKI, DriverConstants.angularDriveKD);
 
+    private PIDController pidToPoseXController = new PIDController(DriverConstants.pidToPoseKP, 0, DriverConstants.pidToPoseKD);
+    private PIDController pidToPoseYController = new PIDController(DriverConstants.pidToPoseKP, 0, DriverConstants.pidToPoseKD);
+
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
     private boolean overrideAutoRotation = false;
@@ -81,7 +84,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         CommandScheduler.getInstance().registerSubsystem(this);
 
-        // registerTelemetry((SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(pose, m_modulePositions, this));
+        // registerTelemetry((SwerveDriveState pose) ->
+        // PoseEstimation.updateEstimatedPose(pose, m_modulePositions, this));
 
         PathPlannerLogging.setLogTargetPoseCallback(PoseEstimation::updateTargetAutoPose);
 
@@ -91,6 +95,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 this.m_modulePositions);
 
         angularDrivePID.setTolerance(DriverConstants.angularDriveTolerance);
+        pidToPoseXController.setTolerance(DriverConstants.pidToPoseTolerance);
+        pidToPoseXController.setTolerance(DriverConstants.pidToPoseTolerance);
 
         if (Utils.isSimulation()) {
             startSimThread();
@@ -111,8 +117,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         return run(() -> {
             ChassisSpeeds speeds = new ChassisSpeeds(translationX.get(), translationY.get(), rotation.get());
-
-            
 
             if (skewReduction.get()) {
                 SwerveSkewMath.reduceSkewFromLogTwist2d(speeds);
@@ -173,12 +177,14 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             SwerveRequest req;
 
             if (fieldOriented.get()) {
-                req = new SwerveRequest.FieldCentric()
+                ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroYaw());
+
+                req = new SwerveRequest.RobotCentric()
                         .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
                                 : DriveRequestType.Velocity)
-                        .withVelocityX(speeds.vxMetersPerSecond)
-                        .withVelocityY(speeds.vyMetersPerSecond)
-                        .withRotationalRate(speeds.omegaRadiansPerSecond);
+                        .withVelocityX(fieldRelativeSpeeds.vxMetersPerSecond) // Drive forward with negative Y (forward)
+                        .withVelocityY(fieldRelativeSpeeds.vyMetersPerSecond) // Drive left with negative X (left)
+                        .withRotationalRate(fieldRelativeSpeeds.omegaRadiansPerSecond);
 
             } else {
                 req = new SwerveRequest.RobotCentric()
@@ -220,100 +226,19 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
-    private void startSimThread() {
-        m_lastSimTime = Utils.getCurrentTimeSeconds();
+    public Command pidToPose(Pose2d target) {
 
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        m_simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - m_lastSimTime;
-            m_lastSimTime = currentTime;
+        double x = pidToPoseXController.calculate(PoseEstimation.getEstimatedPose().getTranslation().getX(), target.getX())
+                + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS);
+        double y = pidToPoseYController.calculate(PoseEstimation.getEstimatedPose().getTranslation().getY(), target.getY())
+                + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS);
 
-            /* use the measured time delta, get battery voltage from WPILib */
-            updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(kSimLoopPeriod);
+
+        return angularDrive(() -> x, () -> y, () -> target.getRotation(), () -> true, () -> false);
     }
 
-    public void updateVision() {
-        if (Robot.isReal()) {
-
-            if (LimelightHelpers.getFiducialID(VisionConstants.limelightLeftName) >= 0) {
-                double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightLeftName)
-                        .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-                double xyStdDev2 = MathUtil.clamp(0.003 * Math.pow(2.2, tagDistance), 0, 1);
-
-                Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightLeftName);
-                double poseFromVisionTimestamp = Timer.getFPGATimestamp()
-                        - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightLeftName)
-                                + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightLeftName)) / 1000;
-
-                addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
-            }
-
-            if (LimelightHelpers.getFiducialID(VisionConstants.limelightCenterName) >= 0) {
-                double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightCenterName)
-                        .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-                double xyStdDev2 = MathUtil.clamp(0.003 * Math.pow(2.2, tagDistance), 0, 1);
-
-                Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName);
-                double poseFromVisionTimestamp = Timer.getFPGATimestamp()
-                        - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightCenterName)
-                                + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightCenterName)) / 1000;
-
-                addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
-            }
-
-            if (LimelightHelpers.getFiducialID(VisionConstants.limelightRightName) >= 0) {
-                double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightRightName)
-                        .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-                double xyStdDev2 = MathUtil.clamp(0.003 * Math.pow(2.2, tagDistance), 0, 1);
-
-                Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightRightName);
-                double poseFromVisionTimestamp = Timer.getFPGATimestamp()
-                        - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightRightName)
-                                + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightRightName)) / 1000;
-
-                addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
-            }
-
-        }
-    }
-
-    public void periodic() {
-
-        updateVision();
-        PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(), m_modulePositions, this);
-
-        SmartDashboard.putNumber("TargetDist", FieldUtil.RedSpeakerPose.getDistance(this.m_odometry.getEstimatedPosition().getTranslation()));
-        SmartDashboard.putNumber("DistX", LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getX());
-        SmartDashboard.putNumber("DistY", LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getY());
-        // System.out.println(this.m_odometry.getEstimatedPosition().toString());
-
-    }
-
-    public void configPathPlanner() {
-
-        AutoBuilder.configureHolonomic(
-                () -> this.getState().Pose, // Robot pose supplier
-                this::seedFieldRelative, // Method to reset odometry (will be called if your auto has a starting pose)
-                this::getCurrentRobotChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::setChassisSpeedsAuto, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                AutoConstants.autoConfig,
-                () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red
-                    // alliance
-                    // This will flip the path being followed to the red side of the field.
-                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                },
-                this // Reference to this subsystem to set requirements
-        );
+    public boolean isAtPose() {
+        return pidToPoseXController.atSetpoint() && pidToPoseYController.atSetpoint() && isAtAngularDriveSetpoint();
     }
 
     /**
@@ -371,6 +296,105 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         setGyroYaw(Rotation2d.fromDegrees(0));
     }
 
+    public void updateVision() {
+        if (Robot.isReal()) {
+
+            if (LimelightHelpers.getFiducialID(VisionConstants.limelightLeftName) >= 0) {
+                double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightLeftName)
+                        .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
+                double xyStdDev2 = MathUtil.clamp(0.003 * Math.pow(2.2, tagDistance), 0, 1);
+
+                Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightLeftName);
+                double poseFromVisionTimestamp = Timer.getFPGATimestamp()
+                        - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightLeftName)
+                                + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightLeftName)) / 1000;
+
+                addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
+            }
+
+            if (LimelightHelpers.getFiducialID(VisionConstants.limelightCenterName) >= 0) {
+                double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightCenterName)
+                        .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
+                double xyStdDev2 = MathUtil.clamp(0.003 * Math.pow(2.2, tagDistance), 0, 1);
+
+                Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName);
+                double poseFromVisionTimestamp = Timer.getFPGATimestamp()
+                        - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightCenterName)
+                                + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightCenterName)) / 1000;
+
+                addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
+            }
+
+            if (LimelightHelpers.getFiducialID(VisionConstants.limelightRightName) >= 0) {
+                double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightRightName)
+                        .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
+                double xyStdDev2 = MathUtil.clamp(0.003 * Math.pow(2.2, tagDistance), 0, 1);
+
+                Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightRightName);
+                double poseFromVisionTimestamp = Timer.getFPGATimestamp()
+                        - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightRightName)
+                                + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightRightName)) / 1000;
+
+                addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
+            }
+
+        }
+    }
+
+    public void periodic() {
+
+        updateVision();
+        PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(), m_modulePositions, this);
+
+        SmartDashboard.putNumber("TargetDist",
+                FieldUtil.RedSpeakerPosition.getDistance(this.m_odometry.getEstimatedPosition().getTranslation()));
+        SmartDashboard.putNumber("DistX",
+                LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getX());
+        SmartDashboard.putNumber("DistY",
+                LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getY());
+        // System.out.println(this.m_odometry.getEstimatedPosition().toString());
+
+    }
+
+    public void configPathPlanner() {
+
+        AutoBuilder.configureHolonomic(
+                () -> this.getState().Pose, // Robot pose supplier
+                this::seedFieldRelative, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getCurrentRobotChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::setChassisSpeedsAuto, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                AutoConstants.autoConfig,
+                () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red
+                    // alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
+    }
+
+    private void startSimThread() {
+        m_lastSimTime = Utils.getCurrentTimeSeconds();
+
+        /* Run simulation at a faster rate so PID gains behave more reasonably */
+        m_simNotifier = new Notifier(() -> {
+            final double currentTime = Utils.getCurrentTimeSeconds();
+            double deltaTime = currentTime - m_lastSimTime;
+            m_lastSimTime = currentTime;
+
+            /* use the measured time delta, get battery voltage from WPILib */
+            updateSimState(deltaTime, RobotController.getBatteryVoltage());
+        });
+        m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
     private String command = "None";
 
     public void initializeLogging() {
@@ -387,7 +411,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2,
                 SwerveLogging.Gyro));
 
-        logger.addDouble("Heading", () -> PoseEstimation.getEstimatedPose().getRotation().getDegrees(), SwerveLogging.Pose);
+        logger.addDouble("Heading", () -> PoseEstimation.getEstimatedPose().getRotation().getDegrees(),
+                SwerveLogging.Pose);
         logger.addDouble("x velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
         logger.addDouble("y velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
 
@@ -402,6 +427,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         logger.addDouble("yAutoError", () -> PoseEstimation.getAutoTargetPoseError().getY(), SwerveLogging.Auto);
         logger.addDouble("thetaAutoError", () -> PoseEstimation.getAutoTargetPoseError().getRotation().getDegrees(),
                 SwerveLogging.Auto);
+
+
+        logger.addBoolean("isAtAngularDriveSetpoint", () -> isAtAngularDriveSetpoint(), SwerveLogging.PidPose);
 
     }
 

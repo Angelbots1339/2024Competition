@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.343781456081431,
-        "y": 5.565266371273484
+        "x": 3.7868547681539813,
+        "y": 6.233162470954571
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9811539854561193,
-        "y": 5.576786940610917
+        "x": 1.890533424585368,
+        "y": 6.395816282373305
       },
       "isLocked": false,
-      "linkedName": "CenterSideStart"
+      "linkedName": "Amp3PieceCloseShotEnd"
     },
     {
       "anchor": {
-        "x": 2.8043402336804677,
-        "y": 5.565266371273484
+        "x": 2.3992793911513752,
+        "y": 5.547451057865079
       },
       "prevControl": {
-        "x": 2.433484792895512,
-        "y": 5.555943023923085
+        "x": 1.3992793911513752,
+        "y": 5.547451057865079
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center2PieceEnd"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.2,
+      "waypointRelativePos": 0.7,
       "command": {
         "type": "sequential",
         "data": {
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "runIntakeNoHandoff"
+                "name": "intakeNote"
               }
             }
           ]
@@ -61,7 +61,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Center",
+  "folder": "AmpSide",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

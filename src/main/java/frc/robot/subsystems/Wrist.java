@@ -18,10 +18,13 @@ import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.Mech2dManger;
 import frc.lib.util.TalonFXFactory;
+import frc.lib.util.logging.LoggedSubsystem;
+import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.Constants.WristConstants;
+import frc.robot.LoggingConstants.WristLogging;
 import frc.robot.Robot;
 
 public class Wrist extends SubsystemBase {
@@ -37,6 +40,8 @@ public class Wrist extends SubsystemBase {
   private double targetPosition = 0;
 
   private MechanismLigament2d simWrist;
+  private LoggedSubsystem logger;
+
 
   /** Creates a new Wrist. */
   public Wrist() {
@@ -155,5 +160,23 @@ public class Wrist extends SubsystemBase {
     //     CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
+  }
+
+    private void initializeLogging() {
+
+    logger = new LoggedSubsystem("Wrist");
+
+    logger.add(new LoggedFalcon("WristLeader", logger, wristLeaderMotor, WristLogging.Motor));
+    logger.add(new LoggedFalcon("WristFollower", logger, wristFollowerMotor, WristLogging.Motor));
+
+    logger.addBoolean("WristAtSetpoint", () -> isAtSetpoint(), WristLogging.Main);
+
+    logger.addDouble("WristPosition", () -> ElevatorConstants.elevatorRotationsToMeters(getAngle().getDegrees()),
+        WristLogging.Main);
+    logger.addDouble("WristVelocity",
+        () -> ElevatorConstants.elevatorRotationsToMeters(wristLeaderMotor.getVelocity().getValue()),
+        WristLogging.Main);
+
+
   }
 }
