@@ -251,7 +251,7 @@ public class Constants {
 
                 public static final double shooterGearRatio = 0.5; // Sensor to Mechanism Ratio
 
-                public static final double shooterVelocityTolerance = 0.1; // Rotations per second
+                public static final double shooterVelocityTolerance = 100; // RPM
 
                 public static final TalonFXConfiguration kShooterConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -263,7 +263,8 @@ public class Constants {
                                                 .withNeutralMode(NeutralModeValue.Brake)
                                                 .withInverted(InvertedValue.CounterClockwise_Positive))
                                 .withSlot0(new Slot0Configs()
-                                                .withKP(0.75)
+                                                .withKV(0)
+                                                .withKP(0.8)
                                                 .withKI(0)
                                                 .withKD(0))
                                 .withFeedback(new FeedbackConfigs()
@@ -285,7 +286,7 @@ public class Constants {
                 public static final RangingMode intakeSensorRange = RangingMode.Short;
                 public static final double intakeSampleTime = 100;
 
-                public static final double isNotePresentThreshold = 40; // Milimeters
+                public static final double isNotePresentThreshold = 70; // Milimeters
 
                 private static final double intakeMaxDutyCycle = 0.5;
 
@@ -316,7 +317,7 @@ public class Constants {
                 public static final RangingMode indexerSensorRange = RangingMode.Short;
                 public static final double indexerSampleTime = 100;
 
-                public static final double isNotePresentThreshold = 40; // Milimeters
+                public static final double isNotePresentThreshold = 150; // Milimeters
 
                 private static final double indexerMaxDutyCycle = 0.5;
 
@@ -487,9 +488,13 @@ public class Constants {
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
 
                 public static final double indexingTargetCurrent = 10; // Amps
-                public static final double ampScoringCurrentIndexer = 10; // Amps
+                public static final double indexerScoringCurrent = 10; // Amps
+
+                public static final double indexingTargetPercent = 0.2; // Percent
+                public static final double indexerScoringPercent = 0.4; // Percent
 
                 public static final double intakingTargetCurrent = 20; // Amps
+                public static final double intakingTargetPercent = 0.3; // Percent
 
                 public static final double kAccelCompFactor = 0; // Seconds
                 public static final double gamePieceVelocity = 0; // Meters per second
@@ -502,10 +507,39 @@ public class Constants {
 
         public static final class VisionConstants {
 
-                public static final String limelightCenterName = "";
 
-                public static final Translation3d limelightCenterOffset = new Translation3d(Units.inchesToMeters(0),
-                                Units.inchesToMeters(0), Units.inchesToMeters(0));
+                // Desmos plots: \left[\left(110,.0088\right),\left(101.75,.01065\right),\left(94,.0088\right),\left(87.25,.0053\right),\left(78.75,.0028\right),\left(64,.0037\right),\left(49.5,.0036\right),\left(113.25,.0124\right),\left(136.75,.34\right),\left(153.5,.387\right),\left(160.5,.3342\right),\left(167,1.573\right),\left(121.25,.052\right)\right]
+                // Apriltag Height: 57 inches
+                // Horizontal offset 22.5 inches 
+
+
+
+
+                public static final String limelightLeftName = "limelight-left";
+                public static final String limelightCenterName = "limelight-center";
+                public static final String limelightRightName = "limelight-right";
+
+                public static final Translation3d limelightLeftOffset = new Translation3d(Units.inchesToMeters(-11.384098),
+                                Units.inchesToMeters(-8.607840), Units.inchesToMeters(14.617002));
+                public static final Translation3d limelightCenterOffset = new Translation3d(Units.inchesToMeters(-9.877464),
+                                Units.inchesToMeters(0), Units.inchesToMeters(10.493215));
+                public static final Translation3d limelightRightOffset = new Translation3d(Units.inchesToMeters(-11.384098),
+                                Units.inchesToMeters(8.607840), Units.inchesToMeters(14.617002));
+
+
+
+                public static final Translation3d newLimelightLeftOffset = new Translation3d(Units.inchesToMeters(-11.879500),
+                                Units.inchesToMeters(-8.607840), Units.inchesToMeters(14.684656));
+                public static final Translation3d newLimelightCenterOffset = new Translation3d(Units.inchesToMeters(-11.377464),
+                                Units.inchesToMeters(0), Units.inchesToMeters(11.618215));
+                public static final Translation3d newLimelightRightOffset = new Translation3d(Units.inchesToMeters(-11.879500),
+                                Units.inchesToMeters(8.607840), Units.inchesToMeters(14.684656));
+
+
+                // Limelight left rotation: Pitch: 10   Roll: 0   Yaw: 40.5
+                // Limelight center rotation: Pitch:24   Roll:   Yaw: 
+                // Limelight right rotation: Pitch:10   Roll:   Yaw: -40.5
+
         }
 
 }

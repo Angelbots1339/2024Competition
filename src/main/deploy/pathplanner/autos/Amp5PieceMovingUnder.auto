@@ -14,19 +14,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp3Piece"
+            "pathName": "Amp3PieceMoving"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp4thPiece"
+            "pathName": "Amp4thPieceMoving"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp5thPiece"
+            "pathName": "Amp5thPieceMovingUnder"
           }
         }
       ]

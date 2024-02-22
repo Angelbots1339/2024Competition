@@ -10,7 +10,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,6 +33,7 @@ import frc.robot.commands.IntakeNote;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.SuperstructureToPosition;
 import frc.robot.commands.Auto.AutoShoot;
+import frc.robot.commands.Auto.IntakeNoHandoff;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -50,6 +53,8 @@ public class RobotContainer {
   private final Wrist wrist = new Wrist();
   private final Elevator elevator = new Elevator();
   private final Indexer indexer = new Indexer();
+
+  private Timer shootTimer = new Timer();
 
   /***** Driver Controls *****/
   private final XboxController driveController = new XboxController(0);
@@ -89,11 +94,11 @@ public class RobotContainer {
     // intake.runIntakeDutyCycle(-0.1), () -> intake.runIntakeDutyCycle(0),
     // intake));
 
-    runIntake.whileTrue(new RunCommand(() -> {
-      intake.runIntakeDutyCycle(0.4);
-      indexer.runIndexerDutyCycle(0.3);
-    },
-        intake));
+    // runIntake.whileTrue(new RunCommand(() -> {
+    //   intake.runIntakeDutyCycle(0.4);
+    //   indexer.runIndexerDutyCycle(0.3);
+    // },
+    //     intake));
 
     runOuttake.whileTrue(new RunCommand(() -> {
       intake.runIntakeDutyCycle(-0.4);
@@ -110,8 +115,34 @@ public class RobotContainer {
     // scoreAmp.whileTrue(new StartEndCommand(() -> elevator.toHeight(0), () ->
     // elevator.disable(), elevator));
 
-    shoot.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.ScoreAmp));
-    scoreAmp.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.Handoff));
+
+    // shoot.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.Handoff));
+    scoreAmp.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.ScoreAmp));
+    
+    shoot.whileTrue(new InstantCommand(() -> {
+
+      wrist.toAngle(Rotation2d.fromDegrees(145));
+      elevator.home();
+      shooter.shooterToRMP(6000, 5000);
+
+      shootTimer.start();
+
+    }).andThen(new RunCommand(() -> {
+
+      if(wrist.isAtSetpoint() && elevator.isAtSetpoint() && shooter.isAtSetpoint() && shootTimer.get() > 0.1){
+        indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
+      } else {
+        indexer.disable();
+      }
+
+    }, elevator, wrist, indexer, shooter)).finallyDo(() -> {
+      shootTimer.stop();
+      shootTimer.reset();
+    }));
+
+    // shoot.whileTrue(new StartEndCommand(() -> shooter.setVoltage(4), () -> shooter.disable(), shooter));
+    
+
 
 
     extendClimb.whileTrue(new StartEndCommand(() -> elevator.setVoltage(driveController.getLeftTriggerAxis() * 8),
@@ -119,8 +150,8 @@ public class RobotContainer {
     retractClimb.whileTrue(new StartEndCommand(() -> elevator.setVoltage(-driveController.getRightTriggerAxis() * 8),
         () -> elevator.disable(), elevator));
 
-    // runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () ->
-    // false));
+    runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () ->
+    false));
 
     // runOuttake.whileTrue(new StartEndCommand(() ->
     // intake.runIntakeTorqueControl(-ScoringConstants.intakingTargetCurrent), () ->
@@ -139,15 +170,14 @@ public class RobotContainer {
   /***** Initialization *****/
   public RobotContainer() {
 
+    // NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
+    //     elevator, swerve, indexer));
+    // NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
+    //     wrist, elevator, () -> false));
+    // NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNoHandoff(intake));
+
     autoChooser = AutoBuilder.buildAutoChooser("");
     SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
-        elevator, swerve, indexer));
-    NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
-        wrist, elevator, () -> false));
-    NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNote(intake,
-        indexer, wrist, elevator, () -> false));
 
     configDefaultCommands();
     configDriverBindings();
@@ -158,17 +188,17 @@ public class RobotContainer {
 
   private void configDefaultCommands() {
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
-    // wrist.setDefaultCommand(new RunCommand(wrist::home, wrist));
-    elevator.setDefaultCommand(new RunCommand(() -> {
-      if (climbMode) {
-        elevator.holdPosition();
-      } else {
-        // elevator.home();
-      }
+    wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
+    elevator.setDefaultCommand(new InstantCommand(() -> {
+      // if (climbMode) {
+      //   elevator.holdPosition();
+      // } else {
+        elevator.home();
+      // }
     }, elevator));
-    intake.setDefaultCommand(new RunCommand(() -> intake.disable(), intake));
-    indexer.setDefaultCommand(new RunCommand(() -> indexer.disable(), indexer));
-    shooter.setDefaultCommand(new RunCommand(() -> shooter.disable(), shooter));
+    intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
+    indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
+    shooter.setDefaultCommand(new InstantCommand(() -> shooter.disable(), shooter));
   }
 
   private void initializeEndgameAlerts() {

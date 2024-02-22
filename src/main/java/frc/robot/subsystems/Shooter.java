@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team254.math.PolynomialRegression;
 import frc.lib.util.ErrorCheckUtil;
@@ -101,8 +102,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean isAtSetpoint() {
-    return Math.abs(shooterMotorLeft.getVelocity().getValue() - leftTargetVelocity) < ShooterConstants.shooterVelocityTolerance
-        && Math.abs(shooterMotorRight.getVelocity().getValue() - rightTargetVelocity) < ShooterConstants.shooterVelocityTolerance;
+    return Math.abs(shooterMotorLeft.getClosedLoopError().getValue()) * 60 < ShooterConstants.shooterVelocityTolerance
+        && Math.abs(shooterMotorRight.getClosedLoopError().getValue()) * 60 < ShooterConstants.shooterVelocityTolerance;
   }
 
   /**
@@ -132,6 +133,10 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    // SmartDashboard.putNumber("ShooterVelocity", shooterMotorLeft.getVelocity().getValue() * 60);
+    // SmartDashboard.putNumber("ShooterError", Math.abs(shooterMotorLeft.getClosedLoopError().getValue()) * 60);
+    // SmartDashboard.putBoolean("ShooterAtSetpoint", isAtSetpoint());
   }
 
   private TalonFX configShooterMotor(TalonFX motor) {
@@ -140,9 +145,9 @@ public class Shooter extends SubsystemBase {
             Constants.kConfigTimeoutSeconds),
         CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
 
-    ErrorCheckUtil.checkError(
-        motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
-        CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
+    // ErrorCheckUtil.checkError(
+    //     motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
   }

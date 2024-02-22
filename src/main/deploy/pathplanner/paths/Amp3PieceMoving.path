@@ -20,28 +20,28 @@
         "y": 7.556662104064949
       },
       "prevControl": {
-        "x": 4.601964740966519,
-        "y": 7.443534863921579
+        "x": 4.588603255910216,
+        "y": 7.521803474162504
       },
       "nextControl": {
-        "x": 8.366502022755409,
-        "y": 7.609521289608603
+        "x": 8.11635209862646,
+        "y": 7.569484537268063
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.850818210895682,
+        "x": 5.586617113049041,
         "y": 6.587093364001543
       },
       "prevControl": {
-        "x": 8.119954679724179,
-        "y": 6.61619170923527
+        "x": 7.919413635123567,
+        "y": 6.587509054647739
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp3PieceEnd"
+      "linkedName": "Amp3PieceMovingEnd"
     }
   ],
   "rotationTargets": [
@@ -148,7 +148,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "AmpSide",
+  "folder": "AmpSideMoving",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

@@ -96,7 +96,6 @@ public class SuperstructureTuning {
                 indexer.runIndexerDutyCycle(indexerSpeed.getDouble(0));
                 elevator.toHeight(elevatorTargetHeight.getDouble(0));
                 wrist.toAngle(Rotation2d.fromDegrees(wristTargetAngle.getDouble(0)));
-                System.out.println(wristTargetAngle.getDouble(0));
         }
 
         public static void end() {

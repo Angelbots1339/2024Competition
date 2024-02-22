@@ -12,32 +12,32 @@
         "y": 6.001639244019229
       },
       "isLocked": false,
-      "linkedName": "Amp4thPieceEnd"
+      "linkedName": "Amp4thPieceMovingEnd"
     },
     {
       "anchor": {
-        "x": 7.761332420812989,
-        "y": 4.4318561322307835
+        "x": 7.8620483259485034,
+        "y": 4.458638486721418
       },
       "prevControl": {
-        "x": 8.030685816864711,
-        "y": 4.952416333171095
+        "x": 8.07326400617729,
+        "y": 4.709989881971265
       },
       "nextControl": {
-        "x": 7.463400996246437,
-        "y": 3.856065202871147
+        "x": 7.650164865144545,
+        "y": 4.206492417614466
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.111924853479336,
-        "y": 5.06958496787364
+        "x": 5.626939105730063,
+        "y": 6.501639244019229
       },
       "prevControl": {
-        "x": 5.582816512855247,
-        "y": 3.678149606299213
+        "x": 7.227348093585079,
+        "y": 5.5649694493833435
       },
       "nextControl": null,
       "isLocked": false,
@@ -65,7 +65,7 @@
   "eventMarkers": [
     {
       "name": "Pickup",
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 0.4,
       "command": {
         "type": "sequential",
         "data": {
@@ -82,7 +82,7 @@
     },
     {
       "name": "Shoot",
-      "waypointRelativePos": 1.85,
+      "waypointRelativePos": 1.75,
       "command": {
         "type": "sequential",
         "data": {
@@ -106,11 +106,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -5.0,
+    "rotation": 15.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "AmpSide",
+  "folder": "AmpSideMoving",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

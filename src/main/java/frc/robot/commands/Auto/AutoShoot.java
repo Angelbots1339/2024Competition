@@ -73,7 +73,7 @@ public class AutoShoot extends Command {
 
     if (indexer.isNotePresent() && shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
-      indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
+      indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
     } else if (!indexer.isNotePresent()) {
       indexer.disable();
     }

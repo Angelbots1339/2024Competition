@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.437490004609639,
-      "y": 6.587093364001543
+      "x": 1.343781456081431,
+      "y": 5.565266371273484
     },
     "rotation": 0
   },
@@ -20,19 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp2Piece"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp3rdPieceCloseShot"
+            "pathName": "Center2Piece"
           }
         },
         {
@@ -44,6 +32,6 @@
       ]
     }
   },
-  "folder": "AmpSide",
+  "folder": "Center",
   "choreoAuto": false
 }

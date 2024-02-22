@@ -152,13 +152,13 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("Elevator Height",
-        ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getPosition().getValue()));
-    SmartDashboard.putNumber("Follower Elevator Height",
-        ElevatorConstants.elevatorRotationsToMeters(elevatorFollowerMotor.getPosition().getValue()));
+    // SmartDashboard.putNumber("Elevator Height",
+    //     ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getPosition().getValue()));
+    // SmartDashboard.putNumber("Follower Elevator Height",
+    //     ElevatorConstants.elevatorRotationsToMeters(elevatorFollowerMotor.getPosition().getValue()));
 
-    SmartDashboard.putString("ControlMode", elevatorLeaderMotor.getControlMode().getValue().toString());
-    SmartDashboard.putBoolean("ElevatorAtSetpoint", isAtSetpoint());
+    // SmartDashboard.putString("ControlMode", elevatorLeaderMotor.getControlMode().getValue().toString());
+    // SmartDashboard.putBoolean("ElevatorAtSetpoint", isAtSetpoint());
   }
 
   private TalonFX configElevatorMotor(TalonFX motor) {

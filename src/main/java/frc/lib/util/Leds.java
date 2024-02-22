@@ -57,8 +57,8 @@ public class Leds extends SubsystemBase {
   private final AddressableLEDBuffer buffer;
   private final Notifier loadingNotifier;
 
-  private final AddressableLED underglowLeds;
-  private final AddressableLEDBuffer underglowBuffer;
+  // private final AddressableLED underglowLeds;
+  // private final AddressableLEDBuffer underglowBuffer;
 
   // Constants
   private static final int minLoopCycleCount = 10;
@@ -112,18 +112,18 @@ public class Leds extends SubsystemBase {
         });
     loadingNotifier.startPeriodic(0.02);
 
-    underglowLeds = new AddressableLED(2);
-    underglowBuffer = new AddressableLEDBuffer(underglowLength);
-    underglowLeds.setLength(underglowLength);
-    underglowLeds.setData(underglowBuffer);
-    underglowLeds.start();
+    // underglowLeds = new AddressableLED(3);
+    // underglowBuffer = new AddressableLEDBuffer(underglowLength);
+    // underglowLeds.setLength(underglowLength);
+    // underglowLeds.setData(underglowBuffer);
+    // underglowLeds.start();
   }
 
   public synchronized void periodic() {
     // Update alliance color
     if (DriverStation.isFMSAttached()) {
-      alliance = DriverStation.getAlliance();
     }
+    alliance = DriverStation.getAlliance();
 
     // Update auto state
     if (DriverStation.isDisabled()) {
@@ -218,11 +218,11 @@ public class Leds extends SubsystemBase {
 
 
     // Set underglow
-    solid(Section.UNDERGLOW, Color.kBlue, underglowBuffer);
+    // solid(Section.UNDERGLOW, Color.kBlue, underglowBuffer);
 
-    // Update LEDs
-    leds.setData(buffer);
-    underglowLeds.setData(underglowBuffer);
+    // // Update LEDs
+    // leds.setData(buffer);
+    // underglowLeds.setData(underglowBuffer);
   }
 
   private void solid(Section section, Color color) {

@@ -65,15 +65,19 @@ public class IntakeNote extends Command {
     elevator.toHeight(ScoringConstants.Handoff.height);
 
     if (!intake.isNotePresent() && !noteDetected) {
-      intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
+      // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
+      intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
     } else if (noteDetected && !wrist.isAtSetpoint() && !elevator.isAtSetpoint()) {
       intake.disable();
     } else if (noteDetected && wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
-      intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
+      // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
+      intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
+
     }
 
     if (!indexer.isNotePresent()) {
-      indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
+      // indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
+      indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
     } else {
       indexer.disable();
     }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.626939105730063,
-        "y": 6.501639244019229
+        "x": 5.586617113049041,
+        "y": 6.587093364001543
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.626939105730061,
-        "y": 6.001639244019229
+        "x": 6.485399674503052,
+        "y": 6.036778332815925
       },
       "isLocked": false,
-      "linkedName": "Amp4thPieceEnd"
+      "linkedName": "Amp3PieceMovingEnd"
     },
     {
       "anchor": {
-        "x": 7.8620483259485034,
-        "y": 4.458638486721418
+        "x": 7.663348197066765,
+        "y": 5.861416264499196
       },
       "prevControl": {
-        "x": 8.07326400617729,
-        "y": 4.709989881971265
+        "x": 7.517322011495875,
+        "y": 5.529041900676394
       },
       "nextControl": {
-        "x": 7.650164865144545,
-        "y": 4.206492417614466
+        "x": 7.798492414088952,
+        "y": 6.169021869490316
       },
       "isLocked": false,
       "linkedName": null
@@ -36,27 +36,17 @@
         "y": 6.501639244019229
       },
       "prevControl": {
-        "x": 7.227348093585079,
-        "y": 5.5649694493833435
+        "x": 6.175056914928645,
+        "y": 6.371112381113652
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Amp4thPieceMovingEnd"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.05,
-      "rotationDegrees": -25.0,
-      "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 2.0,
-      "rotationDegrees": 0,
-      "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0,
       "rotateFast": true
     }
@@ -64,8 +54,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Pickup",
-      "waypointRelativePos": 0.4,
+      "name": "Pickup, Shoot",
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "sequential",
         "data": {
@@ -75,18 +65,7 @@
               "data": {
                 "name": "intakeNote"
               }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Shoot",
-      "waypointRelativePos": 1.75,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
+            },
             {
               "type": "named",
               "data": {
@@ -105,12 +84,12 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 15.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "AmpSide",
+  "folder": "AmpSideMoving",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

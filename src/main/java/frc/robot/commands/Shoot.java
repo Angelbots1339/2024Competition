@@ -83,7 +83,7 @@ public class Shoot extends Command {
 
     if ((indexer.isNotePresent() || overrideIndexerSensor.get()) && shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
-      indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
+      indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
     } else {
       indexer.disable();
     }

@@ -37,21 +37,23 @@ public class PoseEstimation {
      * Don't call this. It's registered to the Swerve telemetry in the Swerve
      * subsystem
      * 
-     * @param state
+     * 
      */
-    public static void updateEstimatedPose(SwerveDriveState state, SwerveModulePosition[] modulePositions,
+    public static void updateEstimatedPose(Pose2d state, SwerveModulePosition[] modulePositions,
             Swerve swerve) {
+
+        estimatedPose = new Pose2d(state.getX(), state.getY(), swerve.getGyroYaw());
+        // System.out.println(state.toString());
 
         double currentTime = Utils.getCurrentTimeSeconds();
         double diffTime = currentTime - lastTime;
         lastTime = currentTime;
-        Pose2d distanceDiff = new Pose2d().transformBy(state.Pose.minus(lastPose));
+        Pose2d distanceDiff = new Pose2d().transformBy(estimatedPose.minus(lastPose));
         Pose2d velocities = distanceDiff.div(diffTime);
 
         estimatedVelocity = velocities;
-        estimatedPose = state.Pose;
 
-        lastPose = state.Pose;
+        lastPose = estimatedPose;
         lastVelocity = velocities;
 
         // poseEstimatorNonVision.update(Rotation2d.fromDegrees(swerve.getPigeon2().getYaw().getValue()),
@@ -89,9 +91,11 @@ public class PoseEstimation {
         // TODO Do math here
 
         double virtualGoalX = targetPosition.getX()
-                - (estimatedPose.getTranslation().getDistance(targetPosition) / ScoringConstants.gamePieceVelocity) * (estimatedVelocity.getX() + estimatedAcceleration.getX() * ScoringConstants.kAccelCompFactor);
+                - (estimatedPose.getTranslation().getDistance(targetPosition) / ScoringConstants.gamePieceVelocity)
+                        * (estimatedVelocity.getX() + estimatedAcceleration.getX() * ScoringConstants.kAccelCompFactor);
         double virtualGoalY = targetPosition.getY()
-                - ScoringConstants.gamePieceVelocity * (estimatedVelocity.getY() + estimatedAcceleration.getY() * ScoringConstants.kAccelCompFactor);
+                - ScoringConstants.gamePieceVelocity
+                        * (estimatedVelocity.getY() + estimatedAcceleration.getY() * ScoringConstants.kAccelCompFactor);
 
         return new Translation2d(virtualGoalX, virtualGoalY);
     }

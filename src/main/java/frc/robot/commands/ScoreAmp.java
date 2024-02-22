@@ -52,7 +52,7 @@ public class ScoreAmp extends Command {
       timer.start();
 
       if (timer.get() > 0.5) {
-        indexer.runIndexerTorqueControl(ScoringConstants.ampScoringCurrentIndexer);
+        indexer.runIndexerTorqueControl(ScoringConstants.indexerScoringCurrent);
       }
     }
 

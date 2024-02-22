@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.playingwithfusion.TimeOfFlight;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
@@ -20,9 +21,7 @@ public class Indexer extends SubsystemBase {
   private TalonFX indexerMotor = configIndexerMotor(TalonFXFactory.createTalon(IndexerConstants.indexerMotorID,
       IndexerConstants.indexerMotorCANBus, IndexerConstants.kIndexerConfiguration));
 
-
-    private TimeOfFlight indexerSensor = new TimeOfFlight(IndexerConstants.indexerSensorID);
-
+  private TimeOfFlight indexerSensor = new TimeOfFlight(IndexerConstants.indexerSensorID);
 
   /** Creates a new Indexer. */
   public Indexer() {
@@ -53,6 +52,8 @@ public class Indexer extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // SmartDashboard.putBoolean("IndexerNotePresent", isNotePresent());
+
   }
 
   private TalonFX configIndexerMotor(TalonFX motor) {

@@ -8,9 +8,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class FieldUtil {
 
-    public static final Translation2d BlueSpeakerPose = new Translation2d(0, 0);
-    public static final Translation2d RedSpeakerPose = new Translation2d(0, 0);
-
+    public static final Translation2d BlueSpeakerPose = new Translation2d(8.27 - 7.24310, 4.105 - 1.26019);
+    public static final Translation2d RedSpeakerPose = new Translation2d(8.27 + 8.308467, 4.105 + 1.442593);
 
     /**
      * Get the position of whichever alliance you are on
@@ -31,8 +30,5 @@ public class FieldUtil {
 
         return null;
     }
-
-
-    
 
 }
