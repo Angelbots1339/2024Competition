@@ -44,7 +44,7 @@ public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
   public Shooter() {
 
-    initializeLogging();
+    // initializeLogging();
   }
 
   /**
@@ -134,9 +134,9 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("ShooterVelocity", shooterMotorLeft.getVelocity().getValue() * 60);
-    SmartDashboard.putNumber("ShooterError", Math.abs(shooterMotorLeft.getClosedLoopError().getValue()) * 60);
-    SmartDashboard.putBoolean("ShooterAtSetpoint", isAtSetpoint());
+    // SmartDashboard.putNumber("ShooterVelocity", shooterMotorLeft.getVelocity().getValue() * 60);
+    // SmartDashboard.putNumber("ShooterError", Math.abs(shooterMotorLeft.getClosedLoopError().getValue()) * 60);
+    // SmartDashboard.putBoolean("ShooterAtSetpoint", isAtSetpoint());
   }
 
   private TalonFX configShooterMotor(TalonFX motor) {

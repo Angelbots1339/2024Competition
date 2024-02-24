@@ -39,7 +39,7 @@ public class AutoShoot extends Command {
     this.indexer = indexer;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooter, wrist, elevator, swerve, indexer);
+    addRequirements(shooter, wrist, elevator, indexer);
   }
 
   // Called when the command is initially scheduled.

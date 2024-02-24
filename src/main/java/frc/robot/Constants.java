@@ -75,7 +75,7 @@ public class Constants {
                 public static final double kSpeedAt12VoltsMps = 6.21;
 
                 public static final double maxSpeed = 6; // Used for driving
-                public static final double maxAngularRate = 2 * Math.PI;
+                public static final double maxAngularRate = 7.334783440493933;  //2 * Math.PI;
 
                 // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
                 // This may need to be tuned to your individual robot
@@ -196,17 +196,18 @@ public class Constants {
                 public static final double FudgeFactorSimpleKp = 0.1; // used for the CD fudge factor solution to swerve
                                                                       // skew
 
-                public static final double angularDriveKP = 0;
+                public static final double angularDriveKP = 0.05;
                 public static final double angularDriveKI = 0;
                 public static final double angularDriveKD = 0;
-                public static final double angularDriveKS = 0.7; // radians per sec
+                public static final double angularDriveKS = 0.4; // radians per sec
                 public static final double angularDriveTolerance = 2; // Degrees
 
 
-                public static final double pidToPoseKP = 0;
+                public static final double pidToPoseKP = 2.5;
                 public static final double pidToPoseKD = 0;
-                public static final double pidToPoseKS = 0.21; 
-                public static final double pidToPoseTolerance = 0.05; // Meters
+                public static final double pidToPoseKS = 0.15; 
+                public static final double pidToPoseTolerance = 0.06; // Meters
+                public static final double pidToPoseMaxSpeed = 1; // Meters per second
 
 
 
@@ -270,10 +271,10 @@ public class Constants {
                                                 .withNeutralMode(NeutralModeValue.Brake)
                                                 .withInverted(InvertedValue.CounterClockwise_Positive))
                                 .withSlot0(new Slot0Configs()
-                                                .withKV(0)
-                                                .withKP(0.8)
+                                                .withKV(0.065)
+                                                .withKP(0.09)
                                                 .withKI(0)
-                                                .withKD(0))
+                                                .withKD(0.03))
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(shooterGearRatio));
 
@@ -423,7 +424,7 @@ public class Constants {
                 public static final double elevatorGearRatio = 25; // Sensor to Mechanism Ratio
                 public static final double elevatorPinionRadius = Units.inchesToMeters(1); // Meters
 
-                public static final double maxElevatorHeight = 0.45; // Meters
+                public static final double maxElevatorHeight = 0.47; // Meters
 
                 public static final TalonFXConfiguration kElevatorConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -490,16 +491,15 @@ public class Constants {
 
         public static class ScoringConstants {
 
-                public static final WristElevatorState Handoff = new WristElevatorState(135, 0);
+                public static final WristElevatorState Handoff = new WristElevatorState(138, 0);
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(18, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
-                public static final WristElevatorState SubwooferShot = new WristElevatorState(90, 0);
+                public static final WristElevatorState SubwooferShot = new WristElevatorState(125, 0);
 
-                public static final double[] shooterSetpoint = {6000, 4800}; // [Left, Right]
+                public static final double[] shooterSetpoint = {4000, 4000}; // [Left, Right]
                 public static final double shootingWaitTime = 0.2; // Seconds to wait before shooting to make shooting predictable & consistent
                 
-                
-
+                public static final double scoreAmpOffset = 0.4;
 
 
                 public static final double indexingTargetCurrent = 10; // Amps
@@ -510,7 +510,7 @@ public class Constants {
                 public static final double indexerScoreAmpPercent = -0.4; // Percent
 
                 public static final double intakingTargetCurrent = 20; // Amps
-                public static final double intakingTargetPercent = 0.3; // Percent
+                public static final double intakingTargetPercent = 0.75; // Percent
 
                 public static final double kAccelCompFactor = 0; // Seconds
                 public static final double gamePieceVelocity = 0; // Meters per second
@@ -528,7 +528,19 @@ public class Constants {
                 // Apriltag Height: 57 inches
                 // Horizontal offset 22.5 inches 
 
+                public static final double StdDevScalar = 1;
+                
 
+                public static double calcStdDev(double metersFromTarget) {
+
+                        double inches = Units.metersToInches(metersFromTarget); // Convert to inches
+
+                        double hypotenuse = Math.sqrt(Math.pow(inches, 2) + Math.pow(57, 2)); // Account for april tag being high off the ground
+                        
+                        double calculated = Math.pow(StdDevScalar * Math.pow(hypotenuse, 19.5335), -0.05/2); // Plug into Std Dev equation that we got experimentally
+
+                        return MathUtil.clamp(calculated, 0, 1); 
+                }
 
 
                 public static final String limelightLeftName = "limelight-left";

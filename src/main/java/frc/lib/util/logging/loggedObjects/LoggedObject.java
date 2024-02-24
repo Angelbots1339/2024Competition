@@ -122,7 +122,7 @@ public abstract class LoggedObject<T> implements Iloggable {
         return level;
     }
     protected ShuffleboardTab getTab(){
-        System.out.println(tabName);
+        // System.out.println(tabName);
         return Shuffleboard.getTab(tabName);
     }
 

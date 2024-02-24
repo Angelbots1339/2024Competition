@@ -80,13 +80,13 @@ public class Elevator extends SubsystemBase {
    */
   public void toHeight(double height) {
 
-    if (isAtSetpoint() && targetHeight == 0) {
-      elevatorLeaderMotor.setControl(new DutyCycleOut(0));
-    } else {
+    // if (isAtSetpoint() && targetHeight == 0) {
+    //   elevatorLeaderMotor.setControl(new DutyCycleOut(0));
+    // } else {
       elevatorLeaderMotor.setControl(
           ElevatorConstants.elevatorPositionControl.withPosition(ElevatorConstants.elevatorMetersToRotations(height)));
       // Let the elevator rest while at 0 (stop outputting Kg)
-    }
+    // }
 
     elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
 

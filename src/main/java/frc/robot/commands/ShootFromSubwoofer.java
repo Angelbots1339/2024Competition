@@ -37,8 +37,8 @@ public class ShootFromSubwoofer extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    wrist.toAngle(Rotation2d.fromDegrees(145));
-    elevator.home();
+    wrist.toAngle(ScoringConstants.SubwooferShot.angle);
+    elevator.toHeight(ScoringConstants.SubwooferShot.height);
     shooter.shooterToRMP(ScoringConstants.shooterSetpoint[0], ScoringConstants.shooterSetpoint[1]);
 
     shootTimer.start();
@@ -63,6 +63,7 @@ public class ShootFromSubwoofer extends Command {
     wrist.home();
     elevator.home();
     shooter.disable();
+    indexer.disable();
 
     shootTimer.stop();
     shootTimer.reset();

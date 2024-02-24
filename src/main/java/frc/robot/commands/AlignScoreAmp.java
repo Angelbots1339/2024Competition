@@ -49,7 +49,7 @@ public class AlignScoreAmp extends Command {
       wrist.toAngle(ScoringConstants.ScoreAmp.angle);
     }
 
-    swerve.pidToPose(new Pose2d(FieldUtil.getAllianceAmpPosition(), Rotation2d.fromDegrees(90)));
+    swerve.pidToPose(new Pose2d(FieldUtil.getAllianceAmpPosition().getX(), FieldUtil.getAllianceAmpPosition().getY() - ScoringConstants.scoreAmpOffset, Rotation2d.fromDegrees(90)));
 
 
     if(wrist.isAtSetpoint() && elevator.isAtSetpoint() && swerve.isAtPose()) {

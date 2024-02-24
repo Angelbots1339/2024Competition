@@ -88,14 +88,13 @@ public class IntakeNote extends Command {
   @Override
   public void end(boolean interrupted) {
 
-    if (!indexer.isNotePresent() && intake.isNotePresent()) {
-      CommandScheduler.getInstance().schedule(new HandOffNote(intake, indexer, wrist, elevator));
-    } else {
+    if (indexer.isNotePresent() && !intake.isNotePresent()) {
       intake.disable();
       indexer.disable();
       wrist.disable();
       elevator.disable();
     }
+    
     Leds.getInstance().intaking = false;
     Leds.getInstance().hasGamePiece = false;
 

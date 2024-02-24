@@ -55,7 +55,7 @@ public class Leds extends SubsystemBase {
   // LED IO
   private final AddressableLED leds;
   private final AddressableLEDBuffer buffer;
-  private final Notifier loadingNotifier;
+  // private final Notifier loadingNotifier;
 
   // private final AddressableLED underglowLeds;
   // private final AddressableLEDBuffer underglowBuffer;
@@ -86,31 +86,32 @@ public class Leds extends SubsystemBase {
   private static final double autoFadeMaxTime = 5.0; // Return to normal
 
   // LED Lengths
-  private static final int length = 43;
-  private static final int bottomLength = 14;
+  private static final int length = 50;
+  private static final int bottomLength = 20;
 
   private static final int underglowLength = 24;
 
   private Leds() {
     System.out.println("[Init] Creating LEDs");
-    leds = new AddressableLED(1);
+    leds = new AddressableLED(0);
     buffer = new AddressableLEDBuffer(length);
     leds.setLength(length);
     leds.setData(buffer);
     leds.start();
-    loadingNotifier = new Notifier(
-        () -> {
-          synchronized (this) {
-            breath(
-                Section.BOTTOM,
-                Color.kWhite,
-                Color.kBlack,
-                0.25,
-                System.currentTimeMillis() / 1000.0);
-            leds.setData(buffer);
-          }
-        });
-    loadingNotifier.startPeriodic(0.02);
+
+    // loadingNotifier = new Notifier(
+    //     () -> {
+    //       synchronized (this) {
+    //         breath(
+    //             Section.BOTTOM,
+    //             Color.kWhite,
+    //             Color.kBlack,
+    //             0.25,
+    //             System.currentTimeMillis() / 1000.0);
+    //         leds.setData(buffer);
+    //       }
+    //     });
+    // loadingNotifier.startPeriodic(0.02);
 
     // underglowLeds = new AddressableLED(3);
     // underglowBuffer = new AddressableLEDBuffer(underglowLength);
@@ -119,7 +120,8 @@ public class Leds extends SubsystemBase {
     // underglowLeds.start();
   }
 
-  public synchronized void periodic() {
+  public synchronized void periodic() {    
+
     // Update alliance color
     if (DriverStation.isFMSAttached()) {
     }
@@ -145,7 +147,7 @@ public class Leds extends SubsystemBase {
     }
 
     // Stop loading notifier if running
-    loadingNotifier.stop();
+    // loadingNotifier.stop();
 
     // Select LED mode
     // solid(Section.FULL, Color.kBlack); // Default to off
@@ -163,25 +165,27 @@ public class Leds extends SubsystemBase {
         solid(Section.FULL, Color.kOrangeRed);
       } else {
         // Default pattern
-        switch (alliance.get()) {
-          case Red:
-            breath(
-                Section.FULL,
-                Color.kRed,
-                Color.kBlack,
-                breathAllianceCycleLength);
-            break;
-          case Blue:
-            breath(
-                Section.FULL,
-                Color.kLightCyan,
-                Color.kBlack,
-                breathAllianceCycleLength);
-            break;
-          default:
-            wave(Section.FULL, Color.kOrange, Color.kDeepPink, waveSlowCycleLength, waveSlowDuration);
-            break;
-        }
+
+
+        // switch (alliance.get()) {
+        //   case Red:
+        //     breath(
+        //         Section.FULL,
+        //         Color.kRed,
+        //         Color.kBlack,
+        //         breathAllianceCycleLength);
+        //     break;
+        //   case Blue:
+        //     breath(
+        //         Section.FULL,
+        //         Color.kLightCyan,
+        //         Color.kBlack,
+        //         breathAllianceCycleLength);
+        //     break;
+        //   default:
+        //     wave(Section.FULL, Color.kOrange, Color.kDeepPink, waveSlowCycleLength, waveSlowDuration);
+        //     break;
+        // }
       }
     } else if (DriverStation.isAutonomous()) {
       switch (alliance.get()) {
@@ -216,14 +220,20 @@ public class Leds extends SubsystemBase {
     }
 
 
+    solid(Section.FULL, Color.kPurple, buffer);
+    leds.setData(buffer);
 
     // Set underglow
     // solid(Section.UNDERGLOW, Color.kBlue, underglowBuffer);
 
     // // Update LEDs
-    // leds.setData(buffer);
     // underglowLeds.setData(underglowBuffer);
   }
+
+
+
+
+
 
   private void solid(Section section, Color color) {
     solid(section, color, buffer);

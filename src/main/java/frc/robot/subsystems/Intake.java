@@ -36,7 +36,7 @@ public class Intake extends SubsystemBase {
     intakeSensor.setRangingMode(IntakeConstants.intakeSensorRange, IntakeConstants.intakeSampleTime);
     intakeSensor.setRangeOfInterest(8, 8, 12, 12);
 
-    initializeLogging();
+    // initializeLogging();
   }
 
   public void disable() {

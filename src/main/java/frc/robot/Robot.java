@@ -42,9 +42,9 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
 
-    CompletableFuture.runAsync(() -> {
-      Logger.getInstance().log(0);
-    });
+    // CompletableFuture.runAsync(() -> {
+    //   Logger.getInstance().log(0);
+    // });
 
     // Update low battery alert
     if (DriverStation.isEnabled()) {

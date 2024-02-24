@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.890533424585368,
-        "y": 6.395816282373305
+        "x": 1.607091788257651,
+        "y": 6.803014962511407
       },
       "isLocked": false,
       "linkedName": "Amp3PieceCloseShotEnd"
@@ -20,8 +20,8 @@
         "y": 5.547451057865079
       },
       "prevControl": {
-        "x": 1.3992793911513752,
-        "y": 5.547451057865079
+        "x": 1.6059634850751185,
+        "y": 5.2832499600184395
       },
       "nextControl": null,
       "isLocked": false,

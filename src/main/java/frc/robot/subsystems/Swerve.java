@@ -63,8 +63,10 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     private PIDController angularDrivePID = new PIDController(DriverConstants.angularDriveKP,
             DriverConstants.angularDriveKI, DriverConstants.angularDriveKD);
 
-    private PIDController pidToPoseXController = new PIDController(DriverConstants.pidToPoseKP, 0, DriverConstants.pidToPoseKD);
-    private PIDController pidToPoseYController = new PIDController(DriverConstants.pidToPoseKP, 0, DriverConstants.pidToPoseKD);
+    private PIDController pidToPoseXController = new PIDController(DriverConstants.pidToPoseKP, 0,
+            DriverConstants.pidToPoseKD);
+    private PIDController pidToPoseYController = new PIDController(DriverConstants.pidToPoseKP, 0,
+            DriverConstants.pidToPoseKD);
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
@@ -95,6 +97,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 this.m_modulePositions);
 
         angularDrivePID.setTolerance(DriverConstants.angularDriveTolerance);
+        angularDrivePID.enableContinuousInput(0, 360);
         pidToPoseXController.setTolerance(DriverConstants.pidToPoseTolerance);
         pidToPoseXController.setTolerance(DriverConstants.pidToPoseTolerance);
 
@@ -199,6 +202,45 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         });
     }
 
+
+    /**
+     * 
+     * @param translationX  Meters/second
+     * @param translationY  Meters/second
+     * @param rotation      Rad/second
+     * @param fieldOriented Use field oriented drive?
+     * @param skewReduction Use Skew Reduction? // TODO Currently doesn't work :(
+     * @return
+     */
+    public SwerveRequest angularDriveRequest(Supplier<Double> translationX, Supplier<Double> translationY,
+            Supplier<Rotation2d> desiredRotation, Supplier<Boolean> skewReduction) {
+
+        
+
+            // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+            // rot = rot.plus(Rotation2d.fromDegrees(180));
+            // };
+
+            ChassisSpeeds speeds = angularPIDCalc(translationX, translationY, desiredRotation);
+
+            if (skewReduction.get()) {
+                speeds = SwerveSkewMath.reduceSkewFromLogTwist2d(speeds);
+            }
+
+            SwerveRequest req;
+
+                ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroYaw());
+
+                req = new SwerveRequest.RobotCentric()
+                        .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
+                                : DriveRequestType.Velocity)
+                        .withVelocityX(fieldRelativeSpeeds.vxMetersPerSecond) // Drive forward with negative Y (forward)
+                        .withVelocityY(fieldRelativeSpeeds.vyMetersPerSecond) // Drive left with negative X (left)
+                        .withRotationalRate(fieldRelativeSpeeds.omegaRadiansPerSecond);
+
+            return req;
+    }
+
     /**
      * Builds a ChassisSpeeds with the given translation and the output of the
      * anularPID for rotation
@@ -213,8 +255,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         double pid = angularDrivePID.calculate(this.getGyroYaw().getDegrees(), desiredRotation.get().getDegrees());
 
         ChassisSpeeds speeds = new ChassisSpeeds(translationX.get(), translationY.get(),
-                pid + (DriverConstants.angularDriveKS * Math.signum(pid)));
+                angularDrivePID.atSetpoint() ? 0 : pid + (DriverConstants.angularDriveKS * Math.signum(pid)));
 
+                
         return speeds;
     }
 
@@ -226,15 +269,19 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
-    public Command pidToPose(Pose2d target) {
+    public void pidToPose(Pose2d target) {
 
-        double x = pidToPoseXController.calculate(PoseEstimation.getEstimatedPose().getTranslation().getX(), target.getX())
-                + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS);
-        double y = pidToPoseYController.calculate(PoseEstimation.getEstimatedPose().getTranslation().getY(), target.getY())
-                + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS);
+        double x = -MathUtil.clamp(pidToPoseXController.calculate(PoseEstimation.getEstimatedPose().getTranslation().getX(),
+                target.getX())
+                + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS), -DriverConstants.pidToPoseMaxSpeed, DriverConstants.pidToPoseMaxSpeed);
+        double y = -MathUtil.clamp(pidToPoseYController.calculate(PoseEstimation.getEstimatedPose().getTranslation().getY(),
+                target.getY())
+                + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS), -DriverConstants.pidToPoseMaxSpeed, DriverConstants.pidToPoseMaxSpeed);
 
+        SmartDashboard.putNumber("PidXError", pidToPoseXController.getPositionError());
+        SmartDashboard.putNumber("PidYError", pidToPoseYController.getPositionError());
 
-        return angularDrive(() -> x, () -> y, () -> target.getRotation(), () -> true, () -> false);
+        this.setControl(angularDriveRequest(() -> pidToPoseXController.atSetpoint() ? 0 : x, () -> pidToPoseYController.atSetpoint() ? 0 : y, () -> target.getRotation(), () -> false));
     }
 
     public boolean isAtPose() {
@@ -279,7 +326,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     }
 
     public Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(m_pigeon2.getYaw().getValue());
+        double rawYaw = m_pigeon2.getYaw().getValue();
+        
+        return Rotation2d.fromDegrees(rawYaw > 0 ? rawYaw % 360 : 360 - Math.abs(rawYaw % 360));
     }
 
     public void setGyroYaw(Rotation2d yaw) {
@@ -295,6 +344,15 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         setGyroYaw(Rotation2d.fromDegrees(0));
     }
+    public void zeroGyro(Rotation2d rot) {
+        // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+        // setGyroYaw(Rotation2d.fromDegrees(0));
+        // } else {
+        // setGyroYaw(Rotation2d.fromDegrees(180));
+        // }
+
+        setGyroYaw(Rotation2d.fromDegrees(rot.getDegrees()));
+    }
 
     public void updateVision() {
         if (Robot.isReal()) {
@@ -302,7 +360,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             if (LimelightHelpers.getFiducialID(VisionConstants.limelightLeftName) >= 0) {
                 double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightLeftName)
                         .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-                double xyStdDev2 = MathUtil.clamp(0.003 * Math.pow(2.2, tagDistance), 0, 1);
+                double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
 
                 Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightLeftName);
                 double poseFromVisionTimestamp = Timer.getFPGATimestamp()
@@ -315,7 +373,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             if (LimelightHelpers.getFiducialID(VisionConstants.limelightCenterName) >= 0) {
                 double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightCenterName)
                         .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-                double xyStdDev2 = MathUtil.clamp(0.003 * Math.pow(2.2, tagDistance), 0, 1);
+                double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
 
                 Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName);
                 double poseFromVisionTimestamp = Timer.getFPGATimestamp()
@@ -328,7 +386,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             if (LimelightHelpers.getFiducialID(VisionConstants.limelightRightName) >= 0) {
                 double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightRightName)
                         .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-                double xyStdDev2 = MathUtil.clamp(0.003 * Math.pow(2.2, tagDistance), 0, 1);
+                double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
 
                 Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightRightName);
                 double poseFromVisionTimestamp = Timer.getFPGATimestamp()
@@ -343,24 +401,37 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     public void periodic() {
 
+        double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightCenterName)
+                .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
+        double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
+        SmartDashboard.putNumber("StdDev", xyStdDev2);
+
         updateVision();
         PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(), m_modulePositions, this);
 
-        SmartDashboard.putNumber("TargetDist",
-                FieldUtil.RedSpeakerPosition.getDistance(this.m_odometry.getEstimatedPosition().getTranslation()));
-        SmartDashboard.putNumber("DistX",
-                LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getX());
-        SmartDashboard.putNumber("DistY",
-                LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getY());
+        // SmartDashboard.putNumber("TargetDist",
+        // FieldUtil.RedSpeakerPosition.getDistance(this.m_odometry.getEstimatedPosition().getTranslation()));
+        // SmartDashboard.putNumber("DistX",
+        // LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getX());
+        // SmartDashboard.putNumber("DistY",
+        // LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getY());
+
         // System.out.println(this.m_odometry.getEstimatedPosition().toString());
 
+        SmartDashboard.putNumber("gyro", getGyroYaw().getDegrees());
+        SmartDashboard.putNumber("rawGyro", m_pigeon2.getYaw().getValue());
+    }
+
+    public void resetPose(Pose2d pose) {
+        this.seedFieldRelative(pose);
+        this.zeroGyro(pose.getRotation());
     }
 
     public void configPathPlanner() {
 
         AutoBuilder.configureHolonomic(
                 () -> this.getState().Pose, // Robot pose supplier
-                this::seedFieldRelative, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getCurrentRobotChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setChassisSpeedsAuto, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 AutoConstants.autoConfig,
@@ -400,7 +471,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     public void initializeLogging() {
 
         logger = new LoggedSubsystem("Swerve");
-        field = new LoggedField("PoseEstimator", logger, SwerveLogging.PoseEstimator, true);
+        field = new LoggedField("PoseEstimator", logger, SwerveLogging.Pose, true);
 
         logger.add(field);
         field.addPose2d("PoseEstimation", () -> PoseEstimation.getEstimatedPose(), true);
@@ -427,7 +498,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         logger.addDouble("yAutoError", () -> PoseEstimation.getAutoTargetPoseError().getY(), SwerveLogging.Auto);
         logger.addDouble("thetaAutoError", () -> PoseEstimation.getAutoTargetPoseError().getRotation().getDegrees(),
                 SwerveLogging.Auto);
-
 
         logger.addBoolean("isAtAngularDriveSetpoint", () -> isAtAngularDriveSetpoint(), SwerveLogging.PidPose);
 

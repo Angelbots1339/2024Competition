@@ -40,18 +40,6 @@
           "data": {
             "name": "shoot"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp4thPieceClose"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
         }
       ]
     }

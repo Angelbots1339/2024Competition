@@ -53,7 +53,7 @@ public class Wrist extends SubsystemBase {
 
     throughBoreTimer.start();
 
-    initializeLogging();
+    // initializeLogging();
 
     if (Robot.isSimulation()) {
       simWrist = Mech2dManger.getInstance().getWrist();
