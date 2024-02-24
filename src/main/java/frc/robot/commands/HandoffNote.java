@@ -15,10 +15,12 @@ import frc.robot.subsystems.Wrist;
 
 public class HandOffNote extends Command {
 
-    private Intake intake;
+  private Intake intake;
   private Indexer indexer;
   private Wrist wrist;
   private Elevator elevator;
+
+  private boolean noteDetected = false;
 
   /** Creates a new HandoffNote. */
   public HandOffNote(Intake intake, Indexer indexer, Wrist wrist, Elevator elevator) {
@@ -35,28 +37,33 @@ public class HandOffNote extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
+    if (intake.isNotePresent() || indexer.isNotePresent()) {
+      noteDetected = true;
+      // Leds.getInstance().hasGamePiece = noteDetected;
+    }
+
     wrist.toAngle(ScoringConstants.Handoff.angle);
     elevator.toHeight(ScoringConstants.Handoff.height);
 
- 
-    if(wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
-      intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
+    if (wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
+      // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
+      intake.setVoltage(ScoringConstants.intakingTargetVoltage);
     } else {
       intake.disable();
     }
 
     if (!indexer.isNotePresent()) {
-      indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
+      indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
     } else {
       indexer.disable();
     }
+
   }
 
   // Called once the command ends or is interrupted.
@@ -71,6 +78,10 @@ public class HandOffNote extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if(!noteDetected){
+      return true;
+    }
+    
     if (indexer.isNotePresent() && !intake.isNotePresent()) {
       return true;
     }

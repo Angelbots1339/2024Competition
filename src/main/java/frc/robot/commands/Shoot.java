@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -54,7 +55,7 @@ public class Shoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Leds.getInstance().shooting = true;
+    // Leds.getInstance().shooting = true;
 
   }
 
@@ -62,9 +63,11 @@ public class Shoot extends Command {
   @Override
   public void execute() {
 
-    Translation2d target = ScoringConstants.shootWhileMoving
-        ? PoseEstimation.calculateVirtualSpeakerOffset(FieldUtil.getAllianceSpeakerPosition())
-        : FieldUtil.getAllianceSpeakerPosition();
+    // Translation2d target = ScoringConstants.shootWhileMoving
+    // ?
+    // PoseEstimation.calculateVirtualSpeakerOffset(FieldUtil.getAllianceSpeakerPosition())
+    // : FieldUtil.getAllianceSpeakerPosition();
+    Translation2d target = FieldUtil.getAllianceSpeakerPosition();
 
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
@@ -74,12 +77,18 @@ public class Shoot extends Command {
             / (PoseEstimation.getEstimatedPose().getY() - target.getY())))
         .plus(Rotation2d.fromRadians(Math.PI));
 
-    wrist.toAngle(SpeakerShotRegression.wristRegression.predict(targetDistance));
+    wrist.toAngle(Rotation2d.fromDegrees(MathUtil.clamp(SpeakerShotRegression.wristRegression.predict(targetDistance),
+        ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp)));
     elevator.home();
-    shooter.shooterToRMP(SpeakerShotRegression.flywheelRegression.predict(targetDistance));
+    shooter.shooterToRMP(ScoringConstants.shooterSetpointClose[0], ScoringConstants.shooterSetpointClose[1]);
 
+    // swerve.angularDrive(() -> translationX.get() *
+    // ScoringConstants.shootingDriveScalar,
+    // () -> translationY.get() * ScoringConstants.shootingDriveScalar, robotAngle,
+    // () -> true, () -> true);
     swerve.angularDrive(() -> translationX.get() * ScoringConstants.shootingDriveScalar,
-        () -> translationY.get() * ScoringConstants.shootingDriveScalar, robotAngle, () -> true, () -> true);
+        () -> translationY.get() * ScoringConstants.shootingDriveScalar, () -> Rotation2d.fromDegrees(0), () -> true,
+        () -> true);
 
     if ((indexer.isNotePresent() || overrideIndexerSensor.get()) && shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
@@ -98,7 +107,7 @@ public class Shoot extends Command {
     wrist.home();
     elevator.home();
 
-    Leds.getInstance().shooting = false;
+    // Leds.getInstance().shooting = false;
 
   }
 

@@ -24,7 +24,7 @@ public class IntakeNoHandoff extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Leds.getInstance().intaking = true;
+    // Leds.getInstance().intaking = true;
 
   }
 
@@ -37,15 +37,15 @@ public class IntakeNoHandoff extends Command {
       intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
     }
 
-    Leds.getInstance().hasGamePiece = intake.isNotePresent();
+    // Leds.getInstance().hasGamePiece = intake.isNotePresent();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     intake.disable();
-    Leds.getInstance().intaking = false;
-    Leds.getInstance().hasGamePiece = false;
+    // Leds.getInstance().intaking = false;
+    // Leds.getInstance().hasGamePiece = false;
   }
 
   // Returns true when the command should end.

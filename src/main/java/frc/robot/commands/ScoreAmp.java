@@ -38,7 +38,7 @@ public class ScoreAmp extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Leds.getInstance().scoringAmp = true;
+    // Leds.getInstance().scoringAmp = true;
 
   }
 
@@ -61,7 +61,7 @@ public class ScoreAmp extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Leds.getInstance().scoringAmp = false;
+    // Leds.getInstance().scoringAmp = false;
 
   }
 

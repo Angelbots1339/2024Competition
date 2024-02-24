@@ -79,7 +79,7 @@ public class GlobalVoltageTuning {
     elevator.setVoltage(elevatorVolts.getDouble(0));
     wrist.setVoltage(wristVolts.getDouble(0));
     shooter.setVoltage(shooterVolts.getDouble(0));
-    intake.setVoltage(intakeVolts.getDouble(0));
+    // intake.setVoltage(intakeVolts.getDouble(0));
     indexer.setVoltage(indexerVolts.getDouble(0));
 
   }
@@ -88,7 +88,7 @@ public class GlobalVoltageTuning {
     elevator.disable();
     wrist.disable();
     shooter.disable();
-    intake.disable();
+    // intake.disable();
     indexer.disable();
 
   }

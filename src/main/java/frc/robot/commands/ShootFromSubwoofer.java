@@ -39,7 +39,7 @@ public class ShootFromSubwoofer extends Command {
   public void initialize() {
     wrist.toAngle(ScoringConstants.SubwooferShot.angle);
     elevator.toHeight(ScoringConstants.SubwooferShot.height);
-    shooter.shooterToRMP(ScoringConstants.shooterSetpoint[0], ScoringConstants.shooterSetpoint[1]);
+    shooter.shooterToRMP(ScoringConstants.shooterSetpointClose[0], ScoringConstants.shooterSetpointClose[1]);
 
     shootTimer.start();
   }

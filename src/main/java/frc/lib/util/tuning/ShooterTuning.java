@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.PoseEstimation;
+import frc.robot.Constants.ScoringConstants;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Wrist;
@@ -43,12 +44,12 @@ public class ShooterTuning {
         if (!hasBeenInitialized) {
             testController = new XboxController(2);
 
-            leftSpeed = Shuffleboard.getTab("ShooterTuning").add("ShooterLeftRPM", 0)
-                    .withWidget(BuiltInWidgets.kNumberSlider)
+            leftSpeed = Shuffleboard.getTab("ShooterTuning").add("LeftTargetRPM", 0)
+                    .withWidget(BuiltInWidgets.kTextView)
                     .withProperties(Map.of("min", 0, "max", 6000))
                     .getEntry();
-            rightSpeed = Shuffleboard.getTab("ShooterTuning").add("ShooterRightRPM", 0)
-                    .withWidget(BuiltInWidgets.kNumberSlider)
+            rightSpeed = Shuffleboard.getTab("ShooterTuning").add("RightTargetRPM", 0)
+                    .withWidget(BuiltInWidgets.kTextView)
                     .withProperties(Map.of("min", 0, "max", 6000))
                     .getEntry();
             wristAngle = Shuffleboard.getTab("ShooterTuning").add("WristAngle", 90)
@@ -60,11 +61,14 @@ public class ShooterTuning {
                     () -> PoseEstimation.getEstimatedPose().getTranslation()
                             .getDistance(FieldUtil.getAllianceSpeakerPosition()))
                     .withWidget(BuiltInWidgets.kTextView);
-            Shuffleboard.getTab("ShooterTuning").addDouble("LeftRPMShooter",
+            Shuffleboard.getTab("ShooterTuning").addDouble("LeftActualRPM",
                     () -> shooter.getLeftVelocity() * 60)
                     .withWidget(BuiltInWidgets.kTextView);
-            Shuffleboard.getTab("ShooterTuning").addDouble("RightRPMShooter",
+            Shuffleboard.getTab("ShooterTuning").addDouble("RightActualRPM",
                     () -> shooter.getRightVelocity() * 60)
+                    .withWidget(BuiltInWidgets.kTextView);
+            Shuffleboard.getTab("ShooterTuning").addDouble("WristActualAngle",
+                    () -> wrist.getAngle().getDegrees())
                     .withWidget(BuiltInWidgets.kTextView);
 
             shooter = shooterInstance;
@@ -99,7 +103,11 @@ public class ShooterTuning {
             indexer.disable();
         }
 
-        if (testController.getAButton()) {
+
+        if(testController.getBButton()) {
+            wrist.toAngle(Rotation2d.fromDegrees(150));
+        }
+        else if (testController.getAButton()) {
         shooter.shooterToRMP(leftRPM, rightRPM);
         wrist.toAngle(Rotation2d.fromDegrees(wristTargetAngle));
 

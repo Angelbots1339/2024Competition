@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team254.math.PolynomialRegression;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
+import frc.lib.util.FieldUtil;
+import frc.lib.util.PoseEstimation;
 import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.lib.util.TalonFXFactory;
@@ -44,7 +46,7 @@ public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
   public Shooter() {
 
-    // initializeLogging();
+    initializeLogging();
   }
 
   /**
@@ -134,9 +136,6 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    // SmartDashboard.putNumber("ShooterVelocity", shooterMotorLeft.getVelocity().getValue() * 60);
-    // SmartDashboard.putNumber("ShooterError", Math.abs(shooterMotorLeft.getClosedLoopError().getValue()) * 60);
-    // SmartDashboard.putBoolean("ShooterAtSetpoint", isAtSetpoint());
   }
 
   private TalonFX configShooterMotor(TalonFX motor) {

@@ -86,6 +86,7 @@ public class RobotContainer {
   private Trigger runOuttake = new Trigger(() -> driveController.getRightBumper() && !climbMode);
 
   private Trigger shoot = new Trigger(() -> driveController.getAButton() && !climbMode);
+  private Trigger shootWithRegression = new Trigger(() -> driveController.getXButton() && !climbMode);
   private Trigger scoreAmp = new Trigger(() -> driveController.getBButton() && !climbMode);
   private Trigger alignScoreAmp = new Trigger(() -> driveController.getYButton() && !climbMode);
 
@@ -101,24 +102,24 @@ public class RobotContainer {
     resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
     toggleClimbMode.onTrue(new InstantCommand(() -> {
       climbMode = !climbMode;
-      Leds.getInstance().climbing = climbMode;
+      // Leds.getInstance().climbing = climbMode;
     }));
 
     runOuttake.whileTrue(new RunCommand(() -> {
       intake.runIntakeDutyCycle(-0.4);
       indexer.runIndexerDutyCycle(-0.4);
     },
-        intake).finallyDo(() -> {
+        intake, indexer).andThen(new InstantCommand(() -> {
           indexer.disable();
           intake.disable();
-        }));
+        })));
 
-    runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false)
-        .andThen(new HandOffNote(intake, indexer, wrist, elevator)));
+    runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false)).onFalse(new HandOffNote(intake, indexer, wrist, elevator));
 
     scoreAmp.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.ScoreAmp));
     alignScoreAmp.whileTrue(new AlignScoreAmp(elevator, wrist, indexer, swerve));
     shoot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, indexer));
+    shootWithRegression.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, () -> false));
 
     // shoot.whileTrue(swerve.angularDrive(translationX, translationY, () ->
     // Rotation2d.fromDegrees(90), () -> true, () -> true));
@@ -159,17 +160,17 @@ public class RobotContainer {
 
   private void configDefaultCommands() {
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
-    // wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
-    // elevator.setDefaultCommand(new InstantCommand(() -> {
-    //   if (climbMode) {
-    //     elevator.holdPosition();
-    //   } else {
-    //     elevator.home();
-    //   }
-    // }, elevator));
-    // intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
-    // indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
-    // shooter.setDefaultCommand(new InstantCommand(() -> shooter.disable(), shooter));
+    wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
+    elevator.setDefaultCommand(new InstantCommand(() -> {
+      if (climbMode) {
+        elevator.holdPosition();
+      } else {
+        elevator.home();
+      }
+    }, elevator));
+    intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
+    indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
+    shooter.setDefaultCommand(new InstantCommand(() -> shooter.disable(), shooter));
   }
 
   private void initializeEndgameAlerts() {
@@ -181,7 +182,7 @@ public class RobotContainer {
         .onTrue(
             Commands.run(
                 () -> {
-                  Leds.getInstance().endgameAlert = true;
+                  // Leds.getInstance().endgameAlert = true;
                   driveController.setRumble(RumbleType.kBothRumble, 1.0);
                   operatorController.setRumble(RumbleType.kBothRumble, 1.0);
                 })
@@ -189,7 +190,7 @@ public class RobotContainer {
                 .andThen(
                     Commands.run(
                         () -> {
-                          Leds.getInstance().endgameAlert = false;
+                          // Leds.getInstance().endgameAlert = false;
                           driveController.setRumble(RumbleType.kBothRumble, 0.0);
                           operatorController.setRumble(RumbleType.kBothRumble, 0.0);
                         })
@@ -203,28 +204,28 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.run(
                     () -> {
-                      Leds.getInstance().endgameAlert = true;
+                      // Leds.getInstance().endgameAlert = true;
                       driveController.setRumble(RumbleType.kBothRumble, 1.0);
                       operatorController.setRumble(RumbleType.kBothRumble, 1.0);
                     })
                     .withTimeout(0.25),
                 Commands.run(
                     () -> {
-                      Leds.getInstance().endgameAlert = false;
+                      // Leds.getInstance().endgameAlert = false;
                       driveController.setRumble(RumbleType.kBothRumble, 0.0);
                       operatorController.setRumble(RumbleType.kBothRumble, 0.0);
                     })
                     .withTimeout(0.1),
                 Commands.run(
                     () -> {
-                      Leds.getInstance().endgameAlert = true;
+                      // Leds.getInstance().endgameAlert = true;
                       driveController.setRumble(RumbleType.kBothRumble, 1.0);
                       operatorController.setRumble(RumbleType.kBothRumble, 1.0);
                     })
                     .withTimeout(0.25),
                 Commands.run(
                     () -> {
-                      Leds.getInstance().endgameAlert = false;
+                      // Leds.getInstance().endgameAlert = false;
                       driveController.setRumble(RumbleType.kBothRumble, 0.0);
                       operatorController.setRumble(RumbleType.kBothRumble, 0.0);
                     })

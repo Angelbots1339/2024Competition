@@ -23,8 +23,10 @@ import frc.robot.LoggingConstants.IntakeLogging;
 
 public class Intake extends SubsystemBase {
 
-  private TalonFX intakeMotor = configIntakeMotor(TalonFXFactory.createTalon(IntakeConstants.intakeMotorID,
-      IntakeConstants.intakeMotorCANBus, IntakeConstants.kIntakeConfiguration));
+  // Todo: Config Motor was leading to strange behavoir, 
+  // private TalonFX intakeMotor = configIntakeMotor(TalonFXFactory.createTalon(IntakeConstants.intakeMotorID,
+  //     IntakeConstants.intakeMotorCANBus, IntakeConstants.kIntakeConfiguration));
+  private TalonFX intakeMotor = new TalonFX(18, "rio");
 
   private TimeOfFlight intakeSensor = new TimeOfFlight(IntakeConstants.intakeSensorID);
 
@@ -36,7 +38,7 @@ public class Intake extends SubsystemBase {
     intakeSensor.setRangingMode(IntakeConstants.intakeSensorRange, IntakeConstants.intakeSampleTime);
     intakeSensor.setRangeOfInterest(8, 8, 12, 12);
 
-    // initializeLogging();
+    initializeLogging();
   }
 
   public void disable() {
@@ -65,13 +67,14 @@ public class Intake extends SubsystemBase {
     // SmartDashboard.putNumber("TOF Sensor", intakeSensor.getRange());
 
     // SmartDashboard.putBoolean("IntakeNotePresent", isNotePresent());
+    // setVoltage(4);
   }
 
   private TalonFX configIntakeMotor(TalonFX motor) {
 
-    ErrorCheckUtil.checkError(
-        motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
-        CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
+    // ErrorCheckUtil.checkError(
+    //     motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
   }

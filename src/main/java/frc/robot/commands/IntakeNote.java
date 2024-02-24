@@ -44,12 +44,12 @@ public class IntakeNote extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
-    indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
+    // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
+    // indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
     wrist.toAngle(ScoringConstants.Handoff.angle);
     elevator.toHeight(ScoringConstants.Handoff.height);
 
-    Leds.getInstance().intaking = true;
+    // Leds.getInstance().intaking = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -57,8 +57,7 @@ public class IntakeNote extends Command {
   public void execute() {
     if (intake.isNotePresent() || indexer.isNotePresent()) {
       noteDetected = true;
-      Leds.getInstance().hasGamePiece = noteDetected;
-
+      // Leds.getInstance().hasGamePiece = noteDetected;
     }
 
     wrist.toAngle(ScoringConstants.Handoff.angle);
@@ -66,12 +65,15 @@ public class IntakeNote extends Command {
 
     if (!intake.isNotePresent() && !noteDetected) {
       // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
-      intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
+      // intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
+      intake.setVoltage(ScoringConstants.intakingTargetVoltage);
+
     } else if (noteDetected && !wrist.isAtSetpoint() && !elevator.isAtSetpoint()) {
       intake.disable();
     } else if (noteDetected && wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
       // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
-      intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
+      // intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
+      intake.setVoltage(ScoringConstants.intakingTargetVoltage);
 
     }
 
@@ -88,15 +90,17 @@ public class IntakeNote extends Command {
   @Override
   public void end(boolean interrupted) {
 
-    if (indexer.isNotePresent() && !intake.isNotePresent()) {
-      intake.disable();
-      indexer.disable();
-      wrist.disable();
-      elevator.disable();
-    }
-    
-    Leds.getInstance().intaking = false;
-    Leds.getInstance().hasGamePiece = false;
+    // if (indexer.isNotePresent() && !intake.isNotePresent()) {
+    intake.disable();
+    indexer.disable();
+    wrist.home();
+    elevator.home();
+    // }
+
+    System.out.println("Intake Command Ended");
+
+    // Leds.getInstance().intaking = false;
+    // Leds.getInstance().hasGamePiece = false;
 
   }
 

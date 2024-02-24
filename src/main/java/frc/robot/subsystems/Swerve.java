@@ -278,8 +278,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 target.getY())
                 + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS), -DriverConstants.pidToPoseMaxSpeed, DriverConstants.pidToPoseMaxSpeed);
 
-        SmartDashboard.putNumber("PidXError", pidToPoseXController.getPositionError());
-        SmartDashboard.putNumber("PidYError", pidToPoseYController.getPositionError());
+        // SmartDashboard.putNumber("PidXError", pidToPoseXController.getPositionError());
+        // SmartDashboard.putNumber("PidYError", pidToPoseYController.getPositionError());
 
         this.setControl(angularDriveRequest(() -> pidToPoseXController.atSetpoint() ? 0 : x, () -> pidToPoseYController.atSetpoint() ? 0 : y, () -> target.getRotation(), () -> false));
     }
@@ -401,25 +401,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     public void periodic() {
 
-        double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightCenterName)
-                .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-        double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
-        SmartDashboard.putNumber("StdDev", xyStdDev2);
-
         updateVision();
         PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(), m_modulePositions, this);
-
-        // SmartDashboard.putNumber("TargetDist",
-        // FieldUtil.RedSpeakerPosition.getDistance(this.m_odometry.getEstimatedPosition().getTranslation()));
-        // SmartDashboard.putNumber("DistX",
-        // LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getX());
-        // SmartDashboard.putNumber("DistY",
-        // LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getY());
-
-        // System.out.println(this.m_odometry.getEstimatedPosition().toString());
-
-        SmartDashboard.putNumber("gyro", getGyroYaw().getDegrees());
-        SmartDashboard.putNumber("rawGyro", m_pigeon2.getYaw().getValue());
     }
 
     public void resetPose(Pose2d pose) {

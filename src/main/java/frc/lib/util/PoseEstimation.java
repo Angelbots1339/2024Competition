@@ -92,10 +92,10 @@ public class PoseEstimation {
 
         double virtualGoalX = targetPosition.getX()
                 - (estimatedPose.getTranslation().getDistance(targetPosition) / ScoringConstants.gamePieceVelocity)
-                        * (estimatedVelocity.getX() + estimatedAcceleration.getX() * ScoringConstants.kAccelCompFactor);
+                        * (estimatedVelocity.getX() + (estimatedAcceleration.getX() * ScoringConstants.kAccelCompFactor));
         double virtualGoalY = targetPosition.getY()
                 - ScoringConstants.gamePieceVelocity
-                        * (estimatedVelocity.getY() + estimatedAcceleration.getY() * ScoringConstants.kAccelCompFactor);
+                        * (estimatedVelocity.getY() + (estimatedAcceleration.getY() * ScoringConstants.kAccelCompFactor));
 
         return new Translation2d(virtualGoalX, virtualGoalY);
     }

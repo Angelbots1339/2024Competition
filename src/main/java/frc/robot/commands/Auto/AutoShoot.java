@@ -6,6 +6,7 @@ package frc.robot.commands.Auto;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
@@ -55,21 +56,22 @@ public class AutoShoot extends Command {
 
     swerve.setAutoOverrideRotation(true, robotAngle);
 
-    Leds.getInstance().shooting = true;
+    // Leds.getInstance().shooting = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    Translation2d virtualTarget = PoseEstimation.calculateVirtualSpeakerOffset(FieldUtil.getAllianceSpeakerPosition());
+    Translation2d virtualTarget = FieldUtil.getAllianceSpeakerPosition();
 
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(virtualTarget);
 
-    wrist.toAngle(SpeakerShotRegression.wristRegression.predict(targetDistance));
+    wrist.toAngle(Rotation2d.fromDegrees(MathUtil.clamp(SpeakerShotRegression.wristRegression.predict(targetDistance),
+        ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp)));
     elevator.home();
-    shooter.shooterToRMP(SpeakerShotRegression.flywheelRegression.predict(targetDistance));
+    shooter.shooterToRMP(ScoringConstants.shooterSetpointClose[0], ScoringConstants.shooterSetpointClose[1]);
 
     if (indexer.isNotePresent() && shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
@@ -89,7 +91,7 @@ public class AutoShoot extends Command {
 
     swerve.setAutoOverrideRotation(false);
 
-    Leds.getInstance().shooting = false;
+    // Leds.getInstance().shooting = false;
 
   }
 

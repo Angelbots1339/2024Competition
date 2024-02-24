@@ -206,7 +206,7 @@ public class Constants {
                 public static final double pidToPoseKP = 2.5;
                 public static final double pidToPoseKD = 0;
                 public static final double pidToPoseKS = 0.15; 
-                public static final double pidToPoseTolerance = 0.06; // Meters
+                public static final double pidToPoseTolerance = 0.03; // Meters
                 public static final double pidToPoseMaxSpeed = 1; // Meters per second
 
 
@@ -259,22 +259,22 @@ public class Constants {
 
                 public static final double shooterGearRatio = 0.5; // Sensor to Mechanism Ratio
 
-                public static final double shooterVelocityTolerance = 100; // RPM
+                public static final double shooterVelocityTolerance = 500; // RPM
 
                 public static final TalonFXConfiguration kShooterConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
-                                                .withStatorCurrentLimit(80)
+                                                .withStatorCurrentLimit(120)
                                                 .withSupplyCurrentLimit(40)
                                                 .withStatorCurrentLimitEnable(true)
-                                                .withSupplyCurrentLimitEnable(true))
+                                                .withSupplyCurrentLimitEnable(false))
                                 .withMotorOutput(new MotorOutputConfigs()
-                                                .withNeutralMode(NeutralModeValue.Brake)
+                                                .withNeutralMode(NeutralModeValue.Coast)
                                                 .withInverted(InvertedValue.CounterClockwise_Positive))
                                 .withSlot0(new Slot0Configs()
-                                                .withKV(0.065)
-                                                .withKP(0.09)
+                                                .withKV(0.075)
+                                                .withKP(0.125)
                                                 .withKI(0)
-                                                .withKD(0.03))
+                                                .withKD(0))
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(shooterGearRatio));
 
@@ -496,8 +496,12 @@ public class Constants {
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(125, 0);
 
-                public static final double[] shooterSetpoint = {4000, 4000}; // [Left, Right]
+                public static final double[] shooterSetpointClose = {3500, 4500}; // [Left, Right]
+                public static final double[] shooterSetpointFar = {3500, 4500}; // [Left, Right]
                 public static final double shootingWaitTime = 0.2; // Seconds to wait before shooting to make shooting predictable & consistent
+
+                public static final double wristRegressionMaxClamp = 175;
+                public static final double wristRegressionMinClamp = 90;
                 
                 public static final double scoreAmpOffset = 0.4;
 
@@ -510,7 +514,8 @@ public class Constants {
                 public static final double indexerScoreAmpPercent = -0.4; // Percent
 
                 public static final double intakingTargetCurrent = 20; // Amps
-                public static final double intakingTargetPercent = 0.75; // Percent
+                public static final double intakingTargetPercent = 0.9; // Percent
+                public static final double intakingTargetVoltage = -4; // Percent
 
                 public static final double kAccelCompFactor = 0; // Seconds
                 public static final double gamePieceVelocity = 0; // Meters per second
@@ -528,7 +533,7 @@ public class Constants {
                 // Apriltag Height: 57 inches
                 // Horizontal offset 22.5 inches 
 
-                public static final double StdDevScalar = 1;
+                public static final double StdDevScalar = 0.25;
                 
 
                 public static double calcStdDev(double metersFromTarget) {
@@ -537,7 +542,7 @@ public class Constants {
 
                         double hypotenuse = Math.sqrt(Math.pow(inches, 2) + Math.pow(57, 2)); // Account for april tag being high off the ground
                         
-                        double calculated = Math.pow(StdDevScalar * Math.pow(hypotenuse, 19.5335), -0.05/2); // Plug into Std Dev equation that we got experimentally
+                        double calculated = StdDevScalar * Math.pow(Math.pow(hypotenuse, 19.5335), -0.1/2); // Plug into Std Dev equation that we got experimentally
 
                         return MathUtil.clamp(calculated, 0, 1); 
                 }

@@ -42,18 +42,18 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
 
-    // CompletableFuture.runAsync(() -> {
-    //   Logger.getInstance().log(0);
-    // });
+    CompletableFuture.runAsync(() -> {
+      Logger.getInstance().log(0);
+    });
 
     // Update low battery alert
-    if (DriverStation.isEnabled()) {
-      disabledTimer.reset();
-    }
-     if (RobotController.getBatteryVoltage() < lowBatteryVoltage
-        && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
-      Leds.getInstance().lowBatteryAlert = true;
-    }
+    // if (DriverStation.isEnabled()) {
+    //   disabledTimer.reset();
+    // }
+    //  if (RobotController.getBatteryVoltage() < lowBatteryVoltage
+    //     && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
+    //   Leds.getInstance().lowBatteryAlert = true;
+    // }
   }
 
   @Override

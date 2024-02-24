@@ -16,7 +16,7 @@ public final class LoggingConstants {
                 public static LoggingLevel Gyro = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Pose = LoggingLevel.SHUFFLEBOARD;
                 public static LoggingLevel Drive = LoggingLevel.NONE;
-                public static LoggingLevel PidPose = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel PidPose = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Auto = LoggingLevel.NONE;
                 public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
         }
@@ -27,15 +27,16 @@ public final class LoggingConstants {
         }
 
         public class ElevatorLogging {
-                public static LoggingLevel Main = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel MotionMagic = LoggingLevel.NONE;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
         public class WristLogging {
-                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel Main = LoggingLevel.SHUFFLEBOARD;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel Regression = LoggingLevel.SHUFFLEBOARD;
                 public static LoggingLevel MotionMagic = LoggingLevel.NONE;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }

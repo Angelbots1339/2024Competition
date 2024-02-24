@@ -15,8 +15,10 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
+import frc.lib.util.FieldUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.Mech2dManger;
+import frc.lib.util.PoseEstimation;
 import frc.lib.util.TalonFXFactory;
 import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.logging.loggedObjects.LoggedFalcon;
@@ -26,6 +28,7 @@ import frc.robot.Constants.ScoringConstants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.LoggingConstants.WristLogging;
 import frc.robot.Robot;
+import frc.robot.regressions.SpeakerShotRegression;
 
 public class Wrist extends SubsystemBase {
 
@@ -53,7 +56,7 @@ public class Wrist extends SubsystemBase {
 
     throughBoreTimer.start();
 
-    // initializeLogging();
+    initializeLogging();
 
     if (Robot.isSimulation()) {
       simWrist = Mech2dManger.getInstance().getWrist();
@@ -66,7 +69,7 @@ public class Wrist extends SubsystemBase {
    * 
    * @param rotations 0 to 1 rotations
    */
-  public void toAngle(double position) {
+  private void toAngle(double position) {
 
     wristLeaderMotor.setControl(WristConstants.wristPositionControl.withPosition(position));
     wristFollowerMotor.setControl(WristConstants.followerControl);
@@ -173,11 +176,20 @@ public class Wrist extends SubsystemBase {
 
     logger.addBoolean("WristAtSetpoint", () -> isAtSetpoint(), WristLogging.Main);
 
-    logger.addDouble("WristPosition", () -> ElevatorConstants.elevatorRotationsToMeters(getAngle().getDegrees()),
+    logger.addDouble("WristPosition", () -> getAngle().getDegrees(),
         WristLogging.Main);
+
     logger.addDouble("WristVelocity",
-        () -> ElevatorConstants.elevatorRotationsToMeters(wristLeaderMotor.getVelocity().getValue()),
+        () -> wristLeaderMotor.getVelocity().getValue(),
         WristLogging.Main);
+
+
+    logger.addDouble("PolyRegressionAngle", () -> SpeakerShotRegression.wristRegression.predict(PoseEstimation.getEstimatedPose().getTranslation()
+    .getDistance(FieldUtil.getAllianceSpeakerPosition())),
+        WristLogging.Regression);
+    logger.addDouble("LinearRegressionAngle", () -> SpeakerShotRegression.wristLinearRegression(PoseEstimation.getEstimatedPose().getTranslation()
+    .getDistance(FieldUtil.getAllianceSpeakerPosition())),
+        WristLogging.Regression);
 
 
   }

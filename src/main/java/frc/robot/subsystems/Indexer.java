@@ -35,7 +35,7 @@ public class Indexer extends SubsystemBase {
     indexerSensor.setRangingMode(IndexerConstants.indexerSensorRange, IndexerConstants.indexerSampleTime);
     indexerSensor.setRangeOfInterest(8, 8, 12, 12);
 
-    // initializeLogging();
+    initializeLogging();
   }
 
   public void runIndexerDutyCycle(double speed) {
@@ -66,9 +66,9 @@ public class Indexer extends SubsystemBase {
 
   private TalonFX configIndexerMotor(TalonFX motor) {
 
-    ErrorCheckUtil.checkError(
-        motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
-        CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
+    // ErrorCheckUtil.checkError(
+    //     motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
+    //     CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
   }
