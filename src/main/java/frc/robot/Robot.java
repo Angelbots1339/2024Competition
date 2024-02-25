@@ -29,10 +29,10 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_robotContainer = new RobotContainer();
 
-    DataLogManager.start();
+    // DataLogManager.start();
 
-    DataLogManager.logNetworkTables(true);
-    DriverStation.startDataLog(DataLogManager.getLog(), true);
+    // DataLogManager.logNetworkTables(true);
+    // DriverStation.startDataLog(DataLogManager.getLog(), true);
 
     disabledTimer.reset();
     disabledTimer.start();
@@ -42,9 +42,9 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
 
-    CompletableFuture.runAsync(() -> {
-      Logger.getInstance().log(0);
-    });
+    // CompletableFuture.runAsync(() -> {
+    //   Logger.getInstance().log(0);
+    // });
 
     // Update low battery alert
     // if (DriverStation.isEnabled()) {

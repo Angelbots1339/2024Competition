@@ -125,8 +125,8 @@ public class RobotContainer {
     // shoot.whileTrue(swerve.angularDrive(translationX, translationY, () ->
     // Rotation2d.fromDegrees(90), () -> true, () -> true));
 
-    extendClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(driveController.getLeftTriggerAxis() * 6), elevator));
-    retractClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(-driveController.getRightTriggerAxis() * 6), elevator));
+    extendClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(driveController.getLeftTriggerAxis() * 10), elevator));
+    retractClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(-driveController.getRightTriggerAxis() * 10), elevator));
 
     extendToMax.onTrue(new RunCommand(() -> elevator.toHeight(ElevatorConstants.maxElevatorHeight - 0.01)));
 
