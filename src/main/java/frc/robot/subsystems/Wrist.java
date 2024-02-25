@@ -139,12 +139,6 @@ public class Wrist extends SubsystemBase {
       throughBoreTimer.stop();
     }
 
-    // SmartDashboard.putNumber("Through Bore Transformed", getAbsoluteEncoderPosition().getDegrees());
-    // SmartDashboard.putNumber("Wrist Position", getAngle().getDegrees());
-
-    // SmartDashboard.putNumber("WristSetpoint", wristLeaderMotor.getClosedLoopReference().getValue());
-    // SmartDashboard.putBoolean("WristAtSetpoint", isAtSetpoint());
-
   }
 
   private TalonFX configWristMotor(TalonFX motor) {

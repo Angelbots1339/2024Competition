@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.sql.Driver;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -252,7 +254,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      */
     private ChassisSpeeds angularPIDCalc(Supplier<Double> translationX, Supplier<Double> translationY,
             Supplier<Rotation2d> desiredRotation) {
-        double pid = angularDrivePID.calculate(this.getGyroYaw().getDegrees(), desiredRotation.get().getDegrees());
+        double pid = angularDrivePID.calculate(this.getAdjustedYaw().getDegrees(), desiredRotation.get().getDegrees());
 
         ChassisSpeeds speeds = new ChassisSpeeds(translationX.get(), translationY.get(),
                 angularDrivePID.atSetpoint() ? 0 : pid + (DriverConstants.angularDriveKS * Math.signum(pid)));
@@ -327,32 +329,26 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     public Rotation2d getGyroYaw() {
         double rawYaw = m_pigeon2.getYaw().getValue();
+        double yawWithRollover = rawYaw > 0 ? rawYaw % 360 : 360 - Math.abs(rawYaw % 360);
         
-        return Rotation2d.fromDegrees(rawYaw > 0 ? rawYaw % 360 : 360 - Math.abs(rawYaw % 360));
+        return Rotation2d.fromDegrees(yawWithRollover);
     }
+    public Rotation2d getAdjustedYaw() {
+        return DriverStation.getAlliance().get() == Alliance.Red ? getGyroYaw()
+                : getGyroYaw().plus(new Rotation2d(Math.PI));
+    }
+
 
     public void setGyroYaw(Rotation2d yaw) {
         m_pigeon2.setYaw(yaw.getDegrees(), Constants.kConfigTimeoutSeconds);
     }
-
     public void zeroGyro() {
-        // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-        // setGyroYaw(Rotation2d.fromDegrees(0));
-        // } else {
-        // setGyroYaw(Rotation2d.fromDegrees(180));
-        // }
-
         setGyroYaw(Rotation2d.fromDegrees(0));
     }
     public void zeroGyro(Rotation2d rot) {
-        // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-        // setGyroYaw(Rotation2d.fromDegrees(0));
-        // } else {
-        // setGyroYaw(Rotation2d.fromDegrees(180));
-        // }
-
         setGyroYaw(Rotation2d.fromDegrees(rot.getDegrees()));
     }
+
 
     public void updateVision() {
         if (Robot.isReal()) {

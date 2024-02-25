@@ -36,12 +36,12 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.commands.AlignScoreAmp;
 import frc.robot.commands.HandOffNote;
+import frc.robot.commands.IntakeNoHandoff;
 import frc.robot.commands.IntakeNote;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootFromSubwoofer;
 import frc.robot.commands.SuperstructureToPosition;
 import frc.robot.commands.Auto.AutoShoot;
-import frc.robot.commands.Auto.IntakeNoHandoff;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -52,12 +52,12 @@ import frc.robot.subsystems.Wrist;
 public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-  private TuningMode tuningMode = TuningMode.SHOOTER;
+  private TuningMode tuningMode = TuningMode.DISABLED;
 
-  private GenericEntry driveSpeed = Shuffleboard.getTab("Tune").add("DriveSpeed", 0)
-      .withWidget(BuiltInWidgets.kTextView)
-      .withProperties(Map.of("min", -1, "max", 1))
-      .getEntry();
+  // private GenericEntry driveSpeed = Shuffleboard.getTab("Tune").add("DriveSpeed", 0)
+  //     .withWidget(BuiltInWidgets.kTextView)
+  //     .withProperties(Map.of("min", -1, "max", 1))
+  //     .getEntry();
 
   /***** Instancing Subsystems *****/
   private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
@@ -66,8 +66,6 @@ public class RobotContainer {
   private final Wrist wrist = new Wrist();
   private final Elevator elevator = new Elevator();
   private final Indexer indexer = new Indexer();
-
-  private Timer shootTimer = new Timer();
 
   private boolean climbMode = false;
 
@@ -83,9 +81,11 @@ public class RobotContainer {
       false);
 
   private Trigger runIntake = new Trigger(() -> driveController.getLeftBumper() && !climbMode);
+  private Trigger runIntakeNoHandoff = new Trigger(() -> driveController.getLeftTriggerAxis() > 0.1 && !climbMode);
   private Trigger runOuttake = new Trigger(() -> driveController.getRightBumper() && !climbMode);
 
-  private Trigger shoot = new Trigger(() -> driveController.getAButton() && !climbMode);
+  private Trigger subwooferShot = new Trigger(() -> driveController.getAButton() && !climbMode);
+  private Trigger subwooferActuallyShoot = new Trigger(() -> driveController.getRightTriggerAxis() > 0.1 && !climbMode);
   private Trigger shootWithRegression = new Trigger(() -> driveController.getXButton() && !climbMode);
   private Trigger scoreAmp = new Trigger(() -> driveController.getBButton() && !climbMode);
   private Trigger alignScoreAmp = new Trigger(() -> driveController.getYButton() && !climbMode);
@@ -93,8 +93,8 @@ public class RobotContainer {
   private Trigger resetGyro = new Trigger(() -> driveController.getStartButton());
   private Trigger toggleClimbMode = new Trigger(() -> driveController.getBackButton());
 
-  private Trigger extendClimb = new Trigger(() -> driveController.getLeftTriggerAxis() > 0.2 && climbMode);
-  private Trigger retractClimb = new Trigger(() -> driveController.getRightTriggerAxis() > 0.2 && climbMode);
+  private Trigger extendClimb = new Trigger(() -> driveController.getLeftTriggerAxis() > 0.1 && climbMode);
+  private Trigger retractClimb = new Trigger(() -> driveController.getRightTriggerAxis() > 0.1 && climbMode);
 
   private Trigger extendToMax = new Trigger(() -> driveController.getAButton() && climbMode);
 
@@ -115,19 +115,15 @@ public class RobotContainer {
         })));
 
     runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false)).onFalse(new HandOffNote(intake, indexer, wrist, elevator));
+    runIntakeNoHandoff.whileTrue(new IntakeNoHandoff(intake));
 
     scoreAmp.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.ScoreAmp));
     alignScoreAmp.whileTrue(new AlignScoreAmp(elevator, wrist, indexer, swerve));
-    shoot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, indexer));
+    subwooferShot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, swerve, indexer, translationX, translationY, () -> subwooferActuallyShoot.getAsBoolean()));
     shootWithRegression.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, () -> false));
 
     // shoot.whileTrue(swerve.angularDrive(translationX, translationY, () ->
     // Rotation2d.fromDegrees(90), () -> true, () -> true));
-
-    // shoot.whileTrue(new StartEndCommand(() -> shooter.setVoltage(4), () ->
-    // shooter.disable(), shooter));
-    // shoot.whileTrue(new SuperstructureToPosition(elevator, wrist, () ->
-    // ScoringConstants.Handoff));
 
     extendClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(driveController.getLeftTriggerAxis() * 6), elevator));
     retractClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(-driveController.getRightTriggerAxis() * 6), elevator));

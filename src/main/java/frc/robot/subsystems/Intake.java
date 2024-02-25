@@ -64,10 +64,7 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // SmartDashboard.putNumber("TOF Sensor", intakeSensor.getRange());
-
-    // SmartDashboard.putBoolean("IntakeNotePresent", isNotePresent());
-    // setVoltage(4);
+    
   }
 
   private TalonFX configIntakeMotor(TalonFX motor) {

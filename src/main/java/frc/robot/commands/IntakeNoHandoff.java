@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Auto;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.Leds;
@@ -32,9 +32,9 @@ public class IntakeNoHandoff extends Command {
   @Override
   public void execute() {
     if(intake.isNotePresent()) {
-      intake.disable();;
+      intake.disable();
     } else {
-      intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
+      intake.setVoltage(ScoringConstants.intakingTargetVoltage);
     }
 
     // Leds.getInstance().hasGamePiece = intake.isNotePresent();

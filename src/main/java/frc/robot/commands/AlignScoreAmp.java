@@ -4,8 +4,12 @@
 
 package frc.robot.commands;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.FieldUtil;
 import frc.robot.Constants.ScoringConstants;
@@ -49,7 +53,8 @@ public class AlignScoreAmp extends Command {
       wrist.toAngle(ScoringConstants.ScoreAmp.angle);
     }
 
-    swerve.pidToPose(new Pose2d(FieldUtil.getAllianceAmpPosition().getX(), FieldUtil.getAllianceAmpPosition().getY() - ScoringConstants.scoreAmpOffset, Rotation2d.fromDegrees(90)));
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    swerve.pidToPose(new Pose2d(FieldUtil.getAllianceAmpPosition().getX(), FieldUtil.getAllianceAmpPosition().getY() - ScoringConstants.scoreAmpOffset, Rotation2d.fromDegrees(alliance.get() == Alliance.Red ? 90 : 270)));
 
 
     if(wrist.isAtSetpoint() && elevator.isAtSetpoint() && swerve.isAtPose()) {
