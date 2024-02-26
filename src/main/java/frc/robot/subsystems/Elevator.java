@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.ReverseLimitValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -56,6 +57,7 @@ public class Elevator extends SubsystemBase {
   private ElevatorSim elevatorSim;
 
   private double targetHeight = 0;
+  private boolean reverseLimitHit = false;
 
   private LoggedSubsystem logger;
 
@@ -80,13 +82,9 @@ public class Elevator extends SubsystemBase {
    */
   public void toHeight(double height) {
 
-    // if (isAtSetpoint() && targetHeight == 0) {
-    //   elevatorLeaderMotor.setControl(new DutyCycleOut(0));
-    // } else {
+     
       elevatorLeaderMotor.setControl(
           ElevatorConstants.elevatorPositionControl.withPosition(ElevatorConstants.elevatorMetersToRotations(height)));
-      // Let the elevator rest while at 0 (stop outputting Kg)
-    // }
 
     elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
 
@@ -146,6 +144,9 @@ public class Elevator extends SubsystemBase {
   public boolean isAtSetpoint() {
     return Math.abs(getSetpointError()) < ElevatorConstants.heightErrorTolerance;
   }
+  public boolean getBottomLimitSwitch() {
+    return elevatorLeaderMotor.getReverseLimit().getValue() == ReverseLimitValue.ClosedToGround;
+  }
 
   @Override
   public void simulationPeriodic() {
@@ -162,6 +163,20 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    // System.out.println(getBottomLimitSwitch());
+
+    if(getBottomLimitSwitch() && !reverseLimitHit) {
+      elevatorLeaderMotor.setPosition(0, 0.01);
+      elevatorFollowerMotor.setPosition(0, 0.01);
+
+      reverseLimitHit = true;
+    } else if (reverseLimitHit && !getBottomLimitSwitch()) {
+      reverseLimitHit = false;
+    }
+
+    // SmartDashboard.putBoolean("ElevatorAtSetpoint", isAtSetpoint());
+    // SmartDashboard.putNumber("ElevatorAtSetpoint", targetHeight);
 
   }
 
@@ -201,6 +216,7 @@ public class Elevator extends SubsystemBase {
     logger.add(new LoggedFalcon("ElevatorFollower", logger, elevatorFollowerMotor, ElevatorLogging.Motor));
 
     logger.addBoolean("ElevatorAtSetpoint", () -> isAtSetpoint(), ElevatorLogging.Main);
+    logger.addBoolean("ElevatorBottomLimit", () -> getBottomLimitSwitch(), ElevatorLogging.Main);
 
     logger.addDouble("ElevatorPosition", () -> ElevatorConstants.elevatorRotationsToMeters(getLeaderPosition()),
         ElevatorLogging.Main);

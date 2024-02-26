@@ -392,8 +392,8 @@ public class Constants {
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
-                                                .withMotionMagicCruiseVelocity(10) // TODO Tune
-                                                .withMotionMagicAcceleration(15)
+                                                .withMotionMagicCruiseVelocity(10) // Default 10
+                                                .withMotionMagicAcceleration(15) // Default 15
                                                 .withMotionMagicJerk(0))
                                 .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
                                                 .withForwardSoftLimitEnable(true)
@@ -424,7 +424,7 @@ public class Constants {
                 public static final double elevatorGearRatio = 25; // Sensor to Mechanism Ratio
                 public static final double elevatorPinionRadius = Units.inchesToMeters(1); // Meters
 
-                public static final double maxElevatorHeight = 0.47; // Meters
+                public static final double maxElevatorHeight = 0.46; // Meters
 
                 public static final TalonFXConfiguration kElevatorConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -453,7 +453,7 @@ public class Constants {
                                                 .withForwardLimitEnable(true)
                                                 .withReverseLimitEnable(true)
                                                 .withForwardLimitAutosetPositionEnable(false)
-                                                .withReverseLimitAutosetPositionEnable(true)
+                                                .withReverseLimitAutosetPositionEnable(false)
                                                 .withForwardLimitAutosetPositionValue(maxElevatorHeight)
                                                 .withReverseLimitAutosetPositionValue(0)
                                                 .withForwardLimitSource(ForwardLimitSourceValue.LimitSwitchPin)
@@ -462,7 +462,7 @@ public class Constants {
                                                 .withReverseLimitType(ReverseLimitTypeValue.NormallyOpen))
                                 .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
                                                 .withForwardSoftLimitEnable(true)
-                                                .withReverseSoftLimitEnable(true)
+                                                .withReverseSoftLimitEnable(false)
                                                 .withForwardSoftLimitThreshold(
                                                                 elevatorMetersToRotations(maxElevatorHeight))
                                                 .withReverseSoftLimitThreshold(0));

@@ -334,7 +334,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         return Rotation2d.fromDegrees(yawWithRollover);
     }
     public Rotation2d getAdjustedYaw() {
-        return DriverStation.getAlliance().get() == Alliance.Red ? getGyroYaw()
+        return DriverStation.getAlliance().get() == Alliance.Blue ? getGyroYaw()
                 : getGyroYaw().plus(new Rotation2d(Math.PI));
     }
 

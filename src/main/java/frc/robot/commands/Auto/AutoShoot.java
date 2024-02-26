@@ -63,10 +63,10 @@ public class AutoShoot extends Command {
   @Override
   public void execute() {
 
-    Translation2d virtualTarget = FieldUtil.getAllianceSpeakerPosition();
+    Translation2d target = FieldUtil.getAllianceSpeakerPosition();
 
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
-        .getDistance(virtualTarget);
+        .getDistance(target);
 
     wrist.toAngle(Rotation2d.fromDegrees(MathUtil.clamp(SpeakerShotRegression.wristRegression.predict(targetDistance),
         ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp)));

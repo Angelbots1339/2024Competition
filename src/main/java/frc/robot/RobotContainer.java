@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.Leds;
+import frc.lib.util.WristElevatorState;
 import frc.lib.util.tuning.GlobalVoltageTuning;
 import frc.lib.util.tuning.ShooterTuning;
 import frc.lib.util.tuning.SuperstructureTuning;
@@ -54,9 +55,9 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
   private TuningMode tuningMode = TuningMode.DISABLED;
 
-  // private GenericEntry driveSpeed = Shuffleboard.getTab("Tune").add("DriveSpeed", 0)
+  // private GenericEntry wristAngle = Shuffleboard.getTab("Tune").add("WristAngle", 90)
   //     .withWidget(BuiltInWidgets.kTextView)
-  //     .withProperties(Map.of("min", -1, "max", 1))
+  //     .withProperties(Map.of("min", -25, "max", 90))
   //     .getEntry();
 
   /***** Instancing Subsystems *****/
@@ -121,15 +122,21 @@ public class RobotContainer {
     alignScoreAmp.whileTrue(new AlignScoreAmp(elevator, wrist, indexer, swerve));
     subwooferShot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, swerve, indexer, translationX, translationY, () -> subwooferActuallyShoot.getAsBoolean()));
     shootWithRegression.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, () -> false));
+    
 
-    // shoot.whileTrue(swerve.angularDrive(translationX, translationY, () ->
-    // Rotation2d.fromDegrees(90), () -> true, () -> true));
-
+    
     extendClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(driveController.getLeftTriggerAxis() * 10), elevator));
     retractClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(-driveController.getRightTriggerAxis() * 10), elevator));
-
+    
     extendToMax.onTrue(new RunCommand(() -> elevator.toHeight(ElevatorConstants.maxElevatorHeight - 0.01)));
+    
 
+
+
+
+    // subwooferShot.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> new WristElevatorState(Rotation2d.fromDegrees(wristAngle.getDouble(90)), 0.46)));
+    // shoot.whileTrue(swerve.angularDrive(translationX, translationY, () ->
+    // Rotation2d.fromDegrees(90), () -> true, () -> true));
   }
 
   private void configOperatorBindings() {
@@ -139,6 +146,7 @@ public class RobotContainer {
   /***** Initialization *****/
   public RobotContainer() {
 
+    
     NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
         elevator, swerve, indexer));
     NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
@@ -230,6 +238,13 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+  
+  /**
+   * Should be called periodically from RobotPeriodic
+   */
+  public void updateDashboard() {
+    SmartDashboard.putBoolean("Climb Mode", climbMode);
   }
 
   /***** Tuning *****/

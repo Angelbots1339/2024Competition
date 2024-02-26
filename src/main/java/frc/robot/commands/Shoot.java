@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
@@ -87,7 +89,7 @@ public class Shoot extends Command {
     // () -> translationY.get() * ScoringConstants.shootingDriveScalar, robotAngle,
     // () -> true, () -> true);
     swerve.angularDrive(() -> translationX.get() * ScoringConstants.shootingDriveScalar,
-        () -> translationY.get() * ScoringConstants.shootingDriveScalar, () -> Rotation2d.fromDegrees(0), () -> true,
+        () -> translationY.get() * ScoringConstants.shootingDriveScalar, () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180), () -> true,
         () -> true);
 
     if ((indexer.isNotePresent() || overrideIndexerSensor.get()) && shooter.isAtSetpoint() && wrist.isAtSetpoint()

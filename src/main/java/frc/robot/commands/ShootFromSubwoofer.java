@@ -7,7 +7,9 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.subsystems.Elevator;
@@ -28,7 +30,7 @@ public class ShootFromSubwoofer extends Command {
   private Supplier<Double> translationY;
   private Supplier<Boolean> actuallyShoot;
 
-  private Timer shootTimer = new Timer();
+  // private Timer shootTimer = new Timer();
 
   /** Creates a new ShootFromSpeaker. */
   public ShootFromSubwoofer(Elevator elevator, Wrist wrist, Shooter shooter, Swerve swerve, Indexer indexer,
@@ -54,7 +56,7 @@ public class ShootFromSubwoofer extends Command {
     elevator.toHeight(ScoringConstants.SubwooferShot.height);
     shooter.shooterToRMP(ScoringConstants.shooterSetpointClose[0], ScoringConstants.shooterSetpointClose[1]);
 
-    shootTimer.start();
+    // shootTimer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -62,11 +64,10 @@ public class ShootFromSubwoofer extends Command {
   public void execute() {
 
     swerve.angularDrive(() -> translationX.get(),
-        () -> translationY.get(), () -> Rotation2d.fromDegrees(0), () -> true,
+        () -> translationY.get(), () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180), () -> true,
         () -> true);
 
-    if (wrist.isAtSetpoint() && elevator.isAtSetpoint() && shooter.isAtSetpoint()
-        && shootTimer.get() > ScoringConstants.shootingWaitTime && actuallyShoot.get()) {
+    if (wrist.isAtSetpoint() && elevator.isAtSetpoint() && shooter.isAtSetpoint() && actuallyShoot.get()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexerScoringPercent);
     } else {
       indexer.disable();
@@ -83,8 +84,8 @@ public class ShootFromSubwoofer extends Command {
     shooter.disable();
     indexer.disable();
 
-    shootTimer.stop();
-    shootTimer.reset();
+    // shootTimer.stop();
+    // shootTimer.reset();
   }
 
   // Returns true when the command should end.
