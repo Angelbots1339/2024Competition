@@ -45,6 +45,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriverConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LoggingConstants.SwerveLogging;
 
@@ -160,8 +161,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      * @param translationY  Meters/second
      * @param rotation      Rad/second
      * @param fieldOriented Use field oriented drive?
-     * @param skewReduction Use Skew Reduction? // TODO Currently doesn't work :(
-     * @return
+     * @param skewReduction Use Skew Reduction? 
+     * @return Drive Command
      */
     public Command angularDrive(Supplier<Double> translationX, Supplier<Double> translationY,
             Supplier<Rotation2d> desiredRotation,
@@ -206,15 +207,16 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
 
     /**
+     * Generates and applies the angular drive request. Must call periodically.
      * 
      * @param translationX  Meters/second
      * @param translationY  Meters/second
      * @param rotation      Rad/second
      * @param fieldOriented Use field oriented drive?
-     * @param skewReduction Use Skew Reduction? // TODO Currently doesn't work :(
-     * @return
+     * @param skewReduction Use Skew Reduction? 
+     * 
      */
-    public SwerveRequest angularDriveRequest(Supplier<Double> translationX, Supplier<Double> translationY,
+    public void angularDriveRequest(Supplier<Double> translationX, Supplier<Double> translationY,
             Supplier<Rotation2d> desiredRotation, Supplier<Boolean> skewReduction) {
 
         
@@ -240,7 +242,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                         .withVelocityY(fieldRelativeSpeeds.vyMetersPerSecond) // Drive left with negative X (left)
                         .withRotationalRate(fieldRelativeSpeeds.omegaRadiansPerSecond);
 
-            return req;
+            this.setControl(req);
     }
 
     /**
@@ -257,7 +259,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         double pid = angularDrivePID.calculate(this.getAdjustedYaw().getDegrees(), desiredRotation.get().getDegrees());
 
         ChassisSpeeds speeds = new ChassisSpeeds(translationX.get(), translationY.get(),
-                angularDrivePID.atSetpoint() ? 0 : pid + (DriverConstants.angularDriveKS * Math.signum(pid)));
+                MathUtil.clamp(angularDrivePID.atSetpoint() ? 0 : pid + (DriverConstants.angularDriveKS * Math.signum(pid)), -SwerveConstants.maxAngularRate, SwerveConstants.maxAngularRate));
 
                 
         return speeds;
@@ -283,7 +285,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         // SmartDashboard.putNumber("PidXError", pidToPoseXController.getPositionError());
         // SmartDashboard.putNumber("PidYError", pidToPoseYController.getPositionError());
 
-        this.setControl(angularDriveRequest(() -> pidToPoseXController.atSetpoint() ? 0 : x, () -> pidToPoseYController.atSetpoint() ? 0 : y, () -> target.getRotation(), () -> false));
+        angularDriveRequest(() -> pidToPoseXController.atSetpoint() ? 0 : x, () -> pidToPoseYController.atSetpoint() ? 0 : y, () -> target.getRotation(), () -> false);
     }
 
     public boolean isAtPose() {
@@ -334,7 +336,12 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         return Rotation2d.fromDegrees(yawWithRollover);
     }
     public Rotation2d getAdjustedYaw() {
-        return DriverStation.getAlliance().get() == Alliance.Blue ? getGyroYaw()
+        boolean isAllianceBlue = true;
+        if(DriverStation.getAlliance().isPresent()) {
+            isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+        }
+
+        return isAllianceBlue ? getGyroYaw()
                 : getGyroYaw().plus(new Rotation2d(Math.PI));
     }
 

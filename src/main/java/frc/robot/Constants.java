@@ -43,7 +43,7 @@ public class Constants {
 
         public static final double kConfigTimeoutSeconds = 0.1;
 
-        public static final class GeneratedSwerveConstants {
+        public static final class SwerveConstants {
 
                 // Both sets of gains need to be tuned to your individual robot.
 
@@ -181,8 +181,8 @@ public class Constants {
 
         public static final class DriverConstants {
 
-                public static final double maxTranslationSpeed = GeneratedSwerveConstants.maxSpeed;
-                public static final double maxRotationSpeed = GeneratedSwerveConstants.maxAngularRate;
+                public static final double maxTranslationSpeed = SwerveConstants.maxSpeed;
+                public static final double maxRotationSpeed = SwerveConstants.maxAngularRate;
 
                 public static final double joystickDeadband = 0.1;
                 public static final double joystickCurvePower = 1;
@@ -196,7 +196,7 @@ public class Constants {
                 public static final double FudgeFactorSimpleKp = 0.1; // used for the CD fudge factor solution to swerve
                                                                       // skew
 
-                public static final double angularDriveKP = 0.05;
+                public static final double angularDriveKP = 0.075;
                 public static final double angularDriveKI = 0;
                 public static final double angularDriveKD = 0;
                 public static final double angularDriveKS = 0.4; // radians per sec
@@ -243,7 +243,7 @@ public class Constants {
                                 // HolonomicPathFollowerConfig, this should likely live in your Constants class
                                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                                 new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                                GeneratedSwerveConstants.kSpeedAt12VoltsMps, // Max module speed, in m/s
+                                SwerveConstants.kSpeedAt12VoltsMps, // Max module speed, in m/s
                                 0.40451045104, // Drive base radius in meters. Distance from robot center to furthest
                                                // module.
                                 new ReplanningConfig() // Default path replanning config. See the API for the options
@@ -271,8 +271,8 @@ public class Constants {
                                                 .withNeutralMode(NeutralModeValue.Coast)
                                                 .withInverted(InvertedValue.CounterClockwise_Positive))
                                 .withSlot0(new Slot0Configs()
-                                                .withKV(0.075)
-                                                .withKP(0.125)
+                                                .withKV(0.071) // 0.075
+                                                .withKP(0.5) // 0.125
                                                 .withKI(0)
                                                 .withKD(0))
                                 .withFeedback(new FeedbackConfigs()
@@ -292,9 +292,9 @@ public class Constants {
 
                 public static final int intakeSensorID = 26; // TODO Set these
                 public static final RangingMode intakeSensorRange = RangingMode.Short;
-                public static final double intakeSampleTime = 100;
+                public static final double intakeSampleTime = 24;
 
-                public static final double isNotePresentThreshold = 70; // Milimeters
+                public static final double isNotePresentThreshold = 200; // Milimeters
 
                 private static final double intakeMaxDutyCycle = 0.5;
 
@@ -323,9 +323,10 @@ public class Constants {
 
                 public static final int indexerSensorID = 27; // TODO Set these
                 public static final RangingMode indexerSensorRange = RangingMode.Short;
-                public static final double indexerSampleTime = 100;
+                public static final double indexerSampleTime = 24;
 
-                public static final double isNotePresentThreshold = 150; // Milimeters
+                public static final double isNotePresentTarget = 70; // Milimeters
+                public static final double isNotePresentTolerance = 5; // Milimeters
 
                 private static final double indexerMaxDutyCycle = 0.5;
 
@@ -497,7 +498,8 @@ public class Constants {
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(125, 0);
 
                 public static final double[] shooterSetpointClose = {3500, 4500}; // [Left, Right]
-                public static final double[] shooterSetpointFar = {3500, 4500}; // [Left, Right]
+                public static final double[] shooterSetpointFar = {5000, 6000}; // [Left, Right]
+                public static final double flywheelDistanceCutoff =  2.5; //  3.28
                 public static final double shootingWaitTime = 0.2; // Seconds to wait before shooting to make shooting predictable & consistent
 
                 public static final double wristRegressionMaxClamp = 175;
@@ -510,6 +512,10 @@ public class Constants {
                 public static final double indexerScoringCurrent = 10; // Amps
 
                 public static final double indexingTargetPercent = 0.2; // Percent
+                public static final double indexingTargetPercentSlow = 0.1; // Percent
+
+                public static final double indexingTargetVolts = 2; // Percent
+                public static final double indexingTargetVoltsSlow = 0.75; // Percent
                 public static final double indexerScoringPercent = 0.4; // Percent
                 public static final double indexerScoreAmpPercent = -0.4; // Percent
 
@@ -520,7 +526,7 @@ public class Constants {
                 public static final double kAccelCompFactor = 0; // Seconds
                 public static final double gamePieceVelocity = 0; // Meters per second
 
-                public static final double shootingDriveScalar = 0.5;
+                public static final double shootingDriveScalar = 0.25;
 
                 public static final boolean shootWhileMoving = false;
 
@@ -533,7 +539,7 @@ public class Constants {
                 // Apriltag Height: 57 inches
                 // Horizontal offset 22.5 inches 
 
-                public static final double StdDevScalar = 0.25;
+                public static final double StdDevScalar = 0.1;
                 
 
                 public static double calcStdDev(double metersFromTarget) {

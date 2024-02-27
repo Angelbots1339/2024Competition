@@ -49,15 +49,15 @@ public class IntakeNote extends Command {
     wrist.toAngle(ScoringConstants.Handoff.angle);
     elevator.toHeight(ScoringConstants.Handoff.height);
 
-    // Leds.getInstance().intaking = true;
+    Leds.getInstance().intaking = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (intake.isNotePresent() || indexer.isNotePresent()) {
+    if (intake.isNotePresent() || indexer.isNoteAtTarget()) {
       noteDetected = true;
-      // Leds.getInstance().hasGamePiece = noteDetected;
+      Leds.getInstance().hasGamePiece = noteDetected;
     }
 
     wrist.toAngle(ScoringConstants.Handoff.angle);
@@ -77,12 +77,7 @@ public class IntakeNote extends Command {
 
     }
 
-    if (!indexer.isNotePresent()) {
-      // indexer.runIndexerTorqueControl(ScoringConstants.indexingTargetCurrent);
-      indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
-    } else {
-      indexer.disable();
-    }
+    indexer.indexNoteToTarget();
 
   }
 
@@ -99,15 +94,15 @@ public class IntakeNote extends Command {
 
     System.out.println("Intake Command Ended");
 
-    // Leds.getInstance().intaking = false;
-    // Leds.getInstance().hasGamePiece = false;
+    Leds.getInstance().intaking = false;
+    Leds.getInstance().hasGamePiece = false;
 
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (endWhenNoteDetected.get() && indexer.isNotePresent() && !intake.isNotePresent()) {
+    if (endWhenNoteDetected.get() && indexer.isNoteAtTarget() && !intake.isNotePresent()) {
       return true;
     }
     return false;

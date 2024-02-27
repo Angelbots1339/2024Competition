@@ -54,7 +54,7 @@ public final class LoggingConstants {
         }
 
         public class ShooterLogging {
-                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel Main = LoggingLevel.SHUFFLEBOARD;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.util.Leds;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
@@ -40,6 +41,7 @@ public class ShootFromSubwoofer extends Command {
     this.wrist = wrist;
     this.shooter = shooter;
     this.indexer = indexer;
+    this.swerve = swerve;
 
     this.translationX = translationX;
     this.translationY = translationY;
@@ -56,6 +58,8 @@ public class ShootFromSubwoofer extends Command {
     elevator.toHeight(ScoringConstants.SubwooferShot.height);
     shooter.shooterToRMP(ScoringConstants.shooterSetpointClose[0], ScoringConstants.shooterSetpointClose[1]);
 
+    Leds.getInstance().shooting = true;
+
     // shootTimer.start();
   }
 
@@ -63,15 +67,21 @@ public class ShootFromSubwoofer extends Command {
   @Override
   public void execute() {
 
-    swerve.angularDrive(() -> translationX.get(),
-        () -> translationY.get(), () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180), () -> true,
-        () -> true);
+    swerve.angularDriveRequest(() -> translationX.get(),
+        () -> translationY.get(),
+        () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180), () -> true);
 
     if (wrist.isAtSetpoint() && elevator.isAtSetpoint() && shooter.isAtSetpoint() && actuallyShoot.get()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexerScoringPercent);
     } else {
       indexer.disable();
     }
+
+    // if (actuallyShoot.get()) {
+    // indexer.runIndexerDutyCycle(ScoringConstants.indexerScoringPercent);
+    // } else {
+    // indexer.disable();
+    // }
 
   }
 
@@ -83,6 +93,9 @@ public class ShootFromSubwoofer extends Command {
     elevator.home();
     shooter.disable();
     indexer.disable();
+
+    Leds.getInstance().shooting = false;
+
 
     // shootTimer.stop();
     // shootTimer.reset();

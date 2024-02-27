@@ -11,7 +11,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.team254.math.InterpolatingDouble;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
 import frc.lib.util.PoseEstimation;
@@ -57,7 +59,7 @@ public class Shoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // Leds.getInstance().shooting = true;
+    Leds.getInstance().shooting = true;
 
   }
 
@@ -75,29 +77,53 @@ public class Shoot extends Command {
         .getDistance(target);
 
     Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-        Math.atan((PoseEstimation.getEstimatedPose().getX() - target.getX())
-            / (PoseEstimation.getEstimatedPose().getY() - target.getY())))
-        .plus(Rotation2d.fromRadians(Math.PI));
+        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+            / (PoseEstimation.getEstimatedPose().getX() - target.getX()))).plus(Rotation2d.fromDegrees(180));
 
-    wrist.toAngle(Rotation2d.fromDegrees(MathUtil.clamp(SpeakerShotRegression.wristRegression.predict(targetDistance),
-        ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp)));
+
+
+    // double regressionOut = MathUtil.clamp(SpeakerShotRegression.wristRegression.predict(targetDistance),
+    //     ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp);
+    // double regressionOut = MathUtil.clamp(SpeakerShotRegression.wristInterpolation.getInterpolated(new InterpolatingDouble(targetDistance)).value,
+    //     ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp);
+    double regressionOut = MathUtil.clamp(SpeakerShotRegression.wristExpoRegression(targetDistance),
+        ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp);
+
+
+
+    wrist.toAngle(Rotation2d.fromDegrees(regressionOut));
     elevator.home();
-    shooter.shooterToRMP(ScoringConstants.shooterSetpointClose[0], ScoringConstants.shooterSetpointClose[1]);
+    double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose : ScoringConstants.shooterSetpointFar;
+    shooter.shooterToRMP(speeds[0], speeds[1]);
+
+    swerve.angularDriveRequest(() -> translationX.get() *
+        ScoringConstants.shootingDriveScalar,
+        () -> translationY.get() * ScoringConstants.shootingDriveScalar, robotAngle,
+        () -> true);
+        
 
     // swerve.angularDrive(() -> translationX.get() *
     // ScoringConstants.shootingDriveScalar,
-    // () -> translationY.get() * ScoringConstants.shootingDriveScalar, robotAngle,
-    // () -> true, () -> true);
-    swerve.angularDrive(() -> translationX.get() * ScoringConstants.shootingDriveScalar,
-        () -> translationY.get() * ScoringConstants.shootingDriveScalar, () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180), () -> true,
-        () -> true);
+    // () -> translationY.get() * ScoringConstants.shootingDriveScalar, () ->
+    // Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 0
+    // : 180), () -> true,
+    // () -> true);
 
-    if ((indexer.isNotePresent() || overrideIndexerSensor.get()) && shooter.isAtSetpoint() && wrist.isAtSetpoint()
+    // if ((indexer.isNotePresent() || overrideIndexerSensor.get()) && shooter.isAtSetpoint() && wrist.isAtSetpoint()
+    //     && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
+    //   indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
+    // } else {
+    //   indexer.disable();
+    // }
+    if ( shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
     } else {
       indexer.disable();
     }
+
+    SmartDashboard.putNumber("TargetAngle", robotAngle.get().getDegrees());
+    SmartDashboard.putNumber("TargetAngle", robotAngle.get().getDegrees());
 
   }
 
@@ -109,7 +135,7 @@ public class Shoot extends Command {
     wrist.home();
     elevator.home();
 
-    // Leds.getInstance().shooting = false;
+    Leds.getInstance().shooting = false;
 
   }
 

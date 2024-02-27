@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.util.Leds;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ScoringConstants;
@@ -43,9 +44,9 @@ public class HandOffNote extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (intake.isNotePresent() || indexer.isNotePresent()) {
+    if (intake.isNotePresent() || indexer.isNoteAtTarget()) {
       noteDetected = true;
-      // Leds.getInstance().hasGamePiece = noteDetected;
+      Leds.getInstance().hasGamePiece = noteDetected;
     }
 
     wrist.toAngle(ScoringConstants.Handoff.angle);
@@ -58,11 +59,7 @@ public class HandOffNote extends Command {
       intake.disable();
     }
 
-    if (!indexer.isNotePresent()) {
-      indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
-    } else {
-      indexer.disable();
-    }
+    indexer.indexNoteToTarget();
 
   }
 
@@ -73,16 +70,19 @@ public class HandOffNote extends Command {
     indexer.disable();
     elevator.home();
     wrist.home();
+
+    Leds.getInstance().intaking = false;
+    Leds.getInstance().hasGamePiece = false;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(!noteDetected){
+    if (!indexer.isNoteAtTarget() && !intake.isNotePresent()) {
       return true;
     }
-    
-    if (indexer.isNotePresent() && !intake.isNotePresent()) {
+
+    if (indexer.isNoteAtTarget() && !intake.isNotePresent()) {
       return true;
     }
     return false;

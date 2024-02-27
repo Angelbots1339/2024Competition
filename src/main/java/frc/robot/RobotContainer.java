@@ -39,6 +39,7 @@ import frc.robot.commands.AlignScoreAmp;
 import frc.robot.commands.HandOffNote;
 import frc.robot.commands.IntakeNoHandoff;
 import frc.robot.commands.IntakeNote;
+import frc.robot.commands.ScoreAmp;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootFromSubwoofer;
 import frc.robot.commands.SuperstructureToPosition;
@@ -53,7 +54,7 @@ import frc.robot.subsystems.Wrist;
 public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-  private TuningMode tuningMode = TuningMode.DISABLED;
+  private TuningMode tuningMode = TuningMode.SHOOTER;
 
   // private GenericEntry wristAngle = Shuffleboard.getTab("Tune").add("WristAngle", 90)
   //     .withWidget(BuiltInWidgets.kTextView)
@@ -61,7 +62,7 @@ public class RobotContainer {
   //     .getEntry();
 
   /***** Instancing Subsystems *****/
-  private final Swerve swerve = Constants.GeneratedSwerveConstants.Swerve;
+  private final Swerve swerve = Constants.SwerveConstants.Swerve;
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
   private final Wrist wrist = new Wrist();
@@ -83,7 +84,7 @@ public class RobotContainer {
 
   private Trigger runIntake = new Trigger(() -> driveController.getLeftBumper() && !climbMode);
   private Trigger runIntakeNoHandoff = new Trigger(() -> driveController.getLeftTriggerAxis() > 0.1 && !climbMode);
-  private Trigger runOuttake = new Trigger(() -> driveController.getRightBumper() && !climbMode);
+  private Trigger runOuttake = new Trigger(() -> driveController.getRightBumper() && !climbMode && !driveController.getAButton());
 
   private Trigger subwooferShot = new Trigger(() -> driveController.getAButton() && !climbMode);
   private Trigger subwooferActuallyShoot = new Trigger(() -> driveController.getRightTriggerAxis() > 0.1 && !climbMode);
@@ -103,11 +104,11 @@ public class RobotContainer {
     resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
     toggleClimbMode.onTrue(new InstantCommand(() -> {
       climbMode = !climbMode;
-      // Leds.getInstance().climbing = climbMode;
+      Leds.getInstance().climbing = climbMode;
     }));
 
     runOuttake.whileTrue(new RunCommand(() -> {
-      intake.runIntakeDutyCycle(-0.4);
+      intake.runIntakeDutyCycle(0.4);
       indexer.runIndexerDutyCycle(-0.4);
     },
         intake, indexer).andThen(new InstantCommand(() -> {
@@ -118,11 +119,14 @@ public class RobotContainer {
     runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false)).onFalse(new HandOffNote(intake, indexer, wrist, elevator));
     runIntakeNoHandoff.whileTrue(new IntakeNoHandoff(intake));
 
-    scoreAmp.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.ScoreAmp));
+    // scoreAmp.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.ScoreAmp));
+    scoreAmp.whileTrue(new ScoreAmp(elevator, wrist, swerve, translationX, translationY));
     alignScoreAmp.whileTrue(new AlignScoreAmp(elevator, wrist, indexer, swerve));
     subwooferShot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, swerve, indexer, translationX, translationY, () -> subwooferActuallyShoot.getAsBoolean()));
     shootWithRegression.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, () -> false));
     
+
+    // subwooferShot.whileTrue(swerve.angularDrive(translationX, translationY, () -> Rotation2d.fromDegrees(90), () -> true, () -> true));
 
     
     extendClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(driveController.getLeftTriggerAxis() * 10), elevator));
@@ -146,6 +150,7 @@ public class RobotContainer {
   /***** Initialization *****/
   public RobotContainer() {
 
+    Leds.getInstance();
     
     NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
         elevator, swerve, indexer));
@@ -164,17 +169,17 @@ public class RobotContainer {
 
   private void configDefaultCommands() {
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
-    wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
-    elevator.setDefaultCommand(new InstantCommand(() -> {
-      if (climbMode) {
-        elevator.holdPosition();
-      } else {
-        elevator.home();
-      }
-    }, elevator));
-    intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
-    indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
-    shooter.setDefaultCommand(new InstantCommand(() -> shooter.disable(), shooter));
+    // wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
+    // elevator.setDefaultCommand(new InstantCommand(() -> {
+    //   if (climbMode) {
+    //     elevator.holdPosition();
+    //   } else {
+    //     elevator.home();
+    //   }
+    // }, elevator));
+    // intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
+    // indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
+    // shooter.setDefaultCommand(new InstantCommand(() -> shooter.disable(), shooter));
   }
 
   private void initializeEndgameAlerts() {
@@ -186,7 +191,7 @@ public class RobotContainer {
         .onTrue(
             Commands.run(
                 () -> {
-                  // Leds.getInstance().endgameAlert = true;
+                  Leds.getInstance().endgameAlert = true;
                   driveController.setRumble(RumbleType.kBothRumble, 1.0);
                   operatorController.setRumble(RumbleType.kBothRumble, 1.0);
                 })
@@ -194,7 +199,7 @@ public class RobotContainer {
                 .andThen(
                     Commands.run(
                         () -> {
-                          // Leds.getInstance().endgameAlert = false;
+                          Leds.getInstance().endgameAlert = false;
                           driveController.setRumble(RumbleType.kBothRumble, 0.0);
                           operatorController.setRumble(RumbleType.kBothRumble, 0.0);
                         })
@@ -208,28 +213,28 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.run(
                     () -> {
-                      // Leds.getInstance().endgameAlert = true;
+                      Leds.getInstance().endgameAlert = true;
                       driveController.setRumble(RumbleType.kBothRumble, 1.0);
                       operatorController.setRumble(RumbleType.kBothRumble, 1.0);
                     })
                     .withTimeout(0.25),
                 Commands.run(
                     () -> {
-                      // Leds.getInstance().endgameAlert = false;
+                      Leds.getInstance().endgameAlert = false;
                       driveController.setRumble(RumbleType.kBothRumble, 0.0);
                       operatorController.setRumble(RumbleType.kBothRumble, 0.0);
                     })
                     .withTimeout(0.1),
                 Commands.run(
                     () -> {
-                      // Leds.getInstance().endgameAlert = true;
+                      Leds.getInstance().endgameAlert = true;
                       driveController.setRumble(RumbleType.kBothRumble, 1.0);
                       operatorController.setRumble(RumbleType.kBothRumble, 1.0);
                     })
                     .withTimeout(0.25),
                 Commands.run(
                     () -> {
-                      // Leds.getInstance().endgameAlert = false;
+                      Leds.getInstance().endgameAlert = false;
                       driveController.setRumble(RumbleType.kBothRumble, 0.0);
                       operatorController.setRumble(RumbleType.kBothRumble, 0.0);
                     })
@@ -244,7 +249,7 @@ public class RobotContainer {
    * Should be called periodically from RobotPeriodic
    */
   public void updateDashboard() {
-    SmartDashboard.putBoolean("Climb Mode", climbMode);
+    // SmartDashboard.putBoolean("Climb Mode", climbMode);
   }
 
   /***** Tuning *****/

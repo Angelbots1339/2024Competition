@@ -56,7 +56,7 @@ public class AutoShoot extends Command {
 
     swerve.setAutoOverrideRotation(true, robotAngle);
 
-    // Leds.getInstance().shooting = true;
+    Leds.getInstance().shooting = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -73,10 +73,10 @@ public class AutoShoot extends Command {
     elevator.home();
     shooter.shooterToRMP(ScoringConstants.shooterSetpointClose[0], ScoringConstants.shooterSetpointClose[1]);
 
-    if (indexer.isNotePresent() && shooter.isAtSetpoint() && wrist.isAtSetpoint()
+    if (indexer.isNoteAtTarget() && shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
-    } else if (!indexer.isNotePresent()) {
+    } else if (!indexer.isNoteAtTarget()) {
       indexer.disable();
     }
   }
@@ -91,13 +91,13 @@ public class AutoShoot extends Command {
 
     swerve.setAutoOverrideRotation(false);
 
-    // Leds.getInstance().shooting = false;
+    Leds.getInstance().shooting = false;
 
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !indexer.isNotePresent();
+    return !indexer.isNoteAtTarget();
   }
 }

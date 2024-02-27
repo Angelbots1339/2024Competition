@@ -17,6 +17,7 @@ import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.Constants.ScoringConstants;
 import frc.robot.LoggingConstants.IndexerLogging;
 
 
@@ -50,8 +51,25 @@ public class Indexer extends SubsystemBase {
     indexerMotor.setControl(new VoltageOut(volts));
   }
 
-  public boolean isNotePresent() {
-    return indexerSensor.getRange() < IndexerConstants.isNotePresentThreshold;
+  public boolean isNoteAtTarget() {
+    return Math.abs(indexerSensor.getRange() - IndexerConstants.isNotePresentTarget) < IndexerConstants.isNotePresentTolerance;
+  }
+
+  public void indexNoteToTarget() {
+
+    if(indexerSensor.getRange() > 250){
+      runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
+    } else if(isNoteAtTarget()){
+      disable();
+    } else {
+      if(indexerSensor.getRange() > IndexerConstants.isNotePresentTarget){
+        setVoltage(ScoringConstants.indexingTargetVoltsSlow);
+        
+      } else if (indexerSensor.getRange() < IndexerConstants.isNotePresentTarget){
+        setVoltage(-ScoringConstants.indexingTargetVoltsSlow * (2/3));
+
+      }
+    }
   }
 
   public void disable() {
@@ -62,6 +80,7 @@ public class Indexer extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
+    SmartDashboard.putNumber("IndexerSensor", indexerSensor.getRange());
   }
 
   private TalonFX configIndexerMotor(TalonFX motor) {
@@ -79,7 +98,7 @@ public class Indexer extends SubsystemBase {
 
     logger.add(new LoggedFalcon("IndexerMotor", logger, indexerMotor, IndexerLogging.Motor));
 
-    logger.addBoolean("NotePresent", () -> isNotePresent(), IndexerLogging.Main);
+    logger.addBoolean("NotePresent", () -> isNoteAtTarget(), IndexerLogging.Main);
     logger.addDouble("TOFSensor", () -> indexerSensor.getRange(), IndexerLogging.Main);
 
 

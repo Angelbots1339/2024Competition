@@ -181,7 +181,7 @@ public class Wrist extends SubsystemBase {
     logger.addDouble("PolyRegressionAngle", () -> SpeakerShotRegression.wristRegression.predict(PoseEstimation.getEstimatedPose().getTranslation()
     .getDistance(FieldUtil.getAllianceSpeakerPosition())),
         WristLogging.Regression);
-    logger.addDouble("LinearRegressionAngle", () -> SpeakerShotRegression.wristLinearRegression(PoseEstimation.getEstimatedPose().getTranslation()
+    logger.addDouble("LinearRegressionAngle", () -> SpeakerShotRegression.wristExpoRegression(PoseEstimation.getEstimatedPose().getTranslation()
     .getDistance(FieldUtil.getAllianceSpeakerPosition())),
         WristLogging.Regression);
 

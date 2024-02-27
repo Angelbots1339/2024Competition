@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.util.logging.LoggedContainer;
 import frc.lib.util.logging.Logger.LoggingLevel;
 import frc.lib.util.logging.loggedPrimitives.LoggedDoubleArray;
-import frc.robot.Constants.GeneratedSwerveConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Swerve;
 
 /** Add your docs here. */
@@ -46,7 +46,7 @@ public class LoggedSweveModules extends LoggedObject<Swerve> {
 
     
     public double driveRotsToMeters(double rots) {
-        return rots * 2 * Math.PI * GeneratedSwerveConstants.kWheelRadiusInches;
+        return rots * 2 * Math.PI * SwerveConstants.kWheelRadiusInches;
     }
 
     @Override

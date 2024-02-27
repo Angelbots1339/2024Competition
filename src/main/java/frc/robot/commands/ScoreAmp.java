@@ -4,6 +4,11 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.Leds;
@@ -18,27 +23,32 @@ public class ScoreAmp extends Command {
 
   private Elevator elevator;
   private Wrist wrist;
-  private Indexer indexer;
+  // private Indexer indexer;
   private Swerve swerve;
+  Supplier<Double> translationX;
+  Supplier<Double> translationY;
 
   private Timer timer = new Timer();
 
   /** Creates a new ScoreAmp. */
-  public ScoreAmp(Elevator elevator, Wrist wrist, Indexer indexer, Swerve swerve) {
+  public ScoreAmp(Elevator elevator, Wrist wrist, Swerve swerve, Supplier<Double> translationX,
+      Supplier<Double> translationY) {
 
     this.elevator = elevator;
     this.wrist = wrist;
-    this.indexer = indexer;
     this.swerve = swerve;
 
+    this.translationX = translationX;
+    this.translationY = translationY;
+
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator, wrist, indexer, swerve);
+    addRequirements(elevator, wrist, swerve);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // Leds.getInstance().scoringAmp = true;
+    Leds.getInstance().scoringAmp = true;
 
   }
 
@@ -46,22 +56,30 @@ public class ScoreAmp extends Command {
   @Override
   public void execute() {
     elevator.toHeight(ScoringConstants.ScoreAmp.height);
-    wrist.toAngle(ScoringConstants.ScoreAmp.angle);
 
-    if (elevator.isAtSetpoint() && wrist.isAtSetpoint()) {
-      timer.start();
+    if(ScoringConstants.ScoreAmp.angle.getDegrees() > 90 || elevator.getLeaderPosition() > 0.15){
 
-      if (timer.get() > 0.5) {
-        indexer.runIndexerTorqueControl(ScoringConstants.indexerScoringCurrent);
-      }
+      wrist.toAngle(ScoringConstants.ScoreAmp.angle);
     }
 
+    // if (elevator.isAtSetpoint() && wrist.isAtSetpoint()) {
+    // timer.start();
+
+    // if (timer.get() > 0.5) {
+    // indexer.runIndexerTorqueControl(ScoringConstants.indexerScoringCurrent);
+    // }
+    // }
+
+    swerve.angularDriveRequest(() -> translationX.get() * 1,
+        () -> translationY.get() * 1,
+        () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 90 : 270),
+        () -> true);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // Leds.getInstance().scoringAmp = false;
+    Leds.getInstance().scoringAmp = false;
 
   }
 

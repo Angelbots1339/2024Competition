@@ -47,7 +47,7 @@ public class Leds extends SubsystemBase {
   public double autoFinishedTime = 0.0;
   public boolean lowBatteryAlert = false;
 
-  private Optional<Alliance> alliance = Optional.empty();
+  private Alliance alliance = Alliance.Blue;
   private boolean lastEnabledAuto = false;
   private double lastEnabledTime = 0.0;
   private boolean estopped = false;
@@ -62,8 +62,8 @@ public class Leds extends SubsystemBase {
 
   // Constants
   private static final int minLoopCycleCount = 10;
-  private static final double strobeFastDuration = 0.1;
-  private static final double strobeSlowDuration = 0.2;
+  private static final double strobeFastDuration = 0.5;
+  private static final double strobeSlowDuration = 5;
   private static final double breathDuration = 1.0;
 
   private static final double rainbowCycleLength = 25.0;
@@ -80,14 +80,14 @@ public class Leds extends SubsystemBase {
   private static final double stripeFastDuration = 2;
   private static final int stripesLongLength = 10;
 
-  private static final double breathAllianceCycleLength = 15.0;
+  private static final double breathAllianceCycleLength = 5;
 
   private static final double autoFadeTime = 2.5; // 3s nominal
   private static final double autoFadeMaxTime = 5.0; // Return to normal
 
   // LED Lengths
-  private static final int length = 50;
-  private static final int bottomLength = 20;
+  private static final int length = 30;
+  private static final int bottomLength = 16;
 
   private static final int underglowLength = 24;
 
@@ -120,12 +120,12 @@ public class Leds extends SubsystemBase {
     // underglowLeds.start();
   }
 
-  public synchronized void periodic() {    
+  public synchronized void periodic() {
 
     // Update alliance color
-    if (DriverStation.isFMSAttached()) {
+    if (DriverStation.getAlliance().isPresent()) {
+      alliance = DriverStation.getAlliance().get();
     }
-    alliance = DriverStation.getAlliance();
 
     // Update auto state
     if (DriverStation.isDisabled()) {
@@ -151,7 +151,7 @@ public class Leds extends SubsystemBase {
 
     // Select LED mode
     // solid(Section.FULL, Color.kBlack); // Default to off
-    wave(Section.FULL, Color.kOrange, Color.kDeepPink, waveSlowCycleLength, waveSlowDuration); // Default to wave
+    wave(Section.FULL, Color.kCyan, Color.kPurple, waveSlowCycleLength, waveSlowDuration); // Default to wave
 
     if (estopped) {
       solid(Section.FULL, Color.kRed);
@@ -164,39 +164,40 @@ public class Leds extends SubsystemBase {
         // Low battery
         solid(Section.FULL, Color.kOrangeRed);
       } else {
-        // Default pattern
+        // Default Disabled Pattern
+        // wave(Section.FULL, Color.kCyan, Color.kPurple, waveSlowCycleLength,
+        // waveSlowDuration);
 
-
-        // switch (alliance.get()) {
-        //   case Red:
-        //     breath(
-        //         Section.FULL,
-        //         Color.kRed,
-        //         Color.kBlack,
-        //         breathAllianceCycleLength);
-        //     break;
-        //   case Blue:
-        //     breath(
-        //         Section.FULL,
-        //         Color.kLightCyan,
-        //         Color.kBlack,
-        //         breathAllianceCycleLength);
-        //     break;
-        //   default:
-        //     wave(Section.FULL, Color.kOrange, Color.kDeepPink, waveSlowCycleLength, waveSlowDuration);
-        //     break;
-        // }
+        switch (alliance) {
+          case Red:
+            breath(
+                Section.FULL,
+                Color.kRed,
+                Color.kBlack,
+                breathAllianceCycleLength);
+            break;
+          case Blue:
+            breath(
+                Section.FULL,
+                Color.kLightCyan,
+                Color.kBlack,
+                breathAllianceCycleLength);
+            break;
+          default:
+            wave(Section.FULL, Color.kCyan, Color.kPurple, waveSlowCycleLength, waveSlowDuration);
+            break;
+        }
       }
     } else if (DriverStation.isAutonomous()) {
-      switch (alliance.get()) {
+      switch (alliance) {
         case Red:
-          wave(Section.FULL, Color.kRed, Color.kDarkRed, waveSlowCycleLength, waveSlowDuration);
+          wave(Section.FULL, Color.kRed, Color.kBlack, waveSlowCycleLength, waveSlowDuration);
           break;
         case Blue:
-          wave(Section.FULL, Color.kLightCyan, Color.kDarkCyan, waveSlowCycleLength, waveSlowDuration);
+          wave(Section.FULL, Color.kDarkCyan, Color.kBlack, waveSlowCycleLength, waveSlowDuration);
           break;
         default:
-          wave(Section.FULL, Color.kOrange, Color.kDeepPink, waveSlowCycleLength, waveSlowDuration);
+          wave(Section.FULL, Color.kCyan, Color.kPurple, waveSlowCycleLength, waveSlowDuration);
           break;
       }
       if (autoFinished) {
@@ -206,12 +207,12 @@ public class Leds extends SubsystemBase {
     }
 
     if (endgameAlert) {
-      strobe(Section.TOP, Color.kOrange, strobeSlowDuration);
+      strobe(Section.TOP, Color.kOrange, strobeFastDuration);
     } else if (intaking) {
       if (hasGamePiece) {
-        strobe(Section.FULL, Color.kGreen, strobeFastDuration);
+        solid(Section.FULL, Color.kGreen);
       } else {
-        strobe(Section.FULL, Color.kPurple, strobeSlowDuration);
+        solid(Section.FULL, Color.kPurple);
       }
     } else if (shooting) {
       rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
@@ -219,8 +220,6 @@ public class Leds extends SubsystemBase {
       rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
     }
 
-
-    solid(Section.FULL, Color.kPurple, buffer);
     leds.setData(buffer);
 
     // Set underglow
@@ -229,11 +228,6 @@ public class Leds extends SubsystemBase {
     // // Update LEDs
     // underglowLeds.setData(underglowBuffer);
   }
-
-
-
-
-
 
   private void solid(Section section, Color color) {
     solid(section, color, buffer);
@@ -280,7 +274,7 @@ public class Leds extends SubsystemBase {
 
   private void breath(Section section, Color c1, Color c2, double duration, double timestamp,
       AddressableLEDBuffer buffer) {
-    double x = ((timestamp % breathDuration) / breathDuration) * 2.0 * Math.PI;
+    double x = ((timestamp % duration) / duration) * 2.0 * Math.PI;
     double ratio = (Math.sin(x) + 1.0) / 2.0;
     double red = (c1.red * (1 - ratio)) + (c2.red * ratio);
     double green = (c1.green * (1 - ratio)) + (c2.green * ratio);

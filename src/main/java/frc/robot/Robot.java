@@ -20,40 +20,40 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
-  // private static final double lowBatteryVoltage = 10.0;
-  // private static final double lowBatteryDisabledTime = 1.5;
+  private static final double lowBatteryVoltage = 12.2;
+  private static final double lowBatteryDisabledTime = 1.5;
 
-  // private final Timer disabledTimer = new Timer();
+  private final Timer disabledTimer = new Timer();
 
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
 
-    // DataLogManager.start();
+    DataLogManager.start();
 
-    // DataLogManager.logNetworkTables(true);
-    // DriverStation.startDataLog(DataLogManager.getLog(), true);
+    DataLogManager.logNetworkTables(true);
+    DriverStation.startDataLog(DataLogManager.getLog(), true);
 
-    // disabledTimer.reset();
-    // disabledTimer.start();
+    disabledTimer.reset();
+    disabledTimer.start();
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
 
-    // CompletableFuture.runAsync(() -> {
-    //   Logger.getInstance().log(0);
-    // });
+    CompletableFuture.runAsync(() -> {
+      Logger.getInstance().log(0);
+    });
 
     // Update low battery alert
-    // if (DriverStation.isEnabled()) {
-    //   disabledTimer.reset();
-    // }
-    //  if (RobotController.getBatteryVoltage() < lowBatteryVoltage
-    //     && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
-    //   Leds.getInstance().lowBatteryAlert = true;
-    // }
+    if (DriverStation.isEnabled()) {
+      disabledTimer.reset();
+    }
+     if (RobotController.getBatteryVoltage() < lowBatteryVoltage
+        && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
+      Leds.getInstance().lowBatteryAlert = true;
+    }
 
     m_robotContainer.updateDashboard();
   }
