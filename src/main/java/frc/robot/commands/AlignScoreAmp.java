@@ -6,6 +6,9 @@ package frc.robot.commands;
 
 import java.util.Optional;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -55,7 +58,6 @@ public class AlignScoreAmp extends Command {
 
     Optional<Alliance> alliance = DriverStation.getAlliance();
     swerve.pidToPose(new Pose2d(FieldUtil.getAllianceAmpPosition().getX(), FieldUtil.getAllianceAmpPosition().getY() - ScoringConstants.scoreAmpOffset, Rotation2d.fromDegrees(alliance.get() == Alliance.Blue ? 90 : 270)));
-
 
     if(wrist.isAtSetpoint() && elevator.isAtSetpoint() && swerve.isAtPose()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexerScoreAmpPercent);

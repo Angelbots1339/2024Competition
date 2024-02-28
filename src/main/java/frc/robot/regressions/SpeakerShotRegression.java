@@ -1,15 +1,18 @@
 package frc.robot.regressions;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.team254.math.InterpolatingDouble;
 import frc.lib.team254.math.InterpolatingTreeMap;
 import frc.lib.team254.math.PolynomialRegression;
+import frc.robot.Constants.ScoringConstants;
 
 public class SpeakerShotRegression {
     public static double[][] kWristManualAngle = {
             /* TEMPLATE REGRESSION */
             // @x --> distance from target (in meters)
             // @y --> wrist angle (in degrees)
-            { 1.17, 125 },
+            { 1.17, 120 },
             { 2.27, 138 },
             { 2.61, 139 },
             { 1.81, 134 },
@@ -48,5 +51,17 @@ public class SpeakerShotRegression {
         for(double[] setpoint : kWristManualAngle){
             wristInterpolation.put(new InterpolatingDouble(setpoint[0]), new InterpolatingDouble(setpoint[1]));
         }
+    }
+
+    public static Rotation2d calculateWristAngle(double targetDistance) {
+
+            return Rotation2d.fromDegrees(MathUtil.clamp(wristInterpolation.getInterpolated(new InterpolatingDouble(targetDistance)).value,
+        ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp));
+        
+        //     return Rotation2d.fromDegrees(MathUtil.clamp(wristExpoRegression(targetDistance),
+        // ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp));
+
+        //     return Rotation2d.fromDegrees(MathUtil.clamp(wristRegression.predict(targetDistance),
+        // ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp));
     }
 }

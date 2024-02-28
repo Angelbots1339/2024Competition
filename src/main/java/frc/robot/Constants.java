@@ -210,9 +210,11 @@ public class Constants {
                 public static final double pidToPoseMaxSpeed = 1; // Meters per second
 
 
+                public static final double manualElevatorVolts = 10;
+                public static final double manualWristVolts = 6;
 
-                public static final double endgameAlert1 = 30;
-                public static final double endgameAlert2 = 15;
+                public static final double endgameAlert1 = 30; // Seconds
+                public static final double endgameAlert2 = 15; // Seconds
 
                 /**
                  * 
@@ -294,7 +296,7 @@ public class Constants {
                 public static final RangingMode intakeSensorRange = RangingMode.Short;
                 public static final double intakeSampleTime = 24;
 
-                public static final double isNotePresentThreshold = 200; // Milimeters
+                public static final double isNotePresentThreshold = 250; // Milimeters
 
                 private static final double intakeMaxDutyCycle = 0.5;
 
@@ -302,8 +304,8 @@ public class Constants {
                                 .withCurrentLimits(new CurrentLimitsConfigs()
                                                 .withStatorCurrentLimit(80)
                                                 .withSupplyCurrentLimit(40)
-                                                .withStatorCurrentLimitEnable(true)
-                                                .withSupplyCurrentLimitEnable(true))
+                                                .withStatorCurrentLimitEnable(false)
+                                                .withSupplyCurrentLimitEnable(false))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
                                                 .withInverted(InvertedValue.Clockwise_Positive));
@@ -499,7 +501,7 @@ public class Constants {
 
                 public static final double[] shooterSetpointClose = {3500, 4500}; // [Left, Right]
                 public static final double[] shooterSetpointFar = {5000, 6000}; // [Left, Right]
-                public static final double flywheelDistanceCutoff =  2.5; //  3.28
+                public static final double flywheelDistanceCutoff =  2.9; //  3.28
                 public static final double shootingWaitTime = 0.2; // Seconds to wait before shooting to make shooting predictable & consistent
 
                 public static final double wristRegressionMaxClamp = 175;
@@ -508,20 +510,17 @@ public class Constants {
                 public static final double scoreAmpOffset = 0.4;
 
 
-                public static final double indexingTargetCurrent = 10; // Amps
-                public static final double indexerScoringCurrent = 10; // Amps
 
-                public static final double indexingTargetPercent = 0.2; // Percent
-                public static final double indexingTargetPercentSlow = 0.1; // Percent
+                public static final double indexingTargetPercent = 0.2;
+                public static final double indexingTargetPercentSlow = 0.1; 
 
-                public static final double indexingTargetVolts = 2; // Percent
-                public static final double indexingTargetVoltsSlow = 0.75; // Percent
-                public static final double indexerScoringPercent = 0.4; // Percent
-                public static final double indexerScoreAmpPercent = -0.4; // Percent
+                public static final double indexingTargetVolts = 3; 
+                public static final double indexingTargetVoltsSlow = 1; 
+                public static final double indexerScoringPercent = 0.4;
+                public static final double indexerScoreAmpPercent = -0.4; 
 
-                public static final double intakingTargetCurrent = 20; // Amps
-                public static final double intakingTargetPercent = 0.9; // Percent
-                public static final double intakingTargetVoltage = -4; // Percent
+                public static final double intakingTargetPercent = 0.5; 
+                public static final double intakingTargetVoltage = 6; 
 
                 public static final double kAccelCompFactor = 0; // Seconds
                 public static final double gamePieceVelocity = 0; // Meters per second
@@ -529,6 +528,8 @@ public class Constants {
                 public static final double shootingDriveScalar = 0.25;
 
                 public static final boolean shootWhileMoving = false;
+
+                public static final double autonomousFinishShotTime = 1;
 
         }
 
@@ -567,6 +568,9 @@ public class Constants {
 
 
 
+
+
+                // Old mounts
                 public static final Translation3d newLimelightLeftOffset = new Translation3d(Units.inchesToMeters(-11.879500),
                                 Units.inchesToMeters(-8.607840), Units.inchesToMeters(14.684656));
                 public static final Translation3d newLimelightCenterOffset = new Translation3d(Units.inchesToMeters(-11.377464),

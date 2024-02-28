@@ -80,18 +80,7 @@ public class Shoot extends Command {
         Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
             / (PoseEstimation.getEstimatedPose().getX() - target.getX()))).plus(Rotation2d.fromDegrees(180));
 
-
-
-    // double regressionOut = MathUtil.clamp(SpeakerShotRegression.wristRegression.predict(targetDistance),
-    //     ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp);
-    // double regressionOut = MathUtil.clamp(SpeakerShotRegression.wristInterpolation.getInterpolated(new InterpolatingDouble(targetDistance)).value,
-    //     ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp);
-    double regressionOut = MathUtil.clamp(SpeakerShotRegression.wristExpoRegression(targetDistance),
-        ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp);
-
-
-
-    wrist.toAngle(Rotation2d.fromDegrees(regressionOut));
+    wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
     double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose : ScoringConstants.shooterSetpointFar;
     shooter.shooterToRMP(speeds[0], speeds[1]);
@@ -122,8 +111,8 @@ public class Shoot extends Command {
       indexer.disable();
     }
 
-    SmartDashboard.putNumber("TargetAngle", robotAngle.get().getDegrees());
-    SmartDashboard.putNumber("TargetAngle", robotAngle.get().getDegrees());
+    // SmartDashboard.putNumber("TargetAngle", SpeakerShotRegression.calculateWristAngle(targetDistance).getDegrees());
+    // SmartDashboard.putNumber("TargetDistance", targetDistance);
 
   }
 

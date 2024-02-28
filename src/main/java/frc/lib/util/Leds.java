@@ -62,9 +62,9 @@ public class Leds extends SubsystemBase {
 
   // Constants
   private static final int minLoopCycleCount = 10;
-  private static final double strobeFastDuration = 0.5;
+  private static final double strobeFastDuration = 0.75;
   private static final double strobeSlowDuration = 5;
-  private static final double breathDuration = 1.0;
+  private static final double breathDuration = 2.0;
 
   private static final double rainbowCycleLength = 25.0;
   private static final double rainbowDuration = 0.25;
@@ -76,8 +76,8 @@ public class Leds extends SubsystemBase {
   private static final double waveSlowDuration = 3.0;
 
   private static final double stripeSlowDuration = 5.0;
-  private static final int stripesSmallLength = 3;
-  private static final double stripeFastDuration = 2;
+  private static final int stripesSmallLength = 5;
+  private static final double stripeFastDuration = 0.5;
   private static final int stripesLongLength = 10;
 
   private static final double breathAllianceCycleLength = 5;
@@ -207,7 +207,13 @@ public class Leds extends SubsystemBase {
     }
 
     if (endgameAlert) {
-      strobe(Section.TOP, Color.kOrange, strobeFastDuration);
+      strobe(Section.FULL, Color.kLightCyan, strobeFastDuration);
+    } else if (climbing) {
+        breath(
+                Section.FULL,
+                Color.kOrangeRed,
+                Color.kCyan,
+                breathDuration);
     } else if (intaking) {
       if (hasGamePiece) {
         solid(Section.FULL, Color.kGreen);
@@ -215,10 +221,28 @@ public class Leds extends SubsystemBase {
         solid(Section.FULL, Color.kPurple);
       }
     } else if (shooting) {
-      rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
+
+          stripes(
+          Section.FULL,
+          List.of(Color.kBlack, Color.kCyan),
+          stripesLongLength,
+          stripeFastDuration);
+      // rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
     } else if (scoringAmp) {
-      rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
+            stripes(
+          Section.FULL,
+          List.of(Color.kBlack, Color.kOrangeRed),
+          // List.of(Color.kRed, Color.kBlack, Color.kOrangeRed, Color.kBlack),
+          stripesLongLength,
+          stripeFastDuration);
+      // rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
     }
+
+    // stripes(
+    //       Section.FULL,
+    //       List.of(Color.kPurple, Color.kCyan, Color.kGold, Color.kOrange, Color.kOrangeRed, Color.kRed, Color.kBlue, Color.kDarkBlue),
+    //       stripesLongLength,
+    //       10);
 
     leds.setData(buffer);
 

@@ -54,6 +54,9 @@ public class Indexer extends SubsystemBase {
   public boolean isNoteAtTarget() {
     return Math.abs(indexerSensor.getRange() - IndexerConstants.isNotePresentTarget) < IndexerConstants.isNotePresentTolerance;
   }
+  public boolean isNotePresent() {
+    return indexerSensor.getRange() < 200;
+  }
 
   public void indexNoteToTarget() {
 
@@ -80,7 +83,7 @@ public class Indexer extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("IndexerSensor", indexerSensor.getRange());
+    // SmartDashboard.putNumber("IndexerSensor", indexerSensor.getRange());
   }
 
   private TalonFX configIndexerMotor(TalonFX motor) {

@@ -63,16 +63,14 @@ public class IntakeNote extends Command {
     wrist.toAngle(ScoringConstants.Handoff.angle);
     elevator.toHeight(ScoringConstants.Handoff.height);
 
-    if (!intake.isNotePresent() && !noteDetected) {
-      // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
-      // intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
-      intake.setVoltage(ScoringConstants.intakingTargetVoltage);
-
-    } else if (noteDetected && !wrist.isAtSetpoint() && !elevator.isAtSetpoint()) {
+    if (noteDetected && !wrist.isAtSetpoint() && !elevator.isAtSetpoint()) {
       intake.disable();
     } else if (noteDetected && wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
       // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
       // intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
+      intake.setVoltage(ScoringConstants.intakingTargetVoltage);
+
+    } else {
       intake.setVoltage(ScoringConstants.intakingTargetVoltage);
 
     }

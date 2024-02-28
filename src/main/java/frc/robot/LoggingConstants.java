@@ -22,12 +22,12 @@ public final class LoggingConstants {
         }
 
         public class RobotContainerLogging {
-                public static LoggingLevel StickValues = LoggingLevel.NONE;
+                public static LoggingLevel StickValues = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
         public class ElevatorLogging {
-                public static LoggingLevel Main = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel MotionMagic = LoggingLevel.NONE;
                 public static LoggingLevel Default = LoggingLevel.NONE;
@@ -54,7 +54,7 @@ public final class LoggingConstants {
         }
 
         public class ShooterLogging {
-                public static LoggingLevel Main = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }

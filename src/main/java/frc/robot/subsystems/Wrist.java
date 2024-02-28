@@ -91,6 +91,13 @@ public class Wrist extends SubsystemBase {
     toAngle(ScoringConstants.Home.angle);
   }
 
+  /**
+   * Just PID to the current angle to hold position
+   */
+  public void holdPosition() {
+    toAngle(getAngle());
+  }
+
   public Rotation2d getSetpointError() {
     return Rotation2d.fromRotations(wristLeaderMotor.getClosedLoopError().getValue());
   }

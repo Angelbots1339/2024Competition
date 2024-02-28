@@ -130,9 +130,6 @@ public class LoggedSweveModules extends LoggedObject<Swerve> {
     @Override
     protected void initializeDataLog() {
 
-
-        
-
         addDoubleToOnboardLog("Module:0/CanCoder", () -> object.getModule(0).getCANcoder().getPosition().getValue());
         addDoubleToOnboardLog("Module:0/TotalDistance", () -> driveRotsToMeters(object.getModule(0).getDriveMotor().getPosition().getValue()));
 

@@ -23,10 +23,10 @@ import frc.robot.LoggingConstants.IntakeLogging;
 
 public class Intake extends SubsystemBase {
 
-  // Todo: Config Motor was leading to strange behavoir, 
-  // private TalonFX intakeMotor = configIntakeMotor(TalonFXFactory.createTalon(IntakeConstants.intakeMotorID,
-  //     IntakeConstants.intakeMotorCANBus, IntakeConstants.kIntakeConfiguration));
-  private TalonFX intakeMotor = new TalonFX(18, "rio");
+  // Todo: Config Motor was leading to strange behavior, 
+  private TalonFX intakeMotor = configIntakeMotor(TalonFXFactory.createTalon(IntakeConstants.intakeMotorID,
+      IntakeConstants.intakeMotorCANBus, IntakeConstants.kIntakeConfiguration));
+  // private TalonFX intakeMotor = new TalonFX(18, "rio");
 
   private TimeOfFlight intakeSensor = new TimeOfFlight(IntakeConstants.intakeSensorID);
 
@@ -65,7 +65,7 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     
-    SmartDashboard.putNumber("IntakeSensor", intakeSensor.getRange());
+    // SmartDashboard.putNumber("IntakeSensor", intakeSensor.getRange());
   }
 
   private TalonFX configIntakeMotor(TalonFX motor) {

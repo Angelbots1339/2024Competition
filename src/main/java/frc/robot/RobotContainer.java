@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -39,11 +40,13 @@ import frc.robot.commands.AlignScoreAmp;
 import frc.robot.commands.HandOffNote;
 import frc.robot.commands.IntakeNoHandoff;
 import frc.robot.commands.IntakeNote;
+import frc.robot.commands.ManualClimb;
 import frc.robot.commands.ScoreAmp;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootFromSubwoofer;
 import frc.robot.commands.SuperstructureToPosition;
 import frc.robot.commands.Auto.AutoShoot;
+import frc.robot.commands.Auto.AutoShootMoving;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -54,7 +57,7 @@ import frc.robot.subsystems.Wrist;
 public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-  private TuningMode tuningMode = TuningMode.SHOOTER;
+  private TuningMode tuningMode = TuningMode.DISABLED;
 
   // private GenericEntry wristAngle = Shuffleboard.getTab("Tune").add("WristAngle", 90)
   //     .withWidget(BuiltInWidgets.kTextView)
@@ -82,6 +85,8 @@ public class RobotContainer {
   private Supplier<Double> rotation = () -> DriverConstants.fixRotationJoystickValues(-driveController.getRightX(),
       false);
 
+  private Supplier<Double> manualWristRotation = () -> driveController.getRightY();
+
   private Trigger runIntake = new Trigger(() -> driveController.getLeftBumper() && !climbMode);
   private Trigger runIntakeNoHandoff = new Trigger(() -> driveController.getLeftTriggerAxis() > 0.1 && !climbMode);
   private Trigger runOuttake = new Trigger(() -> driveController.getRightBumper() && !climbMode && !driveController.getAButton());
@@ -102,7 +107,11 @@ public class RobotContainer {
 
   private void configDriverBindings() {
     resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
-    toggleClimbMode.onTrue(new InstantCommand(() -> {
+    // toggleClimbMode.toggleOnTrue(new InstantCommand(() -> {
+    //   climbMode = !climbMode;
+    //   Leds.getInstance().climbing = climbMode;
+    // }).alongWith(new ManualClimb(elevator, wrist, translationX, rotation, manualWristRotation)));
+    toggleClimbMode.toggleOnTrue(new InstantCommand(() -> {
       climbMode = !climbMode;
       Leds.getInstance().climbing = climbMode;
     }));
@@ -132,7 +141,8 @@ public class RobotContainer {
     extendClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(driveController.getLeftTriggerAxis() * 10), elevator));
     retractClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(-driveController.getRightTriggerAxis() * 10), elevator));
     
-    extendToMax.onTrue(new RunCommand(() -> elevator.toHeight(ElevatorConstants.maxElevatorHeight - 0.01)));
+    
+    // extendToMax.onTrue(new RunCommand(() -> elevator.toHeight(ElevatorConstants.maxElevatorHeight - 0.01)));
     
 
 
@@ -154,8 +164,10 @@ public class RobotContainer {
     
     NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
         elevator, swerve, indexer));
+    NamedCommands.registerCommand("shootWhileMoving", new AutoShootMoving(shooter, wrist,
+        elevator, swerve, indexer));
     NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
-        wrist, elevator, () -> false));
+        wrist, elevator, () -> true).andThen(new HandOffNote(intake, indexer, wrist, elevator)));
     NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNoHandoff(intake));
 
     autoChooser = AutoBuilder.buildAutoChooser("");
@@ -169,17 +181,17 @@ public class RobotContainer {
 
   private void configDefaultCommands() {
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
-    // wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
-    // elevator.setDefaultCommand(new InstantCommand(() -> {
-    //   if (climbMode) {
-    //     elevator.holdPosition();
-    //   } else {
-    //     elevator.home();
-    //   }
-    // }, elevator));
-    // intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
-    // indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
-    // shooter.setDefaultCommand(new InstantCommand(() -> shooter.disable(), shooter));
+    wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
+    elevator.setDefaultCommand(new InstantCommand(() -> {
+      if (climbMode) {
+        elevator.holdPosition();
+      } else {
+        elevator.home();
+      }
+    }, elevator));
+    intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
+    indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
+    shooter.setDefaultCommand(new InstantCommand(() -> shooter.disable(), shooter));
   }
 
   private void initializeEndgameAlerts() {
@@ -249,7 +261,7 @@ public class RobotContainer {
    * Should be called periodically from RobotPeriodic
    */
   public void updateDashboard() {
-    // SmartDashboard.putBoolean("Climb Mode", climbMode);
+    SmartDashboard.putBoolean("Climb Mode", climbMode);
   }
 
   /***** Tuning *****/

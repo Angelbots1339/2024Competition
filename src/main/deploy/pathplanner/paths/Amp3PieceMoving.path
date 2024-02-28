@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 1.437490004609639,
-        "y": 6.587093364001543
+        "y": 6.5
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.0888178628209113,
-        "y": 6.81008170349674
+        "y": 6.722988339495197
       },
       "isLocked": false,
       "linkedName": "AmpSideStart"

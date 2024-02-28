@@ -24,7 +24,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Wrist;
 
-public class AutoShoot extends Command {
+public class AutoShootMoving extends Command {
 
   private Shooter shooter;
   private Wrist wrist;
@@ -35,7 +35,7 @@ public class AutoShoot extends Command {
   private Timer finishShotTimer = new Timer();
 
   /** Creates a new AutoShoot. */
-  public AutoShoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer) {
+  public AutoShootMoving(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer) {
     this.shooter = shooter;
     this.wrist = wrist;
     this.elevator = elevator;
@@ -56,23 +56,22 @@ public class AutoShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    swerve.updateVision(); // Only use vision for targeting in auto
 
     Translation2d target = FieldUtil.getAllianceSpeakerPosition();
 
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
 
-        Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
         Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-            / (PoseEstimation.getEstimatedPose().getX() - target.getX()))).plus(Rotation2d.fromDegrees(180));
+            / (PoseEstimation.getEstimatedPose().getX() - target.getX())))
+        .plus(Rotation2d.fromDegrees(180));
 
     swerve.setAutoOverrideRotation(true, robotAngle);
 
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
-    elevator.home();
 
-    swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+    elevator.home();
 
     double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose
         : ScoringConstants.shooterSetpointFar;

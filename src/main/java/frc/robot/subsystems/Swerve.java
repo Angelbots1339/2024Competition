@@ -161,7 +161,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      * @param translationY  Meters/second
      * @param rotation      Rad/second
      * @param fieldOriented Use field oriented drive?
-     * @param skewReduction Use Skew Reduction? 
+     * @param skewReduction Use Skew Reduction?
      * @return Drive Command
      */
     public Command angularDrive(Supplier<Double> translationX, Supplier<Double> translationY,
@@ -205,7 +205,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         });
     }
 
-
     /**
      * Generates and applies the angular drive request. Must call periodically.
      * 
@@ -213,36 +212,34 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      * @param translationY  Meters/second
      * @param rotation      Rad/second
      * @param fieldOriented Use field oriented drive?
-     * @param skewReduction Use Skew Reduction? 
+     * @param skewReduction Use Skew Reduction?
      * 
      */
     public void angularDriveRequest(Supplier<Double> translationX, Supplier<Double> translationY,
             Supplier<Rotation2d> desiredRotation, Supplier<Boolean> skewReduction) {
 
-        
+        // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+        // rot = rot.plus(Rotation2d.fromDegrees(180));
+        // };
 
-            // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-            // rot = rot.plus(Rotation2d.fromDegrees(180));
-            // };
+        ChassisSpeeds speeds = angularPIDCalc(translationX, translationY, desiredRotation);
 
-            ChassisSpeeds speeds = angularPIDCalc(translationX, translationY, desiredRotation);
+        if (skewReduction.get()) {
+            speeds = SwerveSkewMath.reduceSkewFromLogTwist2d(speeds);
+        }
 
-            if (skewReduction.get()) {
-                speeds = SwerveSkewMath.reduceSkewFromLogTwist2d(speeds);
-            }
+        SwerveRequest req;
 
-            SwerveRequest req;
+        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroYaw());
 
-                ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroYaw());
+        req = new SwerveRequest.RobotCentric()
+                .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
+                        : DriveRequestType.Velocity)
+                .withVelocityX(fieldRelativeSpeeds.vxMetersPerSecond) // Drive forward with negative Y (forward)
+                .withVelocityY(fieldRelativeSpeeds.vyMetersPerSecond) // Drive left with negative X (left)
+                .withRotationalRate(fieldRelativeSpeeds.omegaRadiansPerSecond);
 
-                req = new SwerveRequest.RobotCentric()
-                        .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
-                                : DriveRequestType.Velocity)
-                        .withVelocityX(fieldRelativeSpeeds.vxMetersPerSecond) // Drive forward with negative Y (forward)
-                        .withVelocityY(fieldRelativeSpeeds.vyMetersPerSecond) // Drive left with negative X (left)
-                        .withRotationalRate(fieldRelativeSpeeds.omegaRadiansPerSecond);
-
-            this.setControl(req);
+        this.setControl(req);
     }
 
     /**
@@ -259,9 +256,10 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         double pid = angularDrivePID.calculate(this.getAdjustedYaw().getDegrees(), desiredRotation.get().getDegrees());
 
         ChassisSpeeds speeds = new ChassisSpeeds(translationX.get(), translationY.get(),
-                MathUtil.clamp(angularDrivePID.atSetpoint() ? 0 : pid + (DriverConstants.angularDriveKS * Math.signum(pid)), -SwerveConstants.maxAngularRate, SwerveConstants.maxAngularRate));
+                MathUtil.clamp(
+                        angularDrivePID.atSetpoint() ? 0 : pid + (DriverConstants.angularDriveKS * Math.signum(pid)),
+                        -SwerveConstants.maxAngularRate, SwerveConstants.maxAngularRate));
 
-                
         return speeds;
     }
 
@@ -275,17 +273,24 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     public void pidToPose(Pose2d target) {
 
-        double x = -MathUtil.clamp(pidToPoseXController.calculate(PoseEstimation.getEstimatedPose().getTranslation().getX(),
-                target.getX())
-                + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS), -DriverConstants.pidToPoseMaxSpeed, DriverConstants.pidToPoseMaxSpeed);
-        double y = -MathUtil.clamp(pidToPoseYController.calculate(PoseEstimation.getEstimatedPose().getTranslation().getY(),
-                target.getY())
-                + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS), -DriverConstants.pidToPoseMaxSpeed, DriverConstants.pidToPoseMaxSpeed);
+        double x = -MathUtil.clamp(
+                pidToPoseXController.calculate(PoseEstimation.getEstimatedPose().getTranslation().getX(),
+                        target.getX())
+                        + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS),
+                -DriverConstants.pidToPoseMaxSpeed, DriverConstants.pidToPoseMaxSpeed);
+        double y = -MathUtil.clamp(
+                pidToPoseYController.calculate(PoseEstimation.getEstimatedPose().getTranslation().getY(),
+                        target.getY())
+                        + Math.signum(pidToPoseXController.getPositionError()) * Math.abs(DriverConstants.pidToPoseKS),
+                -DriverConstants.pidToPoseMaxSpeed, DriverConstants.pidToPoseMaxSpeed);
 
-        // SmartDashboard.putNumber("PidXError", pidToPoseXController.getPositionError());
-        // SmartDashboard.putNumber("PidYError", pidToPoseYController.getPositionError());
+        // SmartDashboard.putNumber("PidXError",
+        // pidToPoseXController.getPositionError());
+        // SmartDashboard.putNumber("PidYError",
+        // pidToPoseYController.getPositionError());
 
-        angularDriveRequest(() -> pidToPoseXController.atSetpoint() ? 0 : x, () -> pidToPoseYController.atSetpoint() ? 0 : y, () -> target.getRotation(), () -> false);
+        angularDriveRequest(() -> pidToPoseXController.atSetpoint() ? 0 : x,
+                () -> pidToPoseYController.atSetpoint() ? 0 : y, () -> target.getRotation(), () -> false);
     }
 
     public boolean isAtPose() {
@@ -332,12 +337,13 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     public Rotation2d getGyroYaw() {
         double rawYaw = m_pigeon2.getYaw().getValue();
         double yawWithRollover = rawYaw > 0 ? rawYaw % 360 : 360 - Math.abs(rawYaw % 360);
-        
+
         return Rotation2d.fromDegrees(yawWithRollover);
     }
+
     public Rotation2d getAdjustedYaw() {
         boolean isAllianceBlue = true;
-        if(DriverStation.getAlliance().isPresent()) {
+        if (DriverStation.getAlliance().isPresent()) {
             isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
         }
 
@@ -345,22 +351,34 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 : getGyroYaw().plus(new Rotation2d(Math.PI));
     }
 
-
     public void setGyroYaw(Rotation2d yaw) {
         m_pigeon2.setYaw(yaw.getDegrees(), Constants.kConfigTimeoutSeconds);
     }
+
     public void zeroGyro() {
         setGyroYaw(Rotation2d.fromDegrees(0));
     }
+
     public void zeroGyro(Rotation2d rot) {
         setGyroYaw(Rotation2d.fromDegrees(rot.getDegrees()));
     }
 
+    /**
+     * Will rotate the provided value by 180 if on red alliance
+     */
+    public void zeroGyroAdjusted(Rotation2d rot) {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            setGyroYaw(alliance.get() == Alliance.Blue ? rot : rot.plus(Rotation2d.fromDegrees(180)));
+        } else {
+            setGyroYaw(rot);
+        }
+    }
 
     public void updateVision() {
         if (Robot.isReal()) {
 
-            if (LimelightHelpers.getFiducialID(VisionConstants.limelightLeftName) >= 0) {
+            if (LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightLeftName).getX() > 0.1) {
                 double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightLeftName)
                         .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
                 double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
@@ -373,7 +391,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
             }
 
-            if (LimelightHelpers.getFiducialID(VisionConstants.limelightCenterName) >= 0) {
+            if (LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getX() > 0.1) {
                 double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightCenterName)
                         .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
                 double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
@@ -386,7 +404,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
             }
 
-            if (LimelightHelpers.getFiducialID(VisionConstants.limelightRightName) >= 0) {
+            if (LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightRightName).getX() > 0.1) {
                 double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightRightName)
                         .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
                 double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
@@ -403,14 +421,15 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     }
 
     public void periodic() {
-
-        updateVision();
+        if(!DriverStation.isAutonomous()){
+            updateVision();
+        }
         PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(), m_modulePositions, this);
     }
 
     public void resetPose(Pose2d pose) {
         this.seedFieldRelative(pose);
-        this.zeroGyro(pose.getRotation());
+        this.zeroGyroAdjusted(pose.getRotation());
     }
 
     public void configPathPlanner() {
