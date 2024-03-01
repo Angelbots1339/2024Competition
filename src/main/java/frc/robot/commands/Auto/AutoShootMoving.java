@@ -85,10 +85,10 @@ public class AutoShootMoving extends Command {
       indexer.disable();
     }
 
-    System.out.println("Shooter: " + shooter.isAtSetpoint());
-    System.out.println("Wrist: " + wrist.isAtSetpoint());
-    System.out.println("Elevator: " + elevator.isAtSetpoint());
-    System.out.println("Angular: " + swerve.isAtAngularDriveSetpoint());
+    // System.out.println("Shooter: " + shooter.isAtSetpoint());
+    // System.out.println("Wrist: " + wrist.isAtSetpoint());
+    // System.out.println("Elevator: " + elevator.isAtSetpoint());
+    // System.out.println("Angular: " + swerve.isAtAngularDriveSetpoint());
 
   }
 

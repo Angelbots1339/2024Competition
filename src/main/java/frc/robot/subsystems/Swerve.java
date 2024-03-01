@@ -38,6 +38,7 @@ import frc.lib.util.LimelightHelpers;
 import frc.lib.util.PoseEstimation;
 import frc.lib.util.SwerveSkewMath;
 import frc.lib.util.logging.LoggedSubsystem;
+import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.lib.util.logging.loggedObjects.LoggedField;
 import frc.lib.util.logging.loggedObjects.LoggedPigeon2;
 import frc.lib.util.logging.loggedObjects.LoggedSweveModules;
@@ -89,8 +90,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         CommandScheduler.getInstance().registerSubsystem(this);
 
-        // registerTelemetry((SwerveDriveState pose) ->
-        // PoseEstimation.updateEstimatedPose(pose, m_modulePositions, this));
+        // registerTelemetry(
+        //         (SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(pose.Pose, m_modulePositions, this));
 
         PathPlannerLogging.setLogTargetPoseCallback(PoseEstimation::updateTargetAutoPose);
 
@@ -253,7 +254,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      */
     private ChassisSpeeds angularPIDCalc(Supplier<Double> translationX, Supplier<Double> translationY,
             Supplier<Rotation2d> desiredRotation) {
-        double pid = angularDrivePID.calculate(this.getAdjustedYaw().getDegrees(), desiredRotation.get().getDegrees());
+        double pid = angularDrivePID.calculate(this.getGyroYaw().getDegrees(), desiredRotation.get().getDegrees());
 
         ChassisSpeeds speeds = new ChassisSpeeds(translationX.get(), translationY.get(),
                 MathUtil.clamp(
@@ -347,8 +348,10 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
         }
 
-        return isAllianceBlue ? getGyroYaw()
-                : getGyroYaw().plus(new Rotation2d(Math.PI));
+             double rawYaw = m_pigeon2.getYaw().getValue() + (isAllianceBlue ? 0 : 180);
+        double yawWithRollover = rawYaw > 0 ? rawYaw % 360 : 360 - Math.abs(rawYaw % 360);
+
+        return Rotation2d.fromDegrees(yawWithRollover);
     }
 
     public void setGyroYaw(Rotation2d yaw) {
@@ -367,12 +370,12 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      * Will rotate the provided value by 180 if on red alliance
      */
     public void zeroGyroAdjusted(Rotation2d rot) {
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-            setGyroYaw(alliance.get() == Alliance.Blue ? rot : rot.plus(Rotation2d.fromDegrees(180)));
-        } else {
-            setGyroYaw(rot);
+        boolean isAllianceBlue = true;
+        if(DriverStation.getAlliance().isPresent()) {
+            isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
         }
+     
+            setGyroYaw(isAllianceBlue ? rot : rot.plus(Rotation2d.fromDegrees(180)));
     }
 
     public void updateVision() {
@@ -381,50 +384,65 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             if (LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightLeftName).getX() > 0.1) {
                 double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightLeftName)
                         .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-                double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
 
-                Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightLeftName);
-                double poseFromVisionTimestamp = Timer.getFPGATimestamp()
-                        - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightLeftName)
-                                + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightLeftName)) / 1000;
+                if (tagDistance < VisionConstants.maxUsableDistance) {
 
-                addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
+                    double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
+
+                    Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightLeftName);
+                    double poseFromVisionTimestamp = Timer.getFPGATimestamp()
+                            - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightLeftName)
+                                    + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightLeftName)) / 1000;
+
+                    addVisionMeasurement(poseFromVision, poseFromVisionTimestamp,
+                            VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
+                }
             }
 
             if (LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName).getX() > 0.1) {
                 double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightCenterName)
                         .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-                double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
 
-                Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName);
-                double poseFromVisionTimestamp = Timer.getFPGATimestamp()
-                        - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightCenterName)
-                                + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightCenterName)) / 1000;
+                if (tagDistance < VisionConstants.maxUsableDistance) {
 
-                addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
+                    double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
+
+                    Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightCenterName);
+                    double poseFromVisionTimestamp = Timer.getFPGATimestamp()
+                            - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightCenterName)
+                                    + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightCenterName)) / 1000;
+
+                    addVisionMeasurement(poseFromVision, poseFromVisionTimestamp,
+                            VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
+                }
             }
 
             if (LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightRightName).getX() > 0.1) {
                 double tagDistance = LimelightHelpers.getTargetPose3d_CameraSpace(VisionConstants.limelightRightName)
                         .getTranslation().getNorm(); // Find direct distance to target for std dev calculation
-                double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
+                if (tagDistance < VisionConstants.maxUsableDistance) {
 
-                Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightRightName);
-                double poseFromVisionTimestamp = Timer.getFPGATimestamp()
-                        - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightRightName)
-                                + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightRightName)) / 1000;
+                    double xyStdDev2 = VisionConstants.calcStdDev(tagDistance);
 
-                addVisionMeasurement(poseFromVision, poseFromVisionTimestamp, VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
+                    Pose2d poseFromVision = LimelightHelpers.getBotPose2d_wpiBlue(VisionConstants.limelightRightName);
+                    double poseFromVisionTimestamp = Timer.getFPGATimestamp()
+                            - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightRightName)
+                                    + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightRightName)) / 1000;
+
+                    addVisionMeasurement(poseFromVision, poseFromVisionTimestamp,
+                            VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
+                }
             }
-
         }
     }
 
     public void periodic() {
-        if(!DriverStation.isAutonomous()){
+        if (!DriverStation.isAutonomous()) {
             updateVision();
         }
-        PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(), m_modulePositions, this);
+        PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(),
+        m_modulePositions, this);
+
     }
 
     public void resetPose(Pose2d pose) {
@@ -481,7 +499,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         logger.add(field);
         field.addPose2d("PoseEstimation", () -> PoseEstimation.getEstimatedPose(), true);
 
-        logger.add(new LoggedSweveModules(null, logger, this,
+        logger.add(new LoggedSweveModules("Modules", logger, this,
                 SwerveLogging.Modules));
 
         logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2,
@@ -505,6 +523,20 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 SwerveLogging.Auto);
 
         logger.addBoolean("isAtAngularDriveSetpoint", () -> isAtAngularDriveSetpoint(), SwerveLogging.PidPose);
+
+
+
+        logger.add(new LoggedFalcon("FrontLeftDrive", logger, getModule(0).getDriveMotor(), SwerveLogging.Motors));
+        logger.add(new LoggedFalcon("FrontLeftAngle", logger, getModule(0).getSteerMotor(), SwerveLogging.Motors));
+        
+        logger.add(new LoggedFalcon("FrontRightDrive", logger, getModule(1).getDriveMotor(), SwerveLogging.Motors));
+        logger.add(new LoggedFalcon("FrontRightAngle", logger, getModule(1).getSteerMotor(), SwerveLogging.Motors));
+
+        logger.add(new LoggedFalcon("BackLeftDrive", logger, getModule(2).getDriveMotor(), SwerveLogging.Motors));
+        logger.add(new LoggedFalcon("BackLeftAngle", logger, getModule(2).getSteerMotor(), SwerveLogging.Motors));
+        
+        logger.add(new LoggedFalcon("BackRightDrive", logger, getModule(3).getDriveMotor(), SwerveLogging.Motors));
+        logger.add(new LoggedFalcon("BackRightAngle", logger, getModule(3).getSteerMotor(), SwerveLogging.Motors));
 
     }
 

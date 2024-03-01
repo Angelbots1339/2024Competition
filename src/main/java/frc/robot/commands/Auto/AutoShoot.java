@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,6 +35,8 @@ public class AutoShoot extends Command {
   private Indexer indexer;
 
   private Timer finishShotTimer = new Timer();
+
+  private boolean isAllianceBlue;
 
   /** Creates a new AutoShoot. */
   public AutoShoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer) {
@@ -60,14 +64,15 @@ public class AutoShoot extends Command {
 
     Translation2d target = FieldUtil.getAllianceSpeakerPosition();
 
+        if (DriverStation.getAlliance().isPresent()) {
+      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+    }
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
-
-        Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+        
+        Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to
         Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-            / (PoseEstimation.getEstimatedPose().getX() - target.getX()))).plus(Rotation2d.fromDegrees(180));
-
-    swerve.setAutoOverrideRotation(true, robotAngle);
+            / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
 
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
@@ -86,10 +91,10 @@ public class AutoShoot extends Command {
       indexer.disable();
     }
 
-    System.out.println("Shooter: " + shooter.isAtSetpoint());
-    System.out.println("Wrist: " + wrist.isAtSetpoint());
-    System.out.println("Elevator: " + elevator.isAtSetpoint());
-    System.out.println("Angular: " + swerve.isAtAngularDriveSetpoint());
+    // System.out.println("Shooter: " + shooter.isAtSetpoint());
+    // System.out.println("Wrist: " + wrist.isAtSetpoint());
+    // System.out.println("Elevator: " + elevator.isAtSetpoint());
+    // System.out.println("Angular: " + swerve.isAtAngularDriveSetpoint());
 
   }
 
@@ -101,7 +106,6 @@ public class AutoShoot extends Command {
     wrist.home();
     elevator.home();
 
-    swerve.setAutoOverrideRotation(false);
     finishShotTimer.stop();
     finishShotTimer.reset();
 

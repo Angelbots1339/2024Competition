@@ -179,7 +179,7 @@ public class Leds extends SubsystemBase {
           case Blue:
             breath(
                 Section.FULL,
-                Color.kLightCyan,
+                Color.kBlue,
                 Color.kBlack,
                 breathAllianceCycleLength);
             break;

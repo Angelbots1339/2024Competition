@@ -68,7 +68,7 @@ public class Constants {
 
                 // The stator current at which the wheels start to slip;
                 // This needs to be tuned to your individual robot
-                private static final double kSlipCurrentA = 300.0; // TODO Get a test value
+                private static final double kSlipCurrentA = 65; // TODO Get a test value
 
                 // Theoretical free speed (m/s) at 12v applied output;
                 // This needs to be tuned to your individual robot
@@ -213,8 +213,8 @@ public class Constants {
                 public static final double manualElevatorVolts = 10;
                 public static final double manualWristVolts = 6;
 
-                public static final double endgameAlert1 = 30; // Seconds
-                public static final double endgameAlert2 = 15; // Seconds
+                public static final double endgameAlert1 = 25; // Seconds
+                public static final double endgameAlert2 = 10; // Seconds
 
                 /**
                  * 
@@ -499,9 +499,9 @@ public class Constants {
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(125, 0);
 
-                public static final double[] shooterSetpointClose = {3500, 4500}; // [Left, Right]
+                public static final double[] shooterSetpointClose = {3750, 4750}; // [Left, Right]
                 public static final double[] shooterSetpointFar = {5000, 6000}; // [Left, Right]
-                public static final double flywheelDistanceCutoff =  2.9; //  3.28
+                public static final double flywheelDistanceCutoff =  2.5; //  2.9
                 public static final double shootingWaitTime = 0.2; // Seconds to wait before shooting to make shooting predictable & consistent
 
                 public static final double wristRegressionMaxClamp = 175;
@@ -512,9 +512,9 @@ public class Constants {
 
 
                 public static final double indexingTargetPercent = 0.2;
-                public static final double indexingTargetPercentSlow = 0.1; 
+                // public static final double indexingTargetPercentSlow = 0.1; 
 
-                public static final double indexingTargetVolts = 3; 
+                public static final double indexingTargetVolts = 3; // 3 Volts
                 public static final double indexingTargetVoltsSlow = 1; 
                 public static final double indexerScoringPercent = 0.4;
                 public static final double indexerScoreAmpPercent = -0.4; 
@@ -540,19 +540,20 @@ public class Constants {
                 // Apriltag Height: 57 inches
                 // Horizontal offset 22.5 inches 
 
-                public static final double StdDevScalar = 0.1;
+                // public static final double StdDevScalar = 0.002;
                 
 
                 public static double calcStdDev(double metersFromTarget) {
 
-                        double inches = Units.metersToInches(metersFromTarget); // Convert to inches
+                        // double inches = Units.metersToInches(metersFromTarget); // Convert to inches
+                        // double hypotenuse = Math.sqrt(Math.pow(inches, 2) + Math.pow(57, 2)); // Account for april tag being high off the ground
+                        // double calculated = StdDevScalar * Math.pow(Math.pow(hypotenuse, 19.5335), -0.1/2); // Plug into Std Dev equation that we got experimentally
 
-                        double hypotenuse = Math.sqrt(Math.pow(inches, 2) + Math.pow(57, 2)); // Account for april tag being high off the ground
-                        
-                        double calculated = StdDevScalar * Math.pow(Math.pow(hypotenuse, 19.5335), -0.1/2); // Plug into Std Dev equation that we got experimentally
 
-                        return MathUtil.clamp(calculated, 0, 1); 
+                        return MathUtil.clamp(0.01 * Math.pow(metersFromTarget, 3), 0, 1);
                 }
+
+                public static final double maxUsableDistance = 5; // Meters
 
 
                 public static final String limelightLeftName = "limelight-left";

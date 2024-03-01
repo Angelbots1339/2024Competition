@@ -56,8 +56,12 @@ public class AlignScoreAmp extends Command {
       wrist.toAngle(ScoringConstants.ScoreAmp.angle);
     }
 
-    Optional<Alliance> alliance = DriverStation.getAlliance();
-    swerve.pidToPose(new Pose2d(FieldUtil.getAllianceAmpPosition().getX(), FieldUtil.getAllianceAmpPosition().getY() - ScoringConstants.scoreAmpOffset, Rotation2d.fromDegrees(alliance.get() == Alliance.Blue ? 90 : 270)));
+    boolean isAllianceBlue = true;
+    if(DriverStation.getAlliance().isPresent()){
+      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+    }
+  
+    swerve.pidToPose(new Pose2d(FieldUtil.getAllianceAmpPosition().getX(), FieldUtil.getAllianceAmpPosition().getY() - ScoringConstants.scoreAmpOffset, Rotation2d.fromDegrees(isAllianceBlue ? 90 : 270)));
 
     if(wrist.isAtSetpoint() && elevator.isAtSetpoint() && swerve.isAtPose()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexerScoreAmpPercent);

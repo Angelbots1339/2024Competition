@@ -69,7 +69,7 @@ public class ShootFromSubwoofer extends Command {
 
     swerve.angularDriveRequest(() -> translationX.get(),
         () -> translationY.get(),
-        () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180), () -> true);
+        () -> Rotation2d.fromDegrees(0), () -> true);
 
     if (wrist.isAtSetpoint() && elevator.isAtSetpoint() && shooter.isAtSetpoint() && actuallyShoot.get()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexerScoringPercent);

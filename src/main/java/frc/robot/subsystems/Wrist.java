@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team254.math.InterpolatingDouble;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
@@ -184,13 +185,18 @@ public class Wrist extends SubsystemBase {
         () -> wristLeaderMotor.getVelocity().getValue(),
         WristLogging.Main);
 
+    
+    double distance = PoseEstimation.getEstimatedPose().getTranslation()
+    .getDistance(FieldUtil.getAllianceSpeakerPosition());
 
-    logger.addDouble("PolyRegressionAngle", () -> SpeakerShotRegression.wristRegression.predict(PoseEstimation.getEstimatedPose().getTranslation()
-    .getDistance(FieldUtil.getAllianceSpeakerPosition())),
+    logger.addDouble("PolyRegressionAngle", () -> SpeakerShotRegression.wristRegression.predict(distance),
         WristLogging.Regression);
-    logger.addDouble("LinearRegressionAngle", () -> SpeakerShotRegression.wristExpoRegression(PoseEstimation.getEstimatedPose().getTranslation()
-    .getDistance(FieldUtil.getAllianceSpeakerPosition())),
+    logger.addDouble("LinearRegressionAngle", () -> SpeakerShotRegression.wristExpoRegression(distance),
         WristLogging.Regression);
+    logger.addDouble("InterpolationAngle", () -> SpeakerShotRegression.wristInterpolation.getInterpolated(new InterpolatingDouble(distance)).value,
+        WristLogging.Regression);
+
+    logger.addDouble("TargetDistance", () -> distance, WristLogging.Regression);
 
 
   }

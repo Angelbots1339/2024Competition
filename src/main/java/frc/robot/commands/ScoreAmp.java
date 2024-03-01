@@ -30,6 +30,8 @@ public class ScoreAmp extends Command {
 
   private Timer timer = new Timer();
 
+  boolean isAllianceBlue = false;
+
   /** Creates a new ScoreAmp. */
   public ScoreAmp(Elevator elevator, Wrist wrist, Swerve swerve, Supplier<Double> translationX,
       Supplier<Double> translationY) {
@@ -57,7 +59,7 @@ public class ScoreAmp extends Command {
   public void execute() {
     elevator.toHeight(ScoringConstants.ScoreAmp.height);
 
-    if(ScoringConstants.ScoreAmp.angle.getDegrees() > 90 || elevator.getLeaderPosition() > 0.15){
+    if (ScoringConstants.ScoreAmp.angle.getDegrees() > 90 || elevator.getLeaderPosition() > 0.15) {
 
       wrist.toAngle(ScoringConstants.ScoreAmp.angle);
     }
@@ -70,9 +72,14 @@ public class ScoreAmp extends Command {
     // }
     // }
 
+    if (DriverStation.getAlliance().isPresent()) {
+      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+    }
+
     swerve.angularDriveRequest(() -> translationX.get() * 1,
         () -> translationY.get() * 1,
-        () -> Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 90 : 270),
+        () -> Rotation2d.fromDegrees(isAllianceBlue ? 270 : 90),
+        // () -> Rotation2d.fromDegrees(90),
         () -> true);
   }
 

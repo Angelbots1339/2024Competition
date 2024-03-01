@@ -90,7 +90,7 @@ public class IntakeNote extends Command {
     elevator.home();
     // }
 
-    System.out.println("Intake Command Ended");
+    // System.out.println("Intake Command Ended");
 
     Leds.getInstance().intaking = false;
     Leds.getInstance().hasGamePiece = false;

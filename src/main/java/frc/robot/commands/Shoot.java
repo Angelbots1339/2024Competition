@@ -28,15 +28,18 @@ import frc.robot.subsystems.Wrist;
 
 public class Shoot extends Command {
 
-  Shooter shooter;
-  Wrist wrist;
-  Elevator elevator;
-  Swerve swerve;
-  Indexer indexer;
+  private Shooter shooter;
+  private Wrist wrist;
+  private Elevator elevator;
+  private Swerve swerve;
+  private Indexer indexer;
 
-  Supplier<Double> translationX;
-  Supplier<Double> translationY;
-  Supplier<Boolean> overrideIndexerSensor;
+  private Supplier<Double> translationX;
+  private Supplier<Double> translationY;
+  private Supplier<Boolean> overrideIndexerSensor;
+
+    private boolean isAllianceBlue = true;
+
 
   /** Creates a new Shoot. */
   public Shoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer,
@@ -63,6 +66,7 @@ public class Shoot extends Command {
 
   }
 
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
@@ -76,20 +80,25 @@ public class Shoot extends Command {
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
 
-    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-            / (PoseEstimation.getEstimatedPose().getX() - target.getX()))).plus(Rotation2d.fromDegrees(180));
+    
+    if (DriverStation.getAlliance().isPresent()) {
+      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+    }
+
+    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to
+    Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+        / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
 
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
-    double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose : ScoringConstants.shooterSetpointFar;
+    double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose
+        : ScoringConstants.shooterSetpointFar;
     shooter.shooterToRMP(speeds[0], speeds[1]);
 
     swerve.angularDriveRequest(() -> translationX.get() *
         ScoringConstants.shootingDriveScalar,
         () -> translationY.get() * ScoringConstants.shootingDriveScalar, robotAngle,
         () -> true);
-        
 
     // swerve.angularDrive(() -> translationX.get() *
     // ScoringConstants.shootingDriveScalar,
@@ -98,21 +107,22 @@ public class Shoot extends Command {
     // : 180), () -> true,
     // () -> true);
 
-    // if ((indexer.isNotePresent() || overrideIndexerSensor.get()) && shooter.isAtSetpoint() && wrist.isAtSetpoint()
-    //     && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
-    //   indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
+    // if ((indexer.isNotePresent() || overrideIndexerSensor.get()) &&
+    // shooter.isAtSetpoint() && wrist.isAtSetpoint()
+    // && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
+    // indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
     // } else {
-    //   indexer.disable();
+    // indexer.disable();
     // }
-    if ( shooter.isAtSetpoint() && wrist.isAtSetpoint()
+    if (shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
     } else {
       indexer.disable();
     }
 
-    // SmartDashboard.putNumber("TargetAngle", SpeakerShotRegression.calculateWristAngle(targetDistance).getDegrees());
-    // SmartDashboard.putNumber("TargetDistance", targetDistance);
+    SmartDashboard.putNumber("TargetAngle", SpeakerShotRegression.calculateWristAngle(targetDistance).getDegrees());
+    SmartDashboard.putNumber("TargetDistance", targetDistance);
 
   }
 

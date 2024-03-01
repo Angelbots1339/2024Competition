@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -11,6 +13,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team254.math.PolynomialRegression;
@@ -132,10 +138,26 @@ public class Shooter extends SubsystemBase {
     rightTargetVelocity = 0;
   }
 
+  boolean isAllianceBlue = true; 
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
 
+    Translation2d target = FieldUtil.getAllianceSpeakerPosition();
+
+        if (DriverStation.getAlliance().isPresent()) {
+      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+    }
+    // double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
+    //     .getDistance(target);
+        Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to
+        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+            / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
+
+        SmartDashboard.putNumber("TargetRobotAngle", robotAngle.get().getDegrees());
+        SmartDashboard.putNumber("EstimatedYFromTarget", PoseEstimation.getEstimatedPose().getY() - target.getY());
+        SmartDashboard.putNumber("EstimatedXFromTarget", PoseEstimation.getEstimatedPose().getX() - target.getX());
   }
 
   private TalonFX configShooterMotor(TalonFX motor) {
