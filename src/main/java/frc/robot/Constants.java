@@ -529,7 +529,7 @@ public class Constants {
 
                 public static final boolean shootWhileMoving = false;
 
-                public static final double autonomousFinishShotTime = 1;
+                public static final double autonomousFinishShotTime = 0.3;
 
         }
 

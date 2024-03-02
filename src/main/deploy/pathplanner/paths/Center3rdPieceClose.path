@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2674725303154313,
-        "y": 5.5656226775416515
+        "x": 1.8878611275741073,
+        "y": 5.63866546251611
       },
       "isLocked": false,
       "linkedName": "Center2PieceEnd"
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.21,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

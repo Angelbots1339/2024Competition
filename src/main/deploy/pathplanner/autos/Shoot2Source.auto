@@ -2,19 +2,25 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3887354302486385,
-      "y": 5.57
+      "x": 0.5599913682271782,
+      "y": 4.1229197482961
     },
-    "rotation": 0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Source1Piece"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "shootNoVision"
+            "name": "shoot"
           }
         },
         {
@@ -30,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center2Piece"
+                  "pathName": "Source2Piece"
                 }
               }
             ]
@@ -41,10 +47,16 @@
           "data": {
             "name": "shoot"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SourceMoveFar"
+          }
         }
       ]
     }
   },
-  "folder": "Center",
+  "folder": "Source",
   "choreoAuto": false
 }

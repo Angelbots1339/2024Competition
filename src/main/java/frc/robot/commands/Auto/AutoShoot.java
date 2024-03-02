@@ -35,16 +35,19 @@ public class AutoShoot extends Command {
   private Indexer indexer;
 
   private Timer finishShotTimer = new Timer();
+  private Timer startShotTimer = new Timer();
 
   private boolean isAllianceBlue;
+  private boolean useVision;
 
   /** Creates a new AutoShoot. */
-  public AutoShoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer) {
+  public AutoShoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer, boolean useVision) {
     this.shooter = shooter;
     this.wrist = wrist;
     this.elevator = elevator;
     this.swerve = swerve;
     this.indexer = indexer;
+    this.useVision = useVision;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooter, wrist, elevator, indexer);
@@ -54,23 +57,21 @@ public class AutoShoot extends Command {
   @Override
   public void initialize() {
 
-    Leds.getInstance().shooting = true;
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    swerve.updateVision(); // Only use vision for targeting in auto
+    indexer.disable();
+    // Set setpoints before indexer can even run
+    if (useVision) {
+      swerve.updateVision(); // Only use vision for targeting in auto
+    }
 
     Translation2d target = FieldUtil.getAllianceSpeakerPosition();
 
-        if (DriverStation.getAlliance().isPresent()) {
+    if (DriverStation.getAlliance().isPresent()) {
       isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
     }
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
-        
-        Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to
+
+    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
         Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
             / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
 
@@ -83,12 +84,47 @@ public class AutoShoot extends Command {
         : ScoringConstants.shooterSetpointFar;
     shooter.shooterToRMP(speeds[0], speeds[1]);
 
-    if (shooter.isAtSetpoint() && wrist.isAtSetpoint()
-        && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
-          finishShotTimer.start();
-      indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
-    } else {
-      indexer.disable();
+    Leds.getInstance().shooting = true;
+    startShotTimer.start();
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    if (useVision) {
+      swerve.updateVision(); // Only use vision for targeting in auto
+    }
+    Translation2d target = FieldUtil.getAllianceSpeakerPosition();
+
+    if (DriverStation.getAlliance().isPresent()) {
+      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+    }
+    double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
+        .getDistance(target);
+
+    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+            / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
+
+    wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
+    elevator.home();
+
+    swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+
+    double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose
+        : ScoringConstants.shooterSetpointFar;
+    shooter.shooterToRMP(speeds[0], speeds[1]);
+
+    if(startShotTimer.get() > 0.2){
+      
+          if (shooter.isAtSetpoint() && wrist.isAtSetpoint()
+              && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
+            finishShotTimer.start();
+            indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
+          } else {
+            indexer.disable();
+          }
+
     }
 
     // System.out.println("Shooter: " + shooter.isAtSetpoint());
@@ -108,6 +144,9 @@ public class AutoShoot extends Command {
 
     finishShotTimer.stop();
     finishShotTimer.reset();
+
+    startShotTimer.stop();
+    startShotTimer.reset();
 
     Leds.getInstance().shooting = false;
 

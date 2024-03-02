@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4205654568716546,
-      "y": 5.5786278563297875
+      "x": 0.6049804090348924,
+      "y": 2.685896033829105
     },
     "rotation": 0
   },
@@ -12,9 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "shoot"
+            "pathName": "Mobility"
           }
         }
       ]

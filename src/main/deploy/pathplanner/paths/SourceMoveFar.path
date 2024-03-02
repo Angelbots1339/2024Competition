@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.7868547681539813,
-        "y": 6.233162470954571
+        "x": 2.018506759235741,
+        "y": 4.451334208223972
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.607091788257651,
-        "y": 6.803014962511407
+        "x": 2.1798541143378585,
+        "y": 3.190306940799067
       },
       "isLocked": false,
-      "linkedName": "Amp3PieceCloseShotEnd"
+      "linkedName": "SourceWallShot"
     },
     {
       "anchor": {
-        "x": 2.3992793911513752,
-        "y": 5.547451057865079
+        "x": 3.4750273991288725,
+        "y": 2.7852460982699747
       },
       "prevControl": {
-        "x": 1.6059634850751185,
-        "y": 5.2832499600184395
+        "x": 2.4750273991288725,
+        "y": 2.7852460982699747
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,25 +30,7 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "Intake",
-      "waypointRelativePos": 0.7,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "intakeNote"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.21,
     "maxAcceleration": 2.0,
@@ -61,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "AmpSide",
+  "folder": "Source",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

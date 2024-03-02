@@ -117,7 +117,7 @@ public class RobotContainer {
     }));
 
     runOuttake.whileTrue(new RunCommand(() -> {
-      intake.runIntakeDutyCycle(0.4);
+      intake.runIntakeDutyCycle(-0.4);
       indexer.runIndexerDutyCycle(-0.4);
     },
         intake, indexer).andThen(new InstantCommand(() -> {
@@ -163,7 +163,9 @@ public class RobotContainer {
     Leds.getInstance();
     
     NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
-        elevator, swerve, indexer));
+        elevator, swerve, indexer, true));
+    NamedCommands.registerCommand("shootNoVision", new AutoShoot(shooter, wrist,
+        elevator, swerve, indexer, false));
     NamedCommands.registerCommand("shootWhileMoving", new AutoShootMoving(shooter, wrist,
         elevator, swerve, indexer));
     NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,

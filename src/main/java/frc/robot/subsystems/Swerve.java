@@ -453,7 +453,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     public void configPathPlanner() {
 
         AutoBuilder.configureHolonomic(
-                () -> this.getState().Pose, // Robot pose supplier
+                () -> PoseEstimation.getEstimatedPose(), // Robot pose supplier
                 this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getCurrentRobotChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setChassisSpeedsAuto, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
