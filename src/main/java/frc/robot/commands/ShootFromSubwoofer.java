@@ -71,7 +71,7 @@ public class ShootFromSubwoofer extends Command {
         () -> translationY.get(),
         () -> Rotation2d.fromDegrees(0), () -> true);
 
-    if (wrist.isAtSetpoint() && elevator.isAtSetpoint() && shooter.isAtSetpoint() && actuallyShoot.get()) {
+    if (actuallyShoot.get()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexerScoringPercent);
     } else {
       indexer.disable();

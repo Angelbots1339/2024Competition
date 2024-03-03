@@ -117,8 +117,7 @@ public class AutoShoot extends Command {
 
     if(startShotTimer.get() > 0.2){
       
-          if (shooter.isAtSetpoint() && wrist.isAtSetpoint()
-              && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
+          if (shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
             finishShotTimer.start();
             indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
           } else {

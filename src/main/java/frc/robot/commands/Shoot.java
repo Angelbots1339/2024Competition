@@ -114,8 +114,7 @@ public class Shoot extends Command {
     // } else {
     // indexer.disable();
     // }
-    if (shooter.isAtSetpoint() && wrist.isAtSetpoint()
-        && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
+    if (shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
     } else {
       indexer.disable();

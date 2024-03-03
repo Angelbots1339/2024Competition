@@ -128,9 +128,10 @@ public class RobotContainer {
     runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false)).onFalse(new HandOffNote(intake, indexer, wrist, elevator));
     runIntakeNoHandoff.whileTrue(new IntakeNoHandoff(intake));
 
-    // scoreAmp.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.ScoreAmp));
+
+    
     scoreAmp.whileTrue(new ScoreAmp(elevator, wrist, swerve, translationX, translationY));
-    alignScoreAmp.whileTrue(new AlignScoreAmp(elevator, wrist, indexer, swerve));
+    // alignScoreAmp.whileTrue(new AlignScoreAmp(elevator, wrist, indexer, swerve));
     subwooferShot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, swerve, indexer, translationX, translationY, () -> subwooferActuallyShoot.getAsBoolean()));
     shootWithRegression.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, () -> false));
     

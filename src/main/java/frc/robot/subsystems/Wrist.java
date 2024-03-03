@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -186,17 +188,17 @@ public class Wrist extends SubsystemBase {
         WristLogging.Main);
 
     
-    double distance = PoseEstimation.getEstimatedPose().getTranslation()
+    Supplier<Double> distance = () -> PoseEstimation.getEstimatedPose().getTranslation()
     .getDistance(FieldUtil.getAllianceSpeakerPosition());
 
-    logger.addDouble("PolyRegressionAngle", () -> SpeakerShotRegression.wristRegression.predict(distance),
+    logger.addDouble("PolyRegressionAngle", () -> SpeakerShotRegression.wristRegression.predict(distance.get()),
         WristLogging.Regression);
-    logger.addDouble("LinearRegressionAngle", () -> SpeakerShotRegression.wristExpoRegression(distance),
+    logger.addDouble("LinearRegressionAngle", () -> SpeakerShotRegression.wristExpoRegression(distance.get()),
         WristLogging.Regression);
-    logger.addDouble("InterpolationAngle", () -> SpeakerShotRegression.wristInterpolation.getInterpolated(new InterpolatingDouble(distance)).value,
+    logger.addDouble("InterpolationAngle", () -> SpeakerShotRegression.wristInterpolation.getInterpolated(new InterpolatingDouble(distance.get())).value,
         WristLogging.Regression);
 
-    logger.addDouble("TargetDistance", () -> distance, WristLogging.Regression);
+    logger.addDouble("TargetDistance", () -> distance.get(), WristLogging.Regression);
 
 
   }

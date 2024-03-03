@@ -125,7 +125,7 @@ public class Constants {
                 private static final int kFrontLeftDriveMotorId = 7;
                 private static final int kFrontLeftSteerMotorId = 9;
                 private static final int kFrontLeftEncoderId = 8;
-                private static final double kFrontLeftEncoderOffset = -0.194092;
+                private static final double kFrontLeftEncoderOffset = -0.614;
 
                 private static final double kFrontLeftXPosInches = 10.25;
                 private static final double kFrontLeftYPosInches = 10.25;
@@ -497,11 +497,11 @@ public class Constants {
                 public static final WristElevatorState Handoff = new WristElevatorState(138, 0);
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(18, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
-                public static final WristElevatorState SubwooferShot = new WristElevatorState(125, 0);
+                public static final WristElevatorState SubwooferShot = new WristElevatorState(120, 0);
 
                 public static final double[] shooterSetpointClose = {3750, 4750}; // [Left, Right]
                 public static final double[] shooterSetpointFar = {5000, 6000}; // [Left, Right]
-                public static final double flywheelDistanceCutoff =  2.5; //  2.9
+                public static final double flywheelDistanceCutoff =  2.75; //  2.9
                 public static final double shootingWaitTime = 0.2; // Seconds to wait before shooting to make shooting predictable & consistent
 
                 public static final double wristRegressionMaxClamp = 175;
