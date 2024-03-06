@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -118,10 +119,10 @@ public class RobotContainer {
 
     runOuttake.whileTrue(new RunCommand(() -> {
       intake.runIntakeDutyCycle(-0.4);
-      indexer.runIndexerDutyCycle(-0.4);
+      // indexer.runIndexerDutyCycle(-0.4);
     },
-        intake, indexer).andThen(new InstantCommand(() -> {
-          indexer.disable();
+        intake).andThen(new InstantCommand(() -> {
+          // indexer.disable();
           intake.disable();
         })));
 
@@ -130,9 +131,9 @@ public class RobotContainer {
 
 
     
-    scoreAmp.whileTrue(new ScoreAmp(elevator, wrist, swerve, translationX, translationY));
+    scoreAmp.whileTrue(new ScoreAmp(elevator, wrist, indexer, swerve, translationX, translationY, runOuttake::getAsBoolean));
     // alignScoreAmp.whileTrue(new AlignScoreAmp(elevator, wrist, indexer, swerve));
-    subwooferShot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, swerve, indexer, translationX, translationY, () -> subwooferActuallyShoot.getAsBoolean()));
+    subwooferShot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, swerve, indexer, translationX, translationY, subwooferActuallyShoot::getAsBoolean));
     shootWithRegression.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, () -> false));
     
 
@@ -173,6 +174,12 @@ public class RobotContainer {
         wrist, elevator, () -> true).andThen(new HandOffNote(intake, indexer, wrist, elevator)));
     NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNoHandoff(intake));
 
+    // autoChooser.addOption("Mobility", new PathPlannerAuto("Mobility"));
+    // autoChooser.addOption("Shoot1Center", new PathPlannerAuto("Shoot1Center"));
+    // autoChooser.addOption("Center2Piece", new PathPlannerAuto("Center2Piece"));
+    // autoChooser.addOption("Center3PieceClose", new PathPlannerAuto("Center3PieceClose"));
+    // autoChooser.addOption("AmpTop2Piece", new PathPlannerAuto("AmpTop2Piece"));
+    
     autoChooser = AutoBuilder.buildAutoChooser("");
     SmartDashboard.putData("Auto Chooser", autoChooser);
 

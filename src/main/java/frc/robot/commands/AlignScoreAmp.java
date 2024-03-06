@@ -23,7 +23,6 @@ import frc.robot.subsystems.Wrist;
 
 public class AlignScoreAmp extends Command {
 
-
   Elevator elevator;
   Wrist wrist;
   Indexer indexer;
@@ -43,27 +42,25 @@ public class AlignScoreAmp extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
+
     elevator.toHeight(ScoringConstants.ScoreAmp.height);
 
-    if(ScoringConstants.ScoreAmp.angle.getDegrees() > 90 || elevator.getLeaderPosition() > 0.15){
+    if (ScoringConstants.ScoreAmp.angle.getDegrees() > 90 || elevator.getLeaderPosition() > 0.15) {
 
       wrist.toAngle(ScoringConstants.ScoreAmp.angle);
     }
 
-    boolean isAllianceBlue = true;
-    if(DriverStation.getAlliance().isPresent()){
-      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
-    }
-  
-    swerve.pidToPose(new Pose2d(FieldUtil.getAllianceAmpPosition().getX(), FieldUtil.getAllianceAmpPosition().getY() - ScoringConstants.scoreAmpOffset, Rotation2d.fromDegrees(isAllianceBlue ? 90 : 270)));
+    swerve.pidToPose(new Pose2d(FieldUtil.getAllianceAmpPosition().getX(),
+        FieldUtil.getAllianceAmpPosition().getY() - ScoringConstants.scoreAmpOffset,
+        Rotation2d.fromDegrees(FieldUtil.isAllianceBlue() ? 90 : 270)));
 
-    if(wrist.isAtSetpoint() && elevator.isAtSetpoint() && swerve.isAtPose()) {
+    if (wrist.isAtSetpoint() && elevator.isAtSetpoint() && swerve.isAtPose()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexerScoreAmpPercent);
     } else {
       indexer.disable();

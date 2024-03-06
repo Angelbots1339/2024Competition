@@ -46,4 +46,14 @@ public class FieldUtil {
         return BlueAmpPosition;
     }
 
+    public static boolean isAllianceBlue() {
+        boolean isAllianceBlue = true;
+
+        if (DriverStation.getAlliance().isPresent()) {
+            isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+        }
+
+        return isAllianceBlue;
+    }
+
 }

@@ -138,17 +138,12 @@ public class Shooter extends SubsystemBase {
     rightTargetVelocity = 0;
   }
 
-  boolean isAllianceBlue = true; 
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
 
     Translation2d target = FieldUtil.getAllianceSpeakerPosition();
 
-        if (DriverStation.getAlliance().isPresent()) {
-      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
-    }
     // double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
     //     .getDistance(target);
         Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to

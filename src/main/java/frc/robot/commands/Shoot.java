@@ -38,7 +38,6 @@ public class Shoot extends Command {
   private Supplier<Double> translationY;
   private Supplier<Boolean> overrideIndexerSensor;
 
-    private boolean isAllianceBlue = true;
 
 
   /** Creates a new Shoot. */
@@ -81,9 +80,7 @@ public class Shoot extends Command {
         .getDistance(target);
 
     
-    if (DriverStation.getAlliance().isPresent()) {
-      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
-    }
+  
 
     Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to
     Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
@@ -99,13 +96,6 @@ public class Shoot extends Command {
         ScoringConstants.shootingDriveScalar,
         () -> translationY.get() * ScoringConstants.shootingDriveScalar, robotAngle,
         () -> true);
-
-    // swerve.angularDrive(() -> translationX.get() *
-    // ScoringConstants.shootingDriveScalar,
-    // () -> translationY.get() * ScoringConstants.shootingDriveScalar, () ->
-    // Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 0
-    // : 180), () -> true,
-    // () -> true);
 
     // if ((indexer.isNotePresent() || overrideIndexerSensor.get()) &&
     // shooter.isAtSetpoint() && wrist.isAtSetpoint()

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ScoringConstants;
@@ -23,25 +24,28 @@ public class ScoreAmp extends Command {
 
   private Elevator elevator;
   private Wrist wrist;
-  // private Indexer indexer;
+  private Indexer indexer;
   private Swerve swerve;
+
   Supplier<Double> translationX;
   Supplier<Double> translationY;
+  Supplier<Boolean> runOuttake;
 
   private Timer timer = new Timer();
 
-  boolean isAllianceBlue = false;
 
   /** Creates a new ScoreAmp. */
-  public ScoreAmp(Elevator elevator, Wrist wrist, Swerve swerve, Supplier<Double> translationX,
-      Supplier<Double> translationY) {
+  public ScoreAmp(Elevator elevator, Wrist wrist, Indexer indexer, Swerve swerve, Supplier<Double> translationX,
+      Supplier<Double> translationY, Supplier<Boolean> runOuttake) {
 
     this.elevator = elevator;
     this.wrist = wrist;
     this.swerve = swerve;
+    this.indexer = indexer;
 
     this.translationX = translationX;
     this.translationY = translationY;
+    this.runOuttake = runOuttake;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator, wrist, swerve);
@@ -72,15 +76,17 @@ public class ScoreAmp extends Command {
     // }
     // }
 
-    if (DriverStation.getAlliance().isPresent()) {
-      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
-    }
+
 
     swerve.angularDriveRequest(() -> translationX.get() * 1,
         () -> translationY.get() * 1,
-        () -> Rotation2d.fromDegrees(isAllianceBlue ? 270 : 90),
+        () -> Rotation2d.fromDegrees(FieldUtil.isAllianceBlue() ? 270 : 90),
         // () -> Rotation2d.fromDegrees(90),
         () -> true);
+
+        if(runOuttake.get()) {
+          indexer.runIndexerDutyCycle(-0.4);
+        }
   }
 
   // Called once the command ends or is interrupted.

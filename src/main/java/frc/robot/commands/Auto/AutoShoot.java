@@ -37,7 +37,6 @@ public class AutoShoot extends Command {
   private Timer finishShotTimer = new Timer();
   private Timer startShotTimer = new Timer();
 
-  private boolean isAllianceBlue;
   private boolean useVision;
 
   /** Creates a new AutoShoot. */
@@ -65,9 +64,7 @@ public class AutoShoot extends Command {
 
     Translation2d target = FieldUtil.getAllianceSpeakerPosition();
 
-    if (DriverStation.getAlliance().isPresent()) {
-      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
-    }
+
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
 
@@ -96,9 +93,7 @@ public class AutoShoot extends Command {
     }
     Translation2d target = FieldUtil.getAllianceSpeakerPosition();
 
-    if (DriverStation.getAlliance().isPresent()) {
-      isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
-    }
+    
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
 

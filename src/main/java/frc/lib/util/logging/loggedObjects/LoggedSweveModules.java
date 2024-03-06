@@ -23,25 +23,22 @@ public class LoggedSweveModules extends LoggedObject<Swerve> {
 
     private SwerveDriveState currentState = new SwerveDriveState();
 
-    public void setCurrentState(SwerveDriveState newState) {
+    public void updateState(SwerveDriveState newState) {
         currentState = newState;
     }
 
     public LoggedSweveModules(String name, LoggedContainer subsystemLogger, Swerve object, LoggingLevel logType,
             String tabName) {
         super(name, subsystemLogger, object, logType, tabName);
-        object.registerTelemetry(this::setCurrentState);
     }
 
     public LoggedSweveModules(String name, LoggedContainer subsystemLogger, Swerve object, LoggingLevel logType,
             Boolean SeparateTab) {
         super(name, subsystemLogger, object, logType, SeparateTab);
-        object.registerTelemetry(this::setCurrentState);
     }
 
     public LoggedSweveModules(String name, LoggedContainer subsystemLogger, Swerve object, LoggingLevel logType) {
         super(name, subsystemLogger, object, logType);
-        object.registerTelemetry(this::setCurrentState);
     }
 
     

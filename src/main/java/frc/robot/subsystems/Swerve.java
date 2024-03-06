@@ -63,6 +63,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     private LoggedSubsystem logger;
     private LoggedField field;
     private LoggedField autoField;
+    private LoggedSweveModules loggedModules;
 
     private PIDController angularDrivePID = new PIDController(DriverConstants.angularDriveKP,
             DriverConstants.angularDriveKI, DriverConstants.angularDriveKD);
@@ -171,9 +172,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         return run(() -> {
 
-            // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-            // rot = rot.plus(Rotation2d.fromDegrees(180));
-            // };
 
             ChassisSpeeds speeds = angularPIDCalc(translationX, translationY, desiredRotation);
 
@@ -219,9 +217,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     public void angularDriveRequest(Supplier<Double> translationX, Supplier<Double> translationY,
             Supplier<Rotation2d> desiredRotation, Supplier<Boolean> skewReduction) {
 
-        // if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-        // rot = rot.plus(Rotation2d.fromDegrees(180));
-        // };
 
         ChassisSpeeds speeds = angularPIDCalc(translationX, translationY, desiredRotation);
 
@@ -343,12 +338,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     }
 
     public Rotation2d getAdjustedYaw() {
-        boolean isAllianceBlue = true;
-        if (DriverStation.getAlliance().isPresent()) {
-            isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
-        }
+ 
 
-             double rawYaw = m_pigeon2.getYaw().getValue() + (isAllianceBlue ? 0 : 180);
+             double rawYaw = m_pigeon2.getYaw().getValue() + (FieldUtil.isAllianceBlue() ? 0 : 180);
         double yawWithRollover = rawYaw > 0 ? rawYaw % 360 : 360 - Math.abs(rawYaw % 360);
 
         return Rotation2d.fromDegrees(yawWithRollover);
@@ -370,12 +362,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      * Will rotate the provided value by 180 if on red alliance
      */
     public void zeroGyroAdjusted(Rotation2d rot) {
-        boolean isAllianceBlue = true;
-        if(DriverStation.getAlliance().isPresent()) {
-            isAllianceBlue = DriverStation.getAlliance().get() == Alliance.Blue;
-        }
-     
-            setGyroYaw(isAllianceBlue ? rot : rot.plus(Rotation2d.fromDegrees(180)));
+            setGyroYaw(FieldUtil.isAllianceBlue() ? rot : rot.plus(Rotation2d.fromDegrees(180)));
     }
 
     public void updateVision() {
@@ -443,6 +430,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(),
         m_modulePositions, this);
 
+        loggedModules.updateState(m_cachedState);
     }
 
     public void resetPose(Pose2d pose) {
@@ -495,12 +483,12 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         logger = new LoggedSubsystem("Swerve");
         field = new LoggedField("PoseEstimator", logger, SwerveLogging.Pose, true);
+        loggedModules = new LoggedSweveModules("Modules", logger, this,
+                SwerveLogging.Modules);
 
         logger.add(field);
         field.addPose2d("PoseEstimation", () -> PoseEstimation.getEstimatedPose(), true);
-
-        logger.add(new LoggedSweveModules("Modules", logger, this,
-                SwerveLogging.Modules));
+        logger.add(loggedModules);
 
         logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2,
                 SwerveLogging.Gyro));
