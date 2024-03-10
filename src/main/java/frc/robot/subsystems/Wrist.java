@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.Supplier;
+import java.util.Optional;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -13,14 +13,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.team254.math.InterpolatingDouble;
 import frc.lib.util.ErrorCheckUtil;
-import frc.lib.util.FieldUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
-import frc.lib.util.Mech2dManger;
-import frc.lib.util.PoseEstimation;
 import frc.lib.util.TalonFXFactory;
 import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.logging.loggedObjects.LoggedFalcon;
@@ -28,8 +24,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.LoggingConstants.WristLogging;
-import frc.robot.Robot;
-import frc.robot.regressions.SpeakerShotRegression;
 
 public class Wrist extends SubsystemBase {
 
@@ -43,7 +37,6 @@ public class Wrist extends SubsystemBase {
   private final Timer throughBoreTimer = new Timer();
   private double targetPosition = 0;
 
-  private MechanismLigament2d simWrist;
   private LoggedSubsystem logger;
 
 
@@ -59,10 +52,6 @@ public class Wrist extends SubsystemBase {
 
     initializeLogging();
 
-    if (Robot.isSimulation()) {
-      simWrist = Mech2dManger.getInstance().getWrist();
-      wristLeaderMotor.getSimState().setSupplyVoltage(12);
-    }
   }
 
   /**
@@ -128,11 +117,6 @@ public class Wrist extends SubsystemBase {
     wristFollowerMotor.setControl(WristConstants.followerControl);
   }
 
-  @Override
-  public void simulationPeriodic() {
-    simWrist.setAngle(Rotation2d.fromRotations(wristLeaderMotor.getPosition().getValue() * 360));
-  }
-
   public void resetToAbsolute() {
     wristLeaderMotor.setPosition(getAbsoluteEncoderPosition().getRotations());
     wristFollowerMotor.setPosition(getAbsoluteEncoderPosition().getRotations());
@@ -169,12 +153,21 @@ public class Wrist extends SubsystemBase {
     return motor;
   }
 
+
+  private String command = "None";
     private void initializeLogging() {
 
     logger = new LoggedSubsystem("Wrist");
 
-    logger.add(new LoggedFalcon("WristLeader", logger, wristLeaderMotor, WristLogging.Motor));
-    logger.add(new LoggedFalcon("WristFollower", logger, wristFollowerMotor, WristLogging.Motor));
+    logger.addString("Command", () -> {
+            Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+                command = c.getName();
+            });
+            return command;
+        }, WristLogging.Main);
+
+    logger.add(new LoggedFalcon("WristLeader", logger, wristLeaderMotor, WristLogging.Motor, true));
+    logger.add(new LoggedFalcon("WristFollower", logger, wristFollowerMotor, WristLogging.Motor, true));
 
     logger.addBoolean("WristAtSetpoint", () -> isAtSetpoint(), WristLogging.Main);
 
@@ -186,17 +179,7 @@ public class Wrist extends SubsystemBase {
         WristLogging.Main);
 
     
-    Supplier<Double> distance = () -> PoseEstimation.getEstimatedPose().getTranslation()
-    .getDistance(FieldUtil.getAllianceSpeakerPosition());
-
-    logger.addDouble("PolyRegressionAngle", () -> SpeakerShotRegression.wristRegression.predict(distance.get()),
-        WristLogging.Regression);
-    logger.addDouble("LinearRegressionAngle", () -> SpeakerShotRegression.wristExpoRegression(distance.get()),
-        WristLogging.Regression);
-    logger.addDouble("InterpolationAngle", () -> SpeakerShotRegression.wristInterpolation.getInterpolated(new InterpolatingDouble(distance.get())).value,
-        WristLogging.Regression);
-
-    logger.addDouble("TargetDistance", () -> distance.get(), WristLogging.Regression);
+   
 
 
   }

@@ -61,7 +61,7 @@ public class AlignScoreAmp extends Command {
         Rotation2d.fromDegrees(FieldUtil.isAllianceBlue() ? 90 : 270)));
 
     if (wrist.isAtSetpoint() && elevator.isAtSetpoint() && swerve.isAtPose()) {
-      indexer.runIndexerDutyCycle(ScoringConstants.indexerScoreAmpPercent);
+      indexer.setVoltage(ScoringConstants.indexerScoringVoltage);
     } else {
       indexer.disable();
     }

@@ -7,9 +7,6 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.Leds;
 import frc.robot.Constants.ScoringConstants;
@@ -72,7 +69,7 @@ public class ShootFromSubwoofer extends Command {
         () -> Rotation2d.fromDegrees(0), () -> true);
 
     if (actuallyShoot.get()) {
-      indexer.runIndexerDutyCycle(ScoringConstants.indexerScoringPercent);
+      indexer.setVoltage(ScoringConstants.indexerScoringVoltage);
     } else {
       indexer.disable();
     }

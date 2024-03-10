@@ -4,20 +4,19 @@
 
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.playingwithfusion.TimeOfFlight;
-import com.playingwithfusion.TimeOfFlight.Status;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
-import frc.lib.util.Leds;
 import frc.lib.util.TalonFXFactory;
 import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
-import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.LoggingConstants.IntakeLogging;
 
@@ -77,15 +76,25 @@ public class Intake extends SubsystemBase {
     return motor;
   }
 
+  private String command = "None";
   private void initializeLogging() {
 
     logger = new LoggedSubsystem("Intake");
 
-    logger.add(new LoggedFalcon("IntakeMotor", logger, intakeMotor, IntakeLogging.Motor));
+
+     logger.addString("Command", () -> {
+            Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+                command = c.getName();
+            });
+            return command;
+        }, IntakeLogging.Main);
+
+    logger.add(new LoggedFalcon("IntakeMotor", logger, intakeMotor, IntakeLogging.Motor, true));
 
     logger.addBoolean("NotePresent", () -> isNotePresent(), IntakeLogging.Main);
     logger.addDouble("TOFSensor", () -> intakeSensor.getRange(), IntakeLogging.Main);
 
+    
 
   }
 }

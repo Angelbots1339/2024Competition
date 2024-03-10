@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import frc.lib.util.logging.LoggedSubsystem;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Swerve;
@@ -26,12 +27,13 @@ public class PoseEstimation {
     private static Pose2d lastPose = new Pose2d();
     private static Pose2d lastVelocity = new Pose2d();
 
-    private static SwerveDrivePoseEstimator poseEstimatorNonVision;
+    // private static SwerveDrivePoseEstimator poseEstimatorNonVision;
 
-    public static void initNonVisionPoseEstimator(Rotation2d rot, SwerveDriveKinematics kinematics,
-            SwerveModulePosition[] positions) {
-        poseEstimatorNonVision = new SwerveDrivePoseEstimator(kinematics, rot, positions, estimatedPose);
-    }
+    // public static void initNonVisionPoseEstimator(Rotation2d rot, SwerveDriveKinematics kinematics,
+    //         SwerveModulePosition[] positions) {
+    //     poseEstimatorNonVision = new SwerveDrivePoseEstimator(kinematics, rot, positions, estimatedPose);
+    // }
+
 
     /**
      * Don't call this. It's registered to the Swerve telemetry in the Swerve

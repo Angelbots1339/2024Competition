@@ -64,18 +64,17 @@ public class AutoShoot extends Command {
 
     Translation2d target = FieldUtil.getAllianceSpeakerPosition();
 
-
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
-
-    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-            / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
 
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
 
-    swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+    // Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+    //     Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+    //         / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
+
+    // swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
 
     double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose
         : ScoringConstants.shooterSetpointFar;
@@ -93,7 +92,6 @@ public class AutoShoot extends Command {
     }
     Translation2d target = FieldUtil.getAllianceSpeakerPosition();
 
-    
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
 
@@ -110,14 +108,14 @@ public class AutoShoot extends Command {
         : ScoringConstants.shooterSetpointFar;
     shooter.shooterToRMP(speeds[0], speeds[1]);
 
-    if(startShotTimer.get() > 0.2){
-      
-          if (shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
-            finishShotTimer.start();
-            indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
-          } else {
-            indexer.disable();
-          }
+    if (startShotTimer.get() > 0.2) {
+
+      if (shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
+        finishShotTimer.start();
+        indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
+      } else {
+        indexer.disable();
+      }
 
     }
 

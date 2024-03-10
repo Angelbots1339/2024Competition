@@ -4,34 +4,21 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.Supplier;
 
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.team254.math.PolynomialRegression;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
-import frc.lib.util.FieldUtil;
-import frc.lib.util.PoseEstimation;
 import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.lib.util.TalonFXFactory;
 import frc.robot.Constants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.LoggingConstants.ShooterLogging;
-import frc.robot.regressions.SpeakerShotRegression;
 
 public class Shooter extends SubsystemBase {
 
@@ -142,17 +129,6 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    Translation2d target = FieldUtil.getAllianceSpeakerPosition();
-
-    // double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
-    //     .getDistance(target);
-        Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to
-        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-            / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
-
-        SmartDashboard.putNumber("TargetRobotAngle", robotAngle.get().getDegrees());
-        SmartDashboard.putNumber("EstimatedYFromTarget", PoseEstimation.getEstimatedPose().getY() - target.getY());
-        SmartDashboard.putNumber("EstimatedXFromTarget", PoseEstimation.getEstimatedPose().getX() - target.getX());
   }
 
   private TalonFX configShooterMotor(TalonFX motor) {
@@ -172,8 +148,8 @@ public class Shooter extends SubsystemBase {
 
     logger = new LoggedSubsystem("Shooter");
 
-    logger.add(new LoggedFalcon("LeftShooterMotor", logger, shooterMotorLeft, ShooterLogging.Motor));
-    logger.add(new LoggedFalcon("RightShooterMotor", logger, shooterMotorRight, ShooterLogging.Motor));
+    logger.add(new LoggedFalcon("LeftShooterMotor", logger, shooterMotorLeft, ShooterLogging.Motor, true));
+    logger.add(new LoggedFalcon("RightShooterMotor", logger, shooterMotorRight, ShooterLogging.Motor, true));
 
     logger.addBoolean("ShooterAtSetpoint", () -> isAtSetpoint(), ShooterLogging.Main);
 

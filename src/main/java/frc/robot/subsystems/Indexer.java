@@ -4,11 +4,13 @@
 
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.playingwithfusion.TimeOfFlight;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
@@ -20,7 +22,6 @@ import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.LoggingConstants.IndexerLogging;
 
-
 public class Indexer extends SubsystemBase {
 
   private TalonFX indexerMotor = configIndexerMotor(TalonFXFactory.createTalon(IndexerConstants.indexerMotorID,
@@ -29,7 +30,6 @@ public class Indexer extends SubsystemBase {
   private TimeOfFlight indexerSensor = new TimeOfFlight(IndexerConstants.indexerSensorID);
 
   private LoggedSubsystem logger;
-
 
   /** Creates a new Indexer. */
   public Indexer() {
@@ -52,24 +52,26 @@ public class Indexer extends SubsystemBase {
   }
 
   public boolean isNoteAtTarget() {
-    return Math.abs(indexerSensor.getRange() - IndexerConstants.isNotePresentTarget) < IndexerConstants.isNotePresentTolerance;
+    return Math
+        .abs(indexerSensor.getRange() - IndexerConstants.isNotePresentTarget) < IndexerConstants.isNotePresentTolerance;
   }
+
   public boolean isNotePresent() {
     return indexerSensor.getRange() < 200;
   }
 
   public void indexNoteToTarget() {
 
-    if(indexerSensor.getRange() > 250){
+    if (indexerSensor.getRange() > 250) {
       runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
-    } else if(isNoteAtTarget()){
+    } else if (isNoteAtTarget()) {
       disable();
     } else {
-      if(indexerSensor.getRange() > IndexerConstants.isNotePresentTarget){
+      if (indexerSensor.getRange() > IndexerConstants.isNotePresentTarget) {
         setVoltage(ScoringConstants.indexingTargetVoltsSlow);
-        
-      } else if (indexerSensor.getRange() < IndexerConstants.isNotePresentTarget){
-        setVoltage(-ScoringConstants.indexingTargetVoltsSlow * (2/3));
+
+      } else if (indexerSensor.getRange() < IndexerConstants.isNotePresentTarget) {
+        setVoltage(-ScoringConstants.indexingTargetVoltsSlow * (2 / 3));
 
       }
     }
@@ -89,21 +91,29 @@ public class Indexer extends SubsystemBase {
   private TalonFX configIndexerMotor(TalonFX motor) {
 
     // ErrorCheckUtil.checkError(
-    //     motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
-    //     CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
+    // motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
+    // CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
   }
 
-    private void initializeLogging() {
+  private String command = "None";
+
+  private void initializeLogging() {
 
     logger = new LoggedSubsystem("Indexer");
 
-    logger.add(new LoggedFalcon("IndexerMotor", logger, indexerMotor, IndexerLogging.Motor));
+    logger.addString("Command", () -> {
+      Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+        command = c.getName();
+      });
+      return command;
+    }, IndexerLogging.Main);
+
+    logger.add(new LoggedFalcon("IndexerMotor", logger, indexerMotor, IndexerLogging.Motor, true));
 
     logger.addBoolean("NotePresent", () -> isNoteAtTarget(), IndexerLogging.Main);
     logger.addDouble("TOFSensor", () -> indexerSensor.getRange(), IndexerLogging.Main);
-
 
   }
 }

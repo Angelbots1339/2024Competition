@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.team254.math.InterpolatingDouble;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
 import frc.lib.util.PoseEstimation;
@@ -36,13 +35,13 @@ public class Shoot extends Command {
 
   private Supplier<Double> translationX;
   private Supplier<Double> translationY;
-  private Supplier<Boolean> overrideIndexerSensor;
+  private Supplier<Boolean> overrideSetpoints;
 
 
 
   /** Creates a new Shoot. */
   public Shoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer,
-      Supplier<Double> translationX, Supplier<Double> translationY, Supplier<Boolean> overrideIndexerSensor) {
+      Supplier<Double> translationX, Supplier<Double> translationY, Supplier<Boolean> overrideSetpoints) {
 
     this.shooter = shooter;
     this.wrist = wrist;
@@ -52,7 +51,7 @@ public class Shoot extends Command {
 
     this.translationX = translationX;
     this.translationY = translationY;
-    this.overrideIndexerSensor = overrideIndexerSensor;
+    this.overrideSetpoints = overrideSetpoints;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooter, wrist, elevator, swerve, indexer);
@@ -88,26 +87,21 @@ public class Shoot extends Command {
 
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
-    double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose
-        : ScoringConstants.shooterSetpointFar;
-    shooter.shooterToRMP(speeds[0], speeds[1]);
+
+    // double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose
+    //     : ScoringConstants.shooterSetpointFar;
+    shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]);
 
     swerve.angularDriveRequest(() -> translationX.get() *
         ScoringConstants.shootingDriveScalar,
         () -> translationY.get() * ScoringConstants.shootingDriveScalar, robotAngle,
         () -> true);
 
-    // if ((indexer.isNotePresent() || overrideIndexerSensor.get()) &&
-    // shooter.isAtSetpoint() && wrist.isAtSetpoint()
-    // && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
-    // indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
-    // } else {
-    // indexer.disable();
-    // }
-    if (shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
+ 
+    if ((shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) || overrideSetpoints.get()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
     } else {
-      indexer.disable();
+      indexer.indexNoteToTarget();
     }
 
     SmartDashboard.putNumber("TargetAngle", SpeakerShotRegression.calculateWristAngle(targetDistance).getDegrees());

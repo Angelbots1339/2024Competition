@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 3.7868547681539813,
-        "y": 6.233162470954571
+        "y": 6.314400300096897
       },
       "prevControl": null,
       "nextControl": {
         "x": 5.0540580108938,
-        "y": 6.57996723863818
+        "y": 6.6612050677805055
       },
       "isLocked": false,
       "linkedName": "Amp3PieceCloseShotEnd"
     },
     {
       "anchor": {
-        "x": 7.9294495950103006,
-        "y": 5.870086383691286
+        "x": 7.798922732104724,
+        "y": 5.827804706535339
       },
       "prevControl": {
-        "x": 7.831465371264075,
-        "y": 5.5896733506429985
+        "x": 7.700938508358498,
+        "y": 5.547391673487051
       },
       "nextControl": {
-        "x": 8.005646174935334,
-        "y": 6.088147141513111
+        "x": 7.8751193120297565,
+        "y": 6.045865464357163
       },
       "isLocked": false,
       "linkedName": null
@@ -73,7 +73,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 6.21,
-    "maxAcceleration": 2.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

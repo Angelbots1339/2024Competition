@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -38,6 +39,7 @@ import frc.lib.util.LimelightHelpers;
 import frc.lib.util.PoseEstimation;
 import frc.lib.util.SwerveSkewMath;
 import frc.lib.util.logging.LoggedSubsystem;
+import frc.lib.util.logging.Logger.LoggingLevel;
 import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.lib.util.logging.loggedObjects.LoggedField;
 import frc.lib.util.logging.loggedObjects.LoggedPigeon2;
@@ -62,7 +64,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     private LoggedSubsystem logger;
     private LoggedField field;
-    private LoggedField autoField;
     private LoggedSweveModules loggedModules;
 
     private PIDController angularDrivePID = new PIDController(DriverConstants.angularDriveKP,
@@ -97,9 +98,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         PathPlannerLogging.setLogTargetPoseCallback(PoseEstimation::updateTargetAutoPose);
 
         initializeLogging();
-        PoseEstimation.initNonVisionPoseEstimator(Rotation2d.fromDegrees(this.m_pigeon2.getYaw().getValue()),
-                m_kinematics,
-                this.m_modulePositions);
+        // PoseEstimation.initNonVisionPoseEstimator(Rotation2d.fromDegrees(this.m_pigeon2.getYaw().getValue()),
+        //         m_kinematics,
+        //         this.m_modulePositions);
 
         angularDrivePID.setTolerance(DriverConstants.angularDriveTolerance);
         angularDrivePID.enableContinuousInput(0, 360);
@@ -431,6 +432,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         m_modulePositions, this);
 
         loggedModules.updateState(m_cachedState);
+
+        SmartDashboard.putNumber("2DTagDistance", Math.sqrt(Math.pow(LimelightHelpers.getTargetPose_RobotSpace(VisionConstants.limelightCenterName)[0], 2) + Math.pow(LimelightHelpers.getTargetPose_RobotSpace(VisionConstants.limelightCenterName)[2], 2)));
     }
 
     public void resetPose(Pose2d pose) {
@@ -490,6 +493,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         field.addPose2d("PoseEstimation", () -> PoseEstimation.getEstimatedPose(), true);
         logger.add(loggedModules);
 
+
         logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2,
                 SwerveLogging.Gyro));
 
@@ -511,20 +515,25 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 SwerveLogging.Auto);
 
         logger.addBoolean("isAtAngularDriveSetpoint", () -> isAtAngularDriveSetpoint(), SwerveLogging.PidPose);
+        logger.addDouble("angularDrivePositionError", () -> angularDrivePID.getPositionError(), SwerveLogging.PidPose);
+        logger.addDouble("angularDriveVelocityError", () -> angularDrivePID.getVelocityError(), SwerveLogging.PidPose);
+
+        if(SwerveLogging.PidPose == LoggingLevel.SHUFFLEBOARD){
+            Shuffleboard.getTab(logger.getName()).add(angularDrivePID);
+        }
 
 
-
-        logger.add(new LoggedFalcon("FrontLeftDrive", logger, getModule(0).getDriveMotor(), SwerveLogging.Motors));
-        logger.add(new LoggedFalcon("FrontLeftAngle", logger, getModule(0).getSteerMotor(), SwerveLogging.Motors));
+        logger.add(new LoggedFalcon("FrontLeftDrive", logger, getModule(0).getDriveMotor(), SwerveLogging.Motors, true));
+        logger.add(new LoggedFalcon("FrontLeftAngle", logger, getModule(0).getSteerMotor(), SwerveLogging.Motors, true));
         
-        logger.add(new LoggedFalcon("FrontRightDrive", logger, getModule(1).getDriveMotor(), SwerveLogging.Motors));
-        logger.add(new LoggedFalcon("FrontRightAngle", logger, getModule(1).getSteerMotor(), SwerveLogging.Motors));
+        logger.add(new LoggedFalcon("FrontRightDrive", logger, getModule(1).getDriveMotor(), SwerveLogging.Motors, true));
+        logger.add(new LoggedFalcon("FrontRightAngle", logger, getModule(1).getSteerMotor(), SwerveLogging.Motors, true));
 
-        logger.add(new LoggedFalcon("BackLeftDrive", logger, getModule(2).getDriveMotor(), SwerveLogging.Motors));
-        logger.add(new LoggedFalcon("BackLeftAngle", logger, getModule(2).getSteerMotor(), SwerveLogging.Motors));
+        logger.add(new LoggedFalcon("BackLeftDrive", logger, getModule(2).getDriveMotor(), SwerveLogging.Motors, true));
+        logger.add(new LoggedFalcon("BackLeftAngle", logger, getModule(2).getSteerMotor(), SwerveLogging.Motors, true));
         
-        logger.add(new LoggedFalcon("BackRightDrive", logger, getModule(3).getDriveMotor(), SwerveLogging.Motors));
-        logger.add(new LoggedFalcon("BackRightAngle", logger, getModule(3).getSteerMotor(), SwerveLogging.Motors));
+        logger.add(new LoggedFalcon("BackRightDrive", logger, getModule(3).getDriveMotor(), SwerveLogging.Motors, true));
+        logger.add(new LoggedFalcon("BackRightAngle", logger, getModule(3).getSteerMotor(), SwerveLogging.Motors, true));
 
     }
 

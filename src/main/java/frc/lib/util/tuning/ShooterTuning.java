@@ -95,25 +95,26 @@ public class ShooterTuning {
         // shooter.shooterToRMP(leftRPM, rightRPM);
         // wrist.toAngle(Rotation2d.fromDegrees(wristTargetAngle));
 
-        if (testController.getLeftBumper()) {
+        if (testController.getLeftBumper() && !testController.getAButton()) {
+            // indexer.runIndexerDutyCycle(0.2);
+            indexer.indexNoteToTarget();
+        } else if (testController.getLeftBumper() && testController.getAButton()) {
             indexer.runIndexerDutyCycle(0.3);
         } else if (testController.getRightBumper()) {
-            indexer.runIndexerDutyCycle(-0.3);
+            indexer.runIndexerDutyCycle(-0.2);
         } else {
             indexer.disable();
         }
 
-
-        if(testController.getBButton()) {
+        if (testController.getBButton()) {
             wrist.toAngle(Rotation2d.fromDegrees(150));
-        }
-        else if (testController.getAButton()) {
-        shooter.shooterToRMP(leftRPM, rightRPM);
-        wrist.toAngle(Rotation2d.fromDegrees(wristTargetAngle));
+        } else if (testController.getAButton()) {
+            shooter.shooterToRMP(leftRPM, rightRPM);
+            wrist.toAngle(Rotation2d.fromDegrees(wristTargetAngle));
 
         } else {
-        shooter.disable();
-        wrist.home();
+            shooter.disable();
+            wrist.home();
         }
 
         // indexer.runIndexerDutyCycle(0.3);

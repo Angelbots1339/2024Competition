@@ -57,14 +57,14 @@ public abstract class LoggedObject<T> implements Iloggable {
         this(name, logType, subsystemLogger.getName(), object, tabName);
     }
 
-    public LoggedObject(String name, LoggedContainer subsystemLogger, T object, LoggingLevel logType, Boolean SeptateTab) {
+    public LoggedObject(String name, LoggedContainer subsystemLogger, T object, LoggingLevel logType, Boolean SeparateTab) {
         this(name, subsystemLogger, object, logType,
-                SeptateTab? subsystemLogger.getName() + ":" + logType
+                SeparateTab? subsystemLogger.getName() + ":" + logType
                         : subsystemLogger.getName());
     }
 
     public LoggedObject(String name, LoggedContainer subsystemLogger, T object, LoggingLevel logType) {
-        this(name, subsystemLogger, object, logType, false);
+        this(name, subsystemLogger, object, logType, true);
     }
 
     protected abstract void initializeShuffleboard();

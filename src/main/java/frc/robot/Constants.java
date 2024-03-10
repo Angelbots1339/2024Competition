@@ -123,7 +123,7 @@ public class Constants {
                 private static final int kFrontLeftDriveMotorId = 7;
                 private static final int kFrontLeftSteerMotorId = 9;
                 private static final int kFrontLeftEncoderId = 8;
-                private static final double kFrontLeftEncoderOffset = -0.614;
+                private static final double kFrontLeftEncoderOffset = 0.398193;
 
                 private static final double kFrontLeftXPosInches = 10.25;
                 private static final double kFrontLeftYPosInches = 10.25;
@@ -132,7 +132,7 @@ public class Constants {
                 private static final int kFrontRightDriveMotorId = 10;
                 private static final int kFrontRightSteerMotorId = 12;
                 private static final int kFrontRightEncoderId = 11;
-                private static final double kFrontRightEncoderOffset = -0.251221;
+                private static final double kFrontRightEncoderOffset = -0.252441;
 
                 private static final double kFrontRightXPosInches = 10.25;
                 private static final double kFrontRightYPosInches = -10.25;
@@ -141,7 +141,7 @@ public class Constants {
                 private static final int kBackLeftDriveMotorId = 4;
                 private static final int kBackLeftSteerMotorId = 6;
                 private static final int kBackLeftEncoderId = 5;
-                private static final double kBackLeftEncoderOffset = -0.342773;
+                private static final double kBackLeftEncoderOffset = -0.343750;
 
                 private static final double kBackLeftXPosInches = -10.25;
                 private static final double kBackLeftYPosInches = 10.25;
@@ -150,7 +150,7 @@ public class Constants {
                 private static final int kBackRightDriveMotorId = 1;
                 private static final int kBackRightSteerMotorId = 3;
                 private static final int kBackRightEncoderId = 2;
-                private static final double kBackRightEncoderOffset = -0.253174;
+                private static final double kBackRightEncoderOffset = -0.253662;
 
                 private static final double kBackRightXPosInches = -10.25;
                 private static final double kBackRightYPosInches = -10.25;
@@ -196,7 +196,7 @@ public class Constants {
 
                 public static final double angularDriveKP = 0.075;
                 public static final double angularDriveKI = 0;
-                public static final double angularDriveKD = 0;
+                public static final double angularDriveKD = 0.005;
                 public static final double angularDriveKS = 0.4; // radians per sec
                 public static final double angularDriveTolerance = 2; // Degrees
 
@@ -211,7 +211,7 @@ public class Constants {
                 public static final double manualElevatorVolts = 10;
                 public static final double manualWristVolts = 6;
 
-                public static final double endgameAlert1 = 25; // Seconds
+                public static final double endgameAlert1 = 20; // Seconds
                 public static final double endgameAlert2 = 10; // Seconds
 
                 /**
@@ -386,7 +386,7 @@ public class Constants {
                                                 .withKA(0)
                                                 .withKP(25)
                                                 .withKI(0)
-                                                .withKD(0)
+                                                .withKD(1)
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
                                                 .withKG(-0.4) // Negative b/c of wrist direction & how CTRE uses it
                                                 .withKS(0))
@@ -434,7 +434,7 @@ public class Constants {
                                                 .withStatorCurrentLimitEnable(false)
                                                 .withSupplyCurrentLimitEnable(false))
                                 .withMotorOutput(new MotorOutputConfigs()
-                                                .withNeutralMode(NeutralModeValue.Coast)
+                                                .withNeutralMode(NeutralModeValue.Brake)
                                                 .withInverted(InvertedValue.Clockwise_Positive))
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
@@ -495,7 +495,7 @@ public class Constants {
                 public static final WristElevatorState Handoff = new WristElevatorState(138, 0);
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(18, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
-                public static final WristElevatorState SubwooferShot = new WristElevatorState(120, 0);
+                public static final WristElevatorState SubwooferShot = new WristElevatorState(127, 0);
 
                 public static final double[] shooterSetpointClose = {3750, 4750}; // [Left, Right]
                 public static final double[] shooterSetpointFar = {5000, 6000}; // [Left, Right]
@@ -512,13 +512,12 @@ public class Constants {
                 public static final double indexingTargetPercent = 0.2;
                 // public static final double indexingTargetPercentSlow = 0.1; 
 
-                public static final double indexingTargetVolts = 3; // 3 Volts
+                public static final double indexingTargetVolts = 3; 
                 public static final double indexingTargetVoltsSlow = 1; 
-                public static final double indexerScoringPercent = 0.4;
-                public static final double indexerScoreAmpPercent = -0.4; 
+                public static final double indexerScoringVoltage = 5;
 
-                public static final double intakingTargetPercent = 0.5; 
                 public static final double intakingTargetVoltage = 6; 
+                public static final double outtakingTargetVoltage = -6; 
 
                 public static final double kAccelCompFactor = 0; // Seconds
                 public static final double gamePieceVelocity = 0; // Meters per second
@@ -548,10 +547,11 @@ public class Constants {
                         // double calculated = StdDevScalar * Math.pow(Math.pow(hypotenuse, 19.5335), -0.1/2); // Plug into Std Dev equation that we got experimentally
 
 
-                        return MathUtil.clamp(0.01 * Math.pow(metersFromTarget, 3), 0, 1);
+                        // return MathUtil.clamp(0.01 * Math.pow(metersFromTarget, 3), 0, 1);
+                        return 0.165 * Math.pow(metersFromTarget, 2);
                 }
 
-                public static final double maxUsableDistance = 5; // Meters
+                public static final double maxUsableDistance = 6; // Meters
 
 
                 public static final String limelightLeftName = "limelight-left";

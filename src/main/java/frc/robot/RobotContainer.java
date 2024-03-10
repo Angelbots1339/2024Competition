@@ -4,50 +4,44 @@
 
 package frc.robot;
 
-import java.time.Instant;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.team254.math.InterpolatingDouble;
+import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
-import frc.lib.util.WristElevatorState;
+import frc.lib.util.PoseEstimation;
+import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.tuning.GlobalVoltageTuning;
 import frc.lib.util.tuning.ShooterTuning;
 import frc.lib.util.tuning.SuperstructureTuning;
 import frc.robot.Constants.DriverConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ScoringConstants;
-import frc.robot.commands.AlignScoreAmp;
 import frc.robot.commands.HandOffNote;
 import frc.robot.commands.IntakeNoHandoff;
 import frc.robot.commands.IntakeNote;
+import frc.robot.LoggingConstants.RobotContainerLogging;
 import frc.robot.commands.ManualClimb;
 import frc.robot.commands.ScoreAmp;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootFromSubwoofer;
-import frc.robot.commands.SuperstructureToPosition;
 import frc.robot.commands.Auto.AutoShoot;
 import frc.robot.commands.Auto.AutoShootMoving;
+import frc.robot.regressions.SpeakerShotRegression;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -57,13 +51,15 @@ import frc.robot.subsystems.Wrist;
 
 public class RobotContainer {
 
+  private final LoggedSubsystem logger = new LoggedSubsystem("RobotContainer");
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-  private TuningMode tuningMode = TuningMode.DISABLED;
+  private TuningMode tuningMode = TuningMode.SHOOTER;
 
-  // private GenericEntry wristAngle = Shuffleboard.getTab("Tune").add("WristAngle", 90)
-  //     .withWidget(BuiltInWidgets.kTextView)
-  //     .withProperties(Map.of("min", -25, "max", 90))
-  //     .getEntry();
+  // private GenericEntry wristAngle =
+  // Shuffleboard.getTab("Tune").add("WristAngle", 90)
+  // .withWidget(BuiltInWidgets.kTextView)
+  // .withProperties(Map.of("min", -25, "max", 90))
+  // .getEntry();
 
   /***** Instancing Subsystems *****/
   private final Swerve swerve = Constants.SwerveConstants.Swerve;
@@ -73,7 +69,7 @@ public class RobotContainer {
   private final Elevator elevator = new Elevator();
   private final Indexer indexer = new Indexer();
 
-  private boolean climbMode = false;
+  public boolean climbMode = false;
 
   /***** Driver Controls *****/
   private final XboxController driveController = new XboxController(0);
@@ -90,10 +86,11 @@ public class RobotContainer {
 
   private Trigger runIntake = new Trigger(() -> driveController.getLeftBumper() && !climbMode);
   private Trigger runIntakeNoHandoff = new Trigger(() -> driveController.getLeftTriggerAxis() > 0.1 && !climbMode);
-  private Trigger runOuttake = new Trigger(() -> driveController.getRightBumper() && !climbMode && !driveController.getAButton());
+  private Trigger runOuttake = new Trigger(
+      () -> driveController.getRightBumper() && !climbMode && !driveController.getAButton());
 
   private Trigger subwooferShot = new Trigger(() -> driveController.getAButton() && !climbMode);
-  private Trigger subwooferActuallyShoot = new Trigger(() -> driveController.getRightTriggerAxis() > 0.1 && !climbMode);
+  private Trigger actuallyShoot = new Trigger(() -> driveController.getRightTriggerAxis() > 0.1 && !climbMode);
   private Trigger shootWithRegression = new Trigger(() -> driveController.getXButton() && !climbMode);
   private Trigger scoreAmp = new Trigger(() -> driveController.getBButton() && !climbMode);
   private Trigger alignScoreAmp = new Trigger(() -> driveController.getYButton() && !climbMode);
@@ -108,49 +105,66 @@ public class RobotContainer {
 
   private void configDriverBindings() {
     resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
-    // toggleClimbMode.toggleOnTrue(new InstantCommand(() -> {
-    //   climbMode = !climbMode;
-    //   Leds.getInstance().climbing = climbMode;
-    // }).alongWith(new ManualClimb(elevator, wrist, translationX, rotation, manualWristRotation)));
-    toggleClimbMode.toggleOnTrue(new InstantCommand(() -> {
+    toggleClimbMode.onTrue(new InstantCommand(() -> {
       climbMode = !climbMode;
       Leds.getInstance().climbing = climbMode;
-    }));
+    }).alongWith(climbMode ? new ManualClimb(elevator, wrist, () -> driveController.getLeftTriggerAxis(),
+        () -> driveController.getRightTriggerAxis(),
+        manualWristRotation) : new InstantCommand()));
+
+    // toggleClimbMode.toggleOnTrue(new InstantCommand(() -> {
+    // climbMode = !climbMode;
+    // Leds.getInstance().climbing = climbMode;
+    // }));
+
+    // toggleClimbMode.toggleOnTrue(new ManualClimb(elevator, wrist, () ->
+    // driveController.getLeftTriggerAxis(),
+    // () -> driveController.getRightTriggerAxis(),
+    // manualWristRotation).alongWith(new InstantCommand(() -> {
+    // climbMode = true;
+    // })).andThen(new InstantCommand(() -> {
+    // climbMode = false;
+    // })));
 
     runOuttake.whileTrue(new RunCommand(() -> {
-      intake.runIntakeDutyCycle(-0.4);
-      // indexer.runIndexerDutyCycle(-0.4);
+      intake.setVoltage(ScoringConstants.outtakingTargetVoltage);
+
+      if (scoreAmp.getAsBoolean() && elevator.isAtSetpoint() && wrist.isAtSetpoint()) {
+        indexer.setVoltage(-ScoringConstants.indexerScoringVoltage);
+      }
     },
-        intake).andThen(new InstantCommand(() -> {
-          // indexer.disable();
+        intake, indexer).andThen(new InstantCommand(() -> {
+          indexer.disable();
           intake.disable();
         })));
 
-    runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false)).onFalse(new HandOffNote(intake, indexer, wrist, elevator));
+    runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false))
+        .onFalse(new HandOffNote(intake, indexer, wrist, elevator));
     runIntakeNoHandoff.whileTrue(new IntakeNoHandoff(intake));
 
-
-    
-    scoreAmp.whileTrue(new ScoreAmp(elevator, wrist, indexer, swerve, translationX, translationY, runOuttake::getAsBoolean));
+    scoreAmp.whileTrue(
+        new ScoreAmp(elevator, wrist, indexer, swerve, translationX, translationY));
     // alignScoreAmp.whileTrue(new AlignScoreAmp(elevator, wrist, indexer, swerve));
-    subwooferShot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, swerve, indexer, translationX, translationY, subwooferActuallyShoot::getAsBoolean));
-    shootWithRegression.whileTrue(new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, () -> false));
-    
+    subwooferShot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, swerve, indexer, translationX,
+        translationY, actuallyShoot::getAsBoolean));
+    shootWithRegression.whileTrue(
+        new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, actuallyShoot::getAsBoolean));
 
-    // subwooferShot.whileTrue(swerve.angularDrive(translationX, translationY, () -> Rotation2d.fromDegrees(90), () -> true, () -> true));
+    // subwooferShot.whileTrue(swerve.angularDrive(translationX, translationY, () ->
+    // Rotation2d.fromDegrees(90), () -> true, () -> true));
 
-    
-    extendClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(driveController.getLeftTriggerAxis() * 10), elevator));
-    retractClimb.whileTrue(new RunCommand(() -> elevator.setVoltage(-driveController.getRightTriggerAxis() * 10), elevator));
-    
-    
-    // extendToMax.onTrue(new RunCommand(() -> elevator.toHeight(ElevatorConstants.maxElevatorHeight - 0.01)));
-    
+    // extendClimb
+    // .whileTrue(new RunCommand(() ->
+    // elevator.setVoltage(driveController.getLeftTriggerAxis() * 10), elevator));
+    // retractClimb
+    // .whileTrue(new RunCommand(() ->
+    // elevator.setVoltage(-driveController.getRightTriggerAxis() * 10), elevator));
 
+    extendToMax.onTrue(new RunCommand(() -> elevator.toHeight(ElevatorConstants.maxElevatorHeight - 0.01)));
 
-
-
-    // subwooferShot.whileTrue(new SuperstructureToPosition(elevator, wrist, () -> new WristElevatorState(Rotation2d.fromDegrees(wristAngle.getDouble(90)), 0.46)));
+    // subwooferShot.whileTrue(new SuperstructureToPosition(elevator, wrist, () ->
+    // new WristElevatorState(Rotation2d.fromDegrees(wristAngle.getDouble(90)),
+    // 0.46)));
     // shoot.whileTrue(swerve.angularDrive(translationX, translationY, () ->
     // Rotation2d.fromDegrees(90), () -> true, () -> true));
   }
@@ -163,7 +177,7 @@ public class RobotContainer {
   public RobotContainer() {
 
     Leds.getInstance();
-    
+
     NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
         elevator, swerve, indexer, true));
     NamedCommands.registerCommand("shootNoVision", new AutoShoot(shooter, wrist,
@@ -177,9 +191,10 @@ public class RobotContainer {
     // autoChooser.addOption("Mobility", new PathPlannerAuto("Mobility"));
     // autoChooser.addOption("Shoot1Center", new PathPlannerAuto("Shoot1Center"));
     // autoChooser.addOption("Center2Piece", new PathPlannerAuto("Center2Piece"));
-    // autoChooser.addOption("Center3PieceClose", new PathPlannerAuto("Center3PieceClose"));
+    // autoChooser.addOption("Center3PieceClose", new
+    // PathPlannerAuto("Center3PieceClose"));
     // autoChooser.addOption("AmpTop2Piece", new PathPlannerAuto("AmpTop2Piece"));
-    
+
     autoChooser = AutoBuilder.buildAutoChooser("");
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -193,11 +208,7 @@ public class RobotContainer {
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
     wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
     elevator.setDefaultCommand(new InstantCommand(() -> {
-      if (climbMode) {
-        elevator.holdPosition();
-      } else {
-        elevator.home();
-      }
+      elevator.home();
     }, elevator));
     intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
     indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
@@ -266,12 +277,35 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
-  
+
   /**
    * Should be called periodically from RobotPeriodic
    */
   public void updateDashboard() {
     SmartDashboard.putBoolean("Climb Mode", climbMode);
+  }
+
+  public void initializeLogging() {
+    Supplier<Double> distance = () -> PoseEstimation.getEstimatedPose().getTranslation()
+        .getDistance(FieldUtil.getAllianceSpeakerPosition());
+
+    logger.addDouble("PolyRegressionAngle", () -> SpeakerShotRegression.wristRegression.predict(distance.get()),
+        RobotContainerLogging.ShootingCalculations);
+    logger.addDouble("LinearRegressionAngle", () -> SpeakerShotRegression.wristExpoRegression(distance.get()),
+        RobotContainerLogging.ShootingCalculations);
+    logger.addDouble("InterpolationAngle",
+        () -> SpeakerShotRegression.wristInterpolation.getInterpolated(new InterpolatingDouble(distance.get())).value,
+        RobotContainerLogging.ShootingCalculations);
+
+    logger.addDouble("SpeakerDistance", () -> distance.get(), RobotContainerLogging.ShootingCalculations);
+
+    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+        Math.atan((PoseEstimation.getEstimatedPose().getY() - FieldUtil.getAllianceSpeakerPosition().getY())
+            / (PoseEstimation.getEstimatedPose().getX() - FieldUtil.getAllianceSpeakerPosition().getX())));
+
+    logger.addDouble("TargetRobotAngle", () -> robotAngle.get().getDegrees(),
+        RobotContainerLogging.ShootingCalculations);
+
   }
 
   /***** Tuning *****/

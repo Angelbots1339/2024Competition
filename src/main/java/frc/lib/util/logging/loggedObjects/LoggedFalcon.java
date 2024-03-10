@@ -21,8 +21,8 @@ public class LoggedFalcon extends LoggedObject<TalonFX> {
     }
 
     public LoggedFalcon(String name, LoggedContainer subsystemLogger, TalonFX object, LoggingLevel logType,
-            Boolean SeptateTab) {
-        super(name, subsystemLogger, object, logType, SeptateTab);
+            Boolean SeparateTab) {
+        super(name, subsystemLogger, object, logType, SeparateTab);
     }
 
     public LoggedFalcon(String name, LoggedContainer subsystemLogger, TalonFX object, LoggingLevel logType) {

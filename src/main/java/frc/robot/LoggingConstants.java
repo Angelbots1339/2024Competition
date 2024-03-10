@@ -15,14 +15,14 @@ public final class LoggingConstants {
                 public static LoggingLevel Motors = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Gyro = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Pose = LoggingLevel.SHUFFLEBOARD;
-                public static LoggingLevel Drive = LoggingLevel.NONE;
                 public static LoggingLevel PidPose = LoggingLevel.ONBOARD_ONLY;
-                public static LoggingLevel Auto = LoggingLevel.NONE;
+                public static LoggingLevel Auto = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
         }
 
         public class RobotContainerLogging {
                 public static LoggingLevel StickValues = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel ShootingCalculations = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }
 

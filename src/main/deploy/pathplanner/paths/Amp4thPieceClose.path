@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.7868547681539813,
-        "y": 6.233162470954571
+        "y": 6.314400300096897
       },
       "prevControl": null,
       "nextControl": {
         "x": 1.607091788257651,
-        "y": 6.803014962511407
+        "y": 6.884252791653732
       },
       "isLocked": false,
       "linkedName": "Amp3PieceCloseShotEnd"
@@ -51,7 +51,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 6.21,
-    "maxAcceleration": 2.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

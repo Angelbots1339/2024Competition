@@ -38,13 +38,16 @@ public class HandOffNote extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    if (intake.isNotePresent() || indexer.isNotePresent()) {
+      noteDetected = true;
+      Leds.getInstance().hasGamePiece = noteDetected;
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (intake.isNotePresent() || indexer.isNoteAtTarget()) {
+    if (intake.isNotePresent() || indexer.isNotePresent()) {
       noteDetected = true;
       Leds.getInstance().hasGamePiece = noteDetected;
     }
@@ -78,13 +81,10 @@ public class HandOffNote extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (!indexer.isNoteAtTarget() && !intake.isNotePresent()) {
+    if (!noteDetected) {
       return true;
     }
 
-    if (indexer.isNoteAtTarget() && !intake.isNotePresent()) {
-      return true;
-    }
-    return false;
+    return indexer.isNoteAtTarget() && !intake.isNotePresent();
   }
 }

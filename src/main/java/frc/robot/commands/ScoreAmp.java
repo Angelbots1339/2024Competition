@@ -7,9 +7,6 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
@@ -29,14 +26,12 @@ public class ScoreAmp extends Command {
 
   Supplier<Double> translationX;
   Supplier<Double> translationY;
-  Supplier<Boolean> runOuttake;
 
-  private Timer timer = new Timer();
 
 
   /** Creates a new ScoreAmp. */
   public ScoreAmp(Elevator elevator, Wrist wrist, Indexer indexer, Swerve swerve, Supplier<Double> translationX,
-      Supplier<Double> translationY, Supplier<Boolean> runOuttake) {
+      Supplier<Double> translationY) {
 
     this.elevator = elevator;
     this.wrist = wrist;
@@ -45,7 +40,6 @@ public class ScoreAmp extends Command {
 
     this.translationX = translationX;
     this.translationY = translationY;
-    this.runOuttake = runOuttake;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator, wrist, swerve);
@@ -68,31 +62,20 @@ public class ScoreAmp extends Command {
       wrist.toAngle(ScoringConstants.ScoreAmp.angle);
     }
 
-    // if (elevator.isAtSetpoint() && wrist.isAtSetpoint()) {
-    // timer.start();
-
-    // if (timer.get() > 0.5) {
-    // indexer.runIndexerTorqueControl(ScoringConstants.indexerScoringCurrent);
-    // }
-    // }
-
-
-
     swerve.angularDriveRequest(() -> translationX.get() * 1,
         () -> translationY.get() * 1,
         () -> Rotation2d.fromDegrees(FieldUtil.isAllianceBlue() ? 270 : 90),
-        // () -> Rotation2d.fromDegrees(90),
         () -> true);
-
-        if(runOuttake.get()) {
-          indexer.runIndexerDutyCycle(-0.4);
-        }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     Leds.getInstance().scoringAmp = false;
+
+    wrist.home();
+    elevator.home();
+    indexer.disable();
 
   }
 

@@ -4,29 +4,21 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import java.util.Optional;
+
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.ReverseLimitValue;
-import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
-import frc.lib.util.Mech2dManger;
 import frc.lib.util.ErrorCheckUtil.CommonErrorNames;
 import frc.lib.util.TalonFXFactory;
 import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.logging.loggedObjects.LoggedFalcon;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.LoggingConstants.ElevatorLogging;
@@ -40,21 +32,6 @@ public class Elevator extends SubsystemBase {
   private TalonFX elevatorFollowerMotor = configElevatorMotor(
       TalonFXFactory.createTalon(ElevatorConstants.elevatorFollowerMotorID,
           ElevatorConstants.elevatorMotorCANBus, ElevatorConstants.kElevatorConfiguration));
-  // private TalonFX elevatorFollowerMotor = configElevatorMotor(
-  // TalonFXFactory.createTalon(ElevatorConstants.elevatorFollowerMotorID,
-  // ElevatorConstants.elevatorMotorCANBus,
-  // ElevatorConstants.kElevatorConfiguration.withMotorOutput(ElevatorConstants.kElevatorConfiguration.MotorOutput
-  // .withInverted(ElevatorConstants.kElevatorConfiguration.MotorOutput.Inverted
-  // == InvertedValue.Clockwise_Positive
-  // ? InvertedValue.CounterClockwise_Positive // Make motors spin opposite
-  // directions
-  // : InvertedValue.Clockwise_Positive))));
-
-  private TalonFXSimState leaderSim = elevatorLeaderMotor.getSimState();
-  private TalonFXSimState followerSim = elevatorFollowerMotor.getSimState();
-
-  private MechanismLigament2d elevatorMech;
-  private ElevatorSim elevatorSim;
 
   private double targetHeight = 0;
   private boolean reverseLimitHit = false;
@@ -66,13 +43,6 @@ public class Elevator extends SubsystemBase {
     elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
 
     initializeLogging();
-
-    if (Robot.isSimulation()) {
-      elevatorMech = Mech2dManger.getInstance().getElevator();
-
-      elevatorSim = new ElevatorSim(DCMotor.getFalcon500(2), ElevatorConstants.elevatorGearRatio, 20,
-          ElevatorConstants.elevatorPinionRadius, 0, 1.4732, true, 0);
-    }
   }
 
   /**
@@ -148,17 +118,6 @@ public class Elevator extends SubsystemBase {
     return elevatorLeaderMotor.getReverseLimit().getValue() == ReverseLimitValue.ClosedToGround;
   }
 
-  @Override
-  public void simulationPeriodic() {
-    leaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-    followerSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    elevatorSim.setInputVoltage(leaderSim.getMotorVoltage());
-    elevatorSim.update(0.02);
-    elevatorMech.setLength(elevatorSim.getPositionMeters());
-
-    leaderSim.setRawRotorPosition(ElevatorConstants.elevatorMetersToRotations(elevatorSim.getPositionMeters()));
-  }
 
   @Override
   public void periodic() {
@@ -208,12 +167,20 @@ public class Elevator extends SubsystemBase {
     return motor;
   }
 
+  private String command = "None";
   private void initializeLogging() {
 
     logger = new LoggedSubsystem("Elevator");
 
-    logger.add(new LoggedFalcon("ElevatorLeader", logger, elevatorLeaderMotor, ElevatorLogging.Motor));
-    logger.add(new LoggedFalcon("ElevatorFollower", logger, elevatorFollowerMotor, ElevatorLogging.Motor));
+         logger.addString("Command", () -> {
+            Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+                command = c.getName();
+            });
+            return command;
+        }, ElevatorLogging.Main);
+
+    logger.add(new LoggedFalcon("ElevatorLeader", logger, elevatorLeaderMotor, ElevatorLogging.Motor, true));
+    logger.add(new LoggedFalcon("ElevatorFollower", logger, elevatorFollowerMotor, ElevatorLogging.Motor, true));
 
     logger.addBoolean("ElevatorAtSetpoint", () -> isAtSetpoint(), ElevatorLogging.Main);
     logger.addBoolean("ElevatorBottomLimit", () -> getBottomLimitSwitch(), ElevatorLogging.Main);
