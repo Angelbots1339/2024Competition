@@ -73,9 +73,8 @@ public class AutoShootMoving extends Command {
 
     elevator.home();
 
-    double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose
-        : ScoringConstants.shooterSetpointFar;
-    shooter.shooterToRMP(speeds[0], speeds[1]);
+    shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]);
+
 
     if (shooter.isAtSetpoint() && wrist.isAtSetpoint()
         && elevator.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {

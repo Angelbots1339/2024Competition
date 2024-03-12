@@ -47,6 +47,49 @@
           "data": {
             "name": "shoot"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp3rdPiece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeNote"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp4thPiece"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
         }
       ]
     }

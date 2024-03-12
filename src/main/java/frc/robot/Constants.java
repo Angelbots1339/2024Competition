@@ -73,7 +73,7 @@ public class Constants {
                 public static final double kSpeedAt12VoltsMps = 6.21;
 
                 public static final double maxSpeed = 6; // Used for driving
-                public static final double maxAngularRate = 7.334783440493933;  //2 * Math.PI;
+                public static final double maxAngularRate = 7.334783440493933; // 2 * Math.PI;
 
                 // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
                 // This may need to be tuned to your individual robot
@@ -188,8 +188,7 @@ public class Constants {
                 public static final Boolean skewReduction = true;
                 public static final Boolean openLoopDrive = true;
 
-                public static final double looper_dt = 0.02; // used for 254's solution to swerve skew it is loop time
-                                                             // in sec
+                public static final double looper_dt = 0.02; // loop time in seconds (used for 254's solution to swerve skew)
                 public static final double FudgeFactorKp = 0.1; // used for the CD fudge factor solution to swerve skew
                 public static final double FudgeFactorSimpleKp = 0.1; // used for the CD fudge factor solution to swerve
                                                                       // skew
@@ -198,15 +197,13 @@ public class Constants {
                 public static final double angularDriveKI = 0;
                 public static final double angularDriveKD = 0.005;
                 public static final double angularDriveKS = 0.4; // radians per sec
-                public static final double angularDriveTolerance = 2; // Degrees
-
+                public static final double angularDriveTolerance = 1; // Degrees
 
                 public static final double pidToPoseKP = 2.5;
                 public static final double pidToPoseKD = 0;
-                public static final double pidToPoseKS = 0.15; 
+                public static final double pidToPoseKS = 0.15;
                 public static final double pidToPoseTolerance = 0.03; // Meters
                 public static final double pidToPoseMaxSpeed = 1; // Meters per second
-
 
                 public static final double manualElevatorVolts = 10;
                 public static final double manualWristVolts = 6;
@@ -497,27 +494,26 @@ public class Constants {
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(127, 0);
 
-                public static final double[] shooterSetpointClose = {3750, 4750}; // [Left, Right]
-                public static final double[] shooterSetpointFar = {5000, 6000}; // [Left, Right]
-                public static final double flywheelDistanceCutoff =  2.75; //  2.9
-                public static final double shootingWaitTime = 0.2; // Seconds to wait before shooting to make shooting predictable & consistent
+                public static final double[] shooterSetpointClose = { 3750, 4750 }; // [Left, Right]
+                public static final double[] shooterSetpointFar = { 5000, 6000 }; // [Left, Right]
+                public static final double flywheelDistanceCutoff = 2.75; // 2.9
+                public static final double shootingWaitTime = 0.2; // Seconds to wait before shooting to make shooting
+                                                                   // predictable & consistent
 
                 public static final double wristRegressionMaxClamp = 175;
                 public static final double wristRegressionMinClamp = 90;
-                
+
                 public static final double scoreAmpOffset = 0.4;
 
-
-
                 public static final double indexingTargetPercent = 0.2;
-                // public static final double indexingTargetPercentSlow = 0.1; 
+                // public static final double indexingTargetPercentSlow = 0.1;
 
-                public static final double indexingTargetVolts = 3; 
-                public static final double indexingTargetVoltsSlow = 1; 
+                public static final double indexingTargetVolts = 3;
+                public static final double indexingTargetVoltsSlow = 1;
                 public static final double indexerScoringVoltage = 5;
 
-                public static final double intakingTargetVoltage = 6; 
-                public static final double outtakingTargetVoltage = -6; 
+                public static final double intakingTargetVoltage = 10;
+                public static final double outtakingTargetVoltage = -6;
 
                 public static final double kAccelCompFactor = 0; // Seconds
                 public static final double gamePieceVelocity = 0; // Meters per second
@@ -532,55 +528,55 @@ public class Constants {
 
         public static final class VisionConstants {
 
-
-                // Desmos plots: \left[\left(110,.0088\right),\left(101.75,.01065\right),\left(94,.0088\right),\left(87.25,.0053\right),\left(78.75,.0028\right),\left(64,.0037\right),\left(49.5,.0036\right),\left(113.25,.0124\right),\left(136.75,.34\right),\left(153.5,.387\right),\left(160.5,.3342\right),\left(167,1.573\right),\left(121.25,.052\right)\right]
+                // Desmos plots:
+                // \left[\left(110,.0088\right),\left(101.75,.01065\right),\left(94,.0088\right),\left(87.25,.0053\right),\left(78.75,.0028\right),\left(64,.0037\right),\left(49.5,.0036\right),\left(113.25,.0124\right),\left(136.75,.34\right),\left(153.5,.387\right),\left(160.5,.3342\right),\left(167,1.573\right),\left(121.25,.052\right)\right]
                 // Apriltag Height: 57 inches
-                // Horizontal offset 22.5 inches 
+                // Horizontal offset 22.5 inches
 
                 // public static final double StdDevScalar = 0.002;
-                
 
                 public static double calcStdDev(double metersFromTarget) {
 
                         // double inches = Units.metersToInches(metersFromTarget); // Convert to inches
-                        // double hypotenuse = Math.sqrt(Math.pow(inches, 2) + Math.pow(57, 2)); // Account for april tag being high off the ground
-                        // double calculated = StdDevScalar * Math.pow(Math.pow(hypotenuse, 19.5335), -0.1/2); // Plug into Std Dev equation that we got experimentally
-
+                        // double hypotenuse = Math.sqrt(Math.pow(inches, 2) + Math.pow(57, 2)); //
+                        // Account for april tag being high off the ground
+                        // double calculated = StdDevScalar * Math.pow(Math.pow(hypotenuse, 19.5335),
+                        // -0.1/2); // Plug into Std Dev equation that we got experimentally
 
                         // return MathUtil.clamp(0.01 * Math.pow(metersFromTarget, 3), 0, 1);
                         return 0.165 * Math.pow(metersFromTarget, 2);
                 }
 
-                public static final double maxUsableDistance = 6; // Meters
-
+                public static final double maxUsableDistance = 5.25; // Meters
 
                 public static final String limelightLeftName = "limelight-left";
                 public static final String limelightCenterName = "limelight-center";
                 public static final String limelightRightName = "limelight-right";
 
-                public static final Translation3d limelightLeftOffset = new Translation3d(Units.inchesToMeters(-11.384098),
+                public static final Translation3d limelightLeftOffset = new Translation3d(
+                                Units.inchesToMeters(-11.384098),
                                 Units.inchesToMeters(-8.607840), Units.inchesToMeters(14.617002));
-                public static final Translation3d limelightCenterOffset = new Translation3d(Units.inchesToMeters(-9.877464),
+                public static final Translation3d limelightCenterOffset = new Translation3d(
+                                Units.inchesToMeters(-9.877464),
                                 Units.inchesToMeters(0), Units.inchesToMeters(10.493215));
-                public static final Translation3d limelightRightOffset = new Translation3d(Units.inchesToMeters(-11.384098),
+                public static final Translation3d limelightRightOffset = new Translation3d(
+                                Units.inchesToMeters(-11.384098),
                                 Units.inchesToMeters(8.607840), Units.inchesToMeters(14.617002));
 
-
-
-
-
                 // Old mounts
-                public static final Translation3d newLimelightLeftOffset = new Translation3d(Units.inchesToMeters(-11.879500),
+                public static final Translation3d newLimelightLeftOffset = new Translation3d(
+                                Units.inchesToMeters(-11.879500),
                                 Units.inchesToMeters(-8.607840), Units.inchesToMeters(14.684656));
-                public static final Translation3d newLimelightCenterOffset = new Translation3d(Units.inchesToMeters(-11.377464),
+                public static final Translation3d newLimelightCenterOffset = new Translation3d(
+                                Units.inchesToMeters(-11.377464),
                                 Units.inchesToMeters(0), Units.inchesToMeters(11.618215));
-                public static final Translation3d newLimelightRightOffset = new Translation3d(Units.inchesToMeters(-11.879500),
+                public static final Translation3d newLimelightRightOffset = new Translation3d(
+                                Units.inchesToMeters(-11.879500),
                                 Units.inchesToMeters(8.607840), Units.inchesToMeters(14.684656));
 
-
-                // Limelight left rotation: Pitch: 10   Roll: 0   Yaw: 40.5
-                // Limelight center rotation: Pitch:24   Roll:   Yaw: 
-                // Limelight right rotation: Pitch:10   Roll:   Yaw: -40.5
+                // Limelight left rotation: Pitch: 10 Roll: 0 Yaw: 40.5
+                // Limelight center rotation: Pitch:24 Roll: Yaw:
+                // Limelight right rotation: Pitch:10 Roll: Yaw: -40.5
 
         }
 

@@ -135,7 +135,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
             if (fieldOriented.get()) {
 
-                ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroYaw());
+                ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getAdjustedYaw());
 
                 req = new SwerveRequest.RobotCentric()
                         .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
@@ -227,7 +227,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         SwerveRequest req;
 
-        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroYaw());
+        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getAdjustedYaw());
 
         req = new SwerveRequest.RobotCentric()
                 .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
@@ -250,7 +250,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      */
     private ChassisSpeeds angularPIDCalc(Supplier<Double> translationX, Supplier<Double> translationY,
             Supplier<Rotation2d> desiredRotation) {
-        double pid = angularDrivePID.calculate(this.getGyroYaw().getDegrees(), desiredRotation.get().getDegrees());
+        double pid = angularDrivePID.calculate(getAdjustedYaw().getDegrees(), desiredRotation.get().getDegrees());
 
         ChassisSpeeds speeds = new ChassisSpeeds(translationX.get(), translationY.get(),
                 MathUtil.clamp(
@@ -365,6 +365,12 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     public void zeroGyroAdjusted(Rotation2d rot) {
             setGyroYaw(FieldUtil.isAllianceBlue() ? rot : rot.plus(Rotation2d.fromDegrees(180)));
     }
+    /**
+     * Will rotate the provided value by 180 if on red alliance
+     */
+    public void zeroGyroAdjusted() {
+            setGyroYaw(FieldUtil.isAllianceBlue() ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(180));
+    }
 
     public void updateVision() {
         if (Robot.isReal()) {
@@ -382,7 +388,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                             - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightLeftName)
                                     + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightLeftName)) / 1000;
 
-                    addVisionMeasurement(poseFromVision, poseFromVisionTimestamp,
+                    Pose2d withGyroData = new Pose2d(poseFromVision.getTranslation(), getGyroYaw());
+
+                    addVisionMeasurement(withGyroData, poseFromVisionTimestamp,
                             VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
                 }
             }
@@ -400,7 +408,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                             - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightCenterName)
                                     + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightCenterName)) / 1000;
 
-                    addVisionMeasurement(poseFromVision, poseFromVisionTimestamp,
+                    Pose2d withGyroData = new Pose2d(poseFromVision.getTranslation(), getGyroYaw());
+
+                    addVisionMeasurement(withGyroData, poseFromVisionTimestamp,
                             VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
                 }
             }
@@ -417,7 +427,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                             - (LimelightHelpers.getLatency_Capture(VisionConstants.limelightRightName)
                                     + LimelightHelpers.getLatency_Pipeline(VisionConstants.limelightRightName)) / 1000;
 
-                    addVisionMeasurement(poseFromVision, poseFromVisionTimestamp,
+                    Pose2d withGyroData = new Pose2d(poseFromVision.getTranslation(), getGyroYaw());
+
+                    addVisionMeasurement(withGyroData, poseFromVisionTimestamp,
                             VecBuilder.fill(xyStdDev2, xyStdDev2, 0));
                 }
             }
@@ -433,12 +445,13 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         loggedModules.updateState(m_cachedState);
 
-        SmartDashboard.putNumber("2DTagDistance", Math.sqrt(Math.pow(LimelightHelpers.getTargetPose_RobotSpace(VisionConstants.limelightCenterName)[0], 2) + Math.pow(LimelightHelpers.getTargetPose_RobotSpace(VisionConstants.limelightCenterName)[2], 2)));
+        // SmartDashboard.putNumber("2DTagDistance", Math.sqrt(Math.pow(LimelightHelpers.getTargetPose_RobotSpace(VisionConstants.limelightCenterName)[0], 2) + Math.pow(LimelightHelpers.getTargetPose_RobotSpace(VisionConstants.limelightCenterName)[2], 2)));
     }
 
     public void resetPose(Pose2d pose) {
         this.seedFieldRelative(pose);
         this.zeroGyroAdjusted(pose.getRotation());
+        System.out.println("------Pose Reset------");
     }
 
     public void configPathPlanner() {
@@ -494,13 +507,15 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         logger.add(loggedModules);
 
 
-        logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2,
-                SwerveLogging.Gyro));
+        // logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2,
+        //         SwerveLogging.Gyro));
 
-        logger.addDouble("Heading", () -> PoseEstimation.getEstimatedPose().getRotation().getDegrees(),
+        logger.addDouble("PoseHeading", () -> PoseEstimation.getEstimatedPose().getRotation().getDegrees(),
                 SwerveLogging.Pose);
-        logger.addDouble("x velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
-        logger.addDouble("y velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
+        logger.addDouble("RawGyro", () -> m_pigeon2.getYaw().getValue(),
+                SwerveLogging.Pose);
+        // logger.addDouble("x velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
+        // logger.addDouble("y velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
 
         logger.addString("Command", () -> {
             Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {

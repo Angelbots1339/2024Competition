@@ -3,61 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.740383258544295,
-        "y": 6.948447304302015
+        "x": 2.6049868766404205,
+        "y": 6.932354137856424
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.857106487361123,
-        "y": 7.503038010705651
+        "x": 3.6049868766404205,
+        "y": 6.932354137856424
       },
       "isLocked": false,
-      "linkedName": "Amp2PieceEnd"
+      "linkedName": "Amp2ndPieceEnd"
     },
     {
       "anchor": {
-        "x": 7.803970404237105,
-        "y": 7.071135429307896
+        "x": 8.2957324386871,
+        "y": 7.404103636910978
       },
       "prevControl": {
-        "x": 7.8586714598044445,
-        "y": 8.09187952935714
+        "x": 8.346203232820699,
+        "y": 7.974350464542185
       },
       "nextControl": {
-        "x": 7.7691711587126875,
-        "y": 6.421767255571549
+        "x": 8.254757217847768,
+        "y": 6.941143025804571
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.7868547681539813,
-        "y": 6.314400300096897
+        "x": 3.9806259936593946,
+        "y": 6.13268410333117
       },
       "prevControl": {
-        "x": 5.792265214160058,
-        "y": 6.222176361019389
+        "x": 6.058010305835426,
+        "y": 6.391124916509092
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp3PieceCloseShotEnd"
+      "linkedName": "Amp3PieceEnd"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.85,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0,
-      "rotateFast": false
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.65,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
@@ -79,7 +79,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 12.0,
+    "rotation": 8.0,
     "rotateFast": false
   },
   "reversed": false,

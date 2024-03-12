@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5599913682271782,
-      "y": 4.1229197482961
+      "x": 1.3734736450954386,
+      "y": 7.001715091393146
     },
-    "rotation": 0.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source1Piece"
+            "pathName": "Amp1stPiece"
           }
         },
         {
@@ -26,6 +26,6 @@
       ]
     }
   },
-  "folder": "Source",
+  "folder": "AmpSide",
   "choreoAuto": false
 }

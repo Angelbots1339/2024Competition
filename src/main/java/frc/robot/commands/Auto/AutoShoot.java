@@ -70,18 +70,18 @@ public class AutoShoot extends Command {
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
 
-    // Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-    //     Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-    //         / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
+    // Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the
+    // angle to turn the robot to
+    // Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+    // / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
 
     // swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
 
-    double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose
-        : ScoringConstants.shooterSetpointFar;
-    shooter.shooterToRMP(speeds[0], speeds[1]);
+    shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]);
 
     Leds.getInstance().shooting = true;
     startShotTimer.start();
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -95,28 +95,24 @@ public class AutoShoot extends Command {
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
 
-    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-            / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
+    // Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+    //     Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+    //         / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
 
+    // swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+    
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
 
-    swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
 
-    double[] speeds = targetDistance < ScoringConstants.flywheelDistanceCutoff ? ScoringConstants.shooterSetpointClose
-        : ScoringConstants.shooterSetpointFar;
-    shooter.shooterToRMP(speeds[0], speeds[1]);
+      shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]);
 
-    if (startShotTimer.get() > 0.2) {
 
-      if (shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) {
-        finishShotTimer.start();
-        indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
-      } else {
-        indexer.disable();
-      }
-
+    if (shooter.isAtSetpoint() && wrist.isAtSetpoint()) {
+      finishShotTimer.start();
+      indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
+    } else {
+      indexer.disable();
     }
 
     // System.out.println("Shooter: " + shooter.isAtSetpoint());

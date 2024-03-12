@@ -104,7 +104,7 @@ public class RobotContainer {
   private Trigger extendToMax = new Trigger(() -> driveController.getAButton() && climbMode);
 
   private void configDriverBindings() {
-    resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
+    resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyroAdjusted()));
     toggleClimbMode.onTrue(new InstantCommand(() -> {
       climbMode = !climbMode;
       Leds.getInstance().climbing = climbMode;
@@ -129,7 +129,7 @@ public class RobotContainer {
     runOuttake.whileTrue(new RunCommand(() -> {
       intake.setVoltage(ScoringConstants.outtakingTargetVoltage);
 
-      if (scoreAmp.getAsBoolean() && elevator.isAtSetpoint() && wrist.isAtSetpoint()) {
+      if (scoreAmp.getAsBoolean()) {
         indexer.setVoltage(-ScoringConstants.indexerScoringVoltage);
       }
     },
@@ -177,6 +177,7 @@ public class RobotContainer {
   public RobotContainer() {
 
     Leds.getInstance();
+    initializeLogging();
 
     NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
         elevator, swerve, indexer, true));

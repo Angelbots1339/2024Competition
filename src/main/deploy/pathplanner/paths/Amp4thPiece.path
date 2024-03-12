@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3600527756611072,
-        "y": 6.991144672104159
+        "x": 3.9806259936593946,
+        "y": 6.13268410333117
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6491359279014854,
-        "y": 6.984968696789245
+        "x": 4.970504191008381,
+        "y": 6.510012441321179
+      },
+      "isLocked": false,
+      "linkedName": "Amp3PieceEnd"
+    },
+    {
+      "anchor": {
+        "x": 7.99590071402365,
+        "y": 5.783741498038552
+      },
+      "prevControl": {
+        "x": 8.027968278158781,
+        "y": 6.2490774842660795
+      },
+      "nextControl": {
+        "x": 7.979258176106527,
+        "y": 5.542239781152306
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.7809427887374296,
-        "y": 6.786565489797646
+        "x": 3.771592983000781,
+        "y": 6.13268410333117
       },
       "prevControl": {
-        "x": 2.4369290868211366,
-        "y": 6.773797848521623
+        "x": 6.0019309087403805,
+        "y": 6.840633774570293
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,24 +46,12 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 37.0,
+      "waypointRelativePos": 0.95,
+      "rotationDegrees": -10.0,
       "rotateFast": true
     }
   ],
-  "constraintZones": [
-    {
-      "name": "Slow",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 1.25,
-        "maxAcceleration": 4.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.21,
@@ -57,8 +61,8 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 30.0,
-    "rotateFast": true
+    "rotation": 7.0,
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "AmpSide",

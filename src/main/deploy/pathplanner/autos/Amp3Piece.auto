@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.437490004609639,
-      "y": 6.587093364001543
+      "x": 1.3734736450954386,
+      "y": 7.001715091393146
     },
     "rotation": 0
   },
@@ -12,6 +12,37 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Amp1stPiece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeNote"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp2ndPiece"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "shoot"
@@ -20,19 +51,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp2Piece"
+            "pathName": "Amp3rdPiece"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp3rdPieceCloseShot"
+            "name": "intakeNote"
           }
         },
         {
