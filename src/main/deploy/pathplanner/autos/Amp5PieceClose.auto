@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3887354302486385,
-      "y": 5.57
+      "x": 1.3734736450954386,
+      "y": 7.001715091393146
     },
     "rotation": 0
   },
@@ -12,9 +12,15 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Amp1stPiece"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "shootNoVision"
+            "name": "shoot"
           }
         },
         {
@@ -30,7 +36,50 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center2Piece"
+                  "pathName": "Amp2ndPiece"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp3rdPiece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeNote"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp4thPiece"
                 }
               }
             ]
@@ -55,7 +104,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center3rdPieceClose"
+                  "pathName": "Amp5thPieceClose"
                 }
               }
             ]
@@ -70,6 +119,6 @@
       ]
     }
   },
-  "folder": "Center",
+  "folder": "AmpSide",
   "choreoAuto": false
 }

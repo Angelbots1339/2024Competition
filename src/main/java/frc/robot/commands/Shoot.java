@@ -83,7 +83,8 @@ public class Shoot extends Command {
 
     Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to
     Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-        / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
+        / (PoseEstimation.getEstimatedPose().getX() - target.getX())))
+        .minus(Rotation2d.fromDegrees(2));
 
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
@@ -104,8 +105,8 @@ public class Shoot extends Command {
       indexer.indexNoteToTarget();
     }
 
-    SmartDashboard.putNumber("TargetAngle", SpeakerShotRegression.calculateWristAngle(targetDistance).getDegrees());
-    SmartDashboard.putNumber("TargetDistance", targetDistance);
+    // SmartDashboard.putNumber("TargetAngle", SpeakerShotRegression.calculateWristAngle(targetDistance).getDegrees());
+    // SmartDashboard.putNumber("TargetDistance", targetDistance);
 
   }
 

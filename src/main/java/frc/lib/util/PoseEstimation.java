@@ -44,7 +44,7 @@ public class PoseEstimation {
     public static void updateEstimatedPose(Pose2d state, SwerveModulePosition[] modulePositions,
             Swerve swerve) {
 
-        estimatedPose = new Pose2d(state.getX(), state.getY(), swerve.getAdjustedYaw());
+        estimatedPose = new Pose2d(state.getX(), state.getY(), swerve.getGyroYaw());
         // System.out.println(state.toString());
 
         double currentTime = Utils.getCurrentTimeSeconds();

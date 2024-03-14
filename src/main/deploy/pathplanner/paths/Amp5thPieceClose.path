@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3600527756611072,
-        "y": 6.991144672104159
+        "x": 3.8388160989284943,
+        "y": 6.503183237847957
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.360052775661106,
-        "y": 6.991144672104159
+        "x": 1.3151581858719275,
+        "y": 6.679020381188911
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Amp4thPieceEnd"
     },
     {
       "anchor": {
-        "x": 2.898464472854872,
-        "y": 6.991144672104159
+        "x": 2.418698082766536,
+        "y": 5.541928310708473
       },
       "prevControl": {
-        "x": 1.8984644728548719,
-        "y": 6.991144672104159
+        "x": 1.646107324622057,
+        "y": 5.607963739075626
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,14 +33,14 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.21,
-    "maxAcceleration": 4.0,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
     "rotation": 0,
-    "rotateFast": true
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "AmpSide",

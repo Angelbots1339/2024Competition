@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.6049868766404205,
-        "y": 6.932354137856424
+        "x": 3.5996158242316487,
+        "y": 7.215201930403861
       },
       "isLocked": false,
       "linkedName": "Amp2ndPieceEnd"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 3.9806259936593946,
-        "y": 6.13268410333117
+        "x": 3.8388160989284943,
+        "y": 6.325980253812359
       },
       "prevControl": {
-        "x": 6.058010305835426,
-        "y": 6.391124916509092
+        "x": 5.916200411104526,
+        "y": 6.584421066990282
       },
       "nextControl": null,
       "isLocked": false,
@@ -73,13 +73,13 @@
   ],
   "globalConstraints": {
     "maxVelocity": 6.21,
-    "maxAcceleration": 4.0,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 8.0,
+    "rotation": 10.0,
     "rotateFast": false
   },
   "reversed": false,

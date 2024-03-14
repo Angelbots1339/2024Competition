@@ -177,6 +177,9 @@ public class Wrist extends SubsystemBase {
     logger.addDouble("WristVelocity",
         () -> wristLeaderMotor.getVelocity().getValue(),
         WristLogging.Main);
+    logger.addDouble("WristError",
+        () -> wristLeaderMotor.getClosedLoopError().getValue() * 360,
+        WristLogging.Main);
 
     
    

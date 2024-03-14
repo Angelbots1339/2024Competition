@@ -183,7 +183,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             SwerveRequest req;
 
             if (fieldOriented.get()) {
-                ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroYaw());
+                ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getAdjustedYaw());
 
                 req = new SwerveRequest.RobotCentric()
                         .withDriveRequestType(DriverConstants.openLoopDrive ? DriveRequestType.OpenLoopVoltage
@@ -450,8 +450,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     public void resetPose(Pose2d pose) {
         this.seedFieldRelative(pose);
-        this.zeroGyroAdjusted(pose.getRotation());
-        System.out.println("------Pose Reset------");
+        this.zeroGyro(pose.getRotation());
+        // System.out.println("------Pose Reset------");
     }
 
     public void configPathPlanner() {
@@ -530,6 +530,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
                 SwerveLogging.Auto);
 
         logger.addBoolean("isAtAngularDriveSetpoint", () -> isAtAngularDriveSetpoint(), SwerveLogging.PidPose);
+        logger.addDouble("angularDriveSetpoint", () -> angularDrivePID.getSetpoint(), SwerveLogging.PidPose);
         logger.addDouble("angularDrivePositionError", () -> angularDrivePID.getPositionError(), SwerveLogging.PidPose);
         logger.addDouble("angularDriveVelocityError", () -> angularDrivePID.getVelocityError(), SwerveLogging.PidPose);
 

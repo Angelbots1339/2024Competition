@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
@@ -24,6 +25,7 @@ import frc.lib.team254.math.InterpolatingDouble;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
 import frc.lib.util.PoseEstimation;
+import frc.lib.util.WristElevatorState;
 import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.tuning.GlobalVoltageTuning;
 import frc.lib.util.tuning.ShooterTuning;
@@ -39,6 +41,7 @@ import frc.robot.commands.ManualClimb;
 import frc.robot.commands.ScoreAmp;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootFromSubwoofer;
+import frc.robot.commands.SuperstructureToPosition;
 import frc.robot.commands.Auto.AutoShoot;
 import frc.robot.commands.Auto.AutoShootMoving;
 import frc.robot.regressions.SpeakerShotRegression;
@@ -142,8 +145,10 @@ public class RobotContainer {
         .onFalse(new HandOffNote(intake, indexer, wrist, elevator));
     runIntakeNoHandoff.whileTrue(new IntakeNoHandoff(intake));
 
+    // scoreAmp.whileTrue(
+    // new ScoreAmp(elevator, wrist, indexer, swerve, translationX, translationY));
     scoreAmp.whileTrue(
-        new ScoreAmp(elevator, wrist, indexer, swerve, translationX, translationY));
+        new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.Handoff));
     // alignScoreAmp.whileTrue(new AlignScoreAmp(elevator, wrist, indexer, swerve));
     subwooferShot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, swerve, indexer, translationX,
         translationY, actuallyShoot::getAsBoolean));
@@ -206,6 +211,11 @@ public class RobotContainer {
   }
 
   private void configDefaultCommands() {
+    // swerve.setDefaultCommand(swerve.angularDrive(translationX, translationY,
+    //     () -> Rotation2d.fromRadians(Math.atan2(MathUtil.applyDeadband(-driveController.getRightX(), 0.1),
+    //         MathUtil.applyDeadband(-driveController.getRightY(), 0.1))),
+    //     () -> true, () -> true));
+
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
     wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
     elevator.setDefaultCommand(new InstantCommand(() -> {

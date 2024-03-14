@@ -195,9 +195,9 @@ public class Constants {
 
                 public static final double angularDriveKP = 0.075;
                 public static final double angularDriveKI = 0;
-                public static final double angularDriveKD = 0.005;
+                public static final double angularDriveKD = 0.03;
                 public static final double angularDriveKS = 0.4; // radians per sec
-                public static final double angularDriveTolerance = 1; // Degrees
+                public static final double angularDriveTolerance = 0.5; // Degrees
 
                 public static final double pidToPoseKP = 2.5;
                 public static final double pidToPoseKD = 0;
@@ -381,9 +381,9 @@ public class Constants {
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
-                                                .withKP(25)
+                                                .withKP(25) // 40 
                                                 .withKI(0)
-                                                .withKD(1)
+                                                .withKD(0)
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
                                                 .withKG(-0.4) // Negative b/c of wrist direction & how CTRE uses it
                                                 .withKS(0))
