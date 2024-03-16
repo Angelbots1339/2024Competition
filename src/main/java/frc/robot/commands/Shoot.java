@@ -84,7 +84,7 @@ public class Shoot extends Command {
     Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to
     Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
         / (PoseEstimation.getEstimatedPose().getX() - target.getX())))
-        .minus(Rotation2d.fromDegrees(2));
+        .minus(Rotation2d.fromDegrees(3));
 
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();

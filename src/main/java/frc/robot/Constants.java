@@ -195,9 +195,9 @@ public class Constants {
 
                 public static final double angularDriveKP = 0.075;
                 public static final double angularDriveKI = 0;
-                public static final double angularDriveKD = 0.03;
+                public static final double angularDriveKD = 0.005;
                 public static final double angularDriveKS = 0.4; // radians per sec
-                public static final double angularDriveTolerance = 0.5; // Degrees
+                public static final double angularDriveTolerance = 2; // Degrees
 
                 public static final double pidToPoseKP = 2.5;
                 public static final double pidToPoseKD = 0;
@@ -381,12 +381,12 @@ public class Constants {
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
-                                                .withKP(25) // 40 
+                                                .withKP(55) // 40  || 55
                                                 .withKI(0)
-                                                .withKD(0)
+                                                .withKD(5) // 0.5 || 5
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
                                                 .withKG(-0.4) // Negative b/c of wrist direction & how CTRE uses it
-                                                .withKS(0))
+                                                .withKS(0.5)) // 0.2
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
@@ -410,7 +410,7 @@ public class Constants {
                 public static final double kWristPositionUpdateFrequency = 10; // Hertz
                 public static final double kWristErrorUpdateFrequency = 20; // Hertz
 
-                public static final Rotation2d angleErrorTolerance = Rotation2d.fromDegrees(1); // Degrees
+                public static final Rotation2d angleErrorTolerance = Rotation2d.fromDegrees(0.5); // Degrees
 
         }
 

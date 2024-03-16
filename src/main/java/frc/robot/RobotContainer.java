@@ -145,10 +145,11 @@ public class RobotContainer {
         .onFalse(new HandOffNote(intake, indexer, wrist, elevator));
     runIntakeNoHandoff.whileTrue(new IntakeNoHandoff(intake));
 
-    // scoreAmp.whileTrue(
-    // new ScoreAmp(elevator, wrist, indexer, swerve, translationX, translationY));
     scoreAmp.whileTrue(
-        new SuperstructureToPosition(elevator, wrist, () -> ScoringConstants.Handoff));
+        new ScoreAmp(elevator, wrist, indexer, swerve, translationX, translationY));
+    // scoreAmp.whileTrue(
+    // new SuperstructureToPosition(elevator, wrist, () ->
+    // ScoringConstants.Handoff));
     // alignScoreAmp.whileTrue(new AlignScoreAmp(elevator, wrist, indexer, swerve));
     subwooferShot.whileTrue(new ShootFromSubwoofer(elevator, wrist, shooter, swerve, indexer, translationX,
         translationY, actuallyShoot::getAsBoolean));
@@ -193,6 +194,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
         wrist, elevator, () -> true).andThen(new HandOffNote(intake, indexer, wrist, elevator)));
     NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNoHandoff(intake));
+    NamedCommands.registerCommand("vision", new RunCommand(() -> swerve.updateVision()));
 
     // autoChooser.addOption("Mobility", new PathPlannerAuto("Mobility"));
     // autoChooser.addOption("Shoot1Center", new PathPlannerAuto("Shoot1Center"));
@@ -212,9 +214,11 @@ public class RobotContainer {
 
   private void configDefaultCommands() {
     // swerve.setDefaultCommand(swerve.angularDrive(translationX, translationY,
-    //     () -> Rotation2d.fromRadians(Math.atan2(MathUtil.applyDeadband(-driveController.getRightX(), 0.1),
-    //         MathUtil.applyDeadband(-driveController.getRightY(), 0.1))),
-    //     () -> true, () -> true));
+    // () ->
+    // Rotation2d.fromRadians(Math.atan2(MathUtil.applyDeadband(-driveController.getRightX(),
+    // 0.1),
+    // MathUtil.applyDeadband(-driveController.getRightY(), 0.1))),
+    // () -> true, () -> true));
 
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
     wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));

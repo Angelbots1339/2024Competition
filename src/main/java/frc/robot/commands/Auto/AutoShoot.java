@@ -70,12 +70,11 @@ public class AutoShoot extends Command {
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
 
-    // Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the
-    // angle to turn the robot to
-    // Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-    // / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
+    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+            / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
 
-    // swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+    swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
 
     shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]);
 
@@ -95,11 +94,12 @@ public class AutoShoot extends Command {
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
 
-    // Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-    //     Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-    //         / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
+    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+            / (PoseEstimation.getEstimatedPose().getX() - target.getX())))
+            .minus(Rotation2d.fromDegrees(3));
 
-    // swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+    swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
     
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
