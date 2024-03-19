@@ -118,7 +118,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      * @param translationY  Meters/second
      * @param rotation      Rad/second
      * @param fieldOriented Use field oriented drive?
-     * @param skewReduction Use Skew Reduction? // TODO Currently doesn't work :(
+     * @param skewReduction Use Skew Reduction? 
      * @return
      */
     public Command drive(Supplier<Double> translationX, Supplier<Double> translationY, Supplier<Double> rotation,
@@ -260,7 +260,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         return speeds;
     }
 
-    public boolean isAtAngularDriveSetpoint() {
+    public boolean isAngularDriveAtSetpoint() {
         return angularDrivePID.atSetpoint();
     }
 
@@ -291,7 +291,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     }
 
     public boolean isAtPose() {
-        return pidToPoseXController.atSetpoint() && pidToPoseYController.atSetpoint() && isAtAngularDriveSetpoint();
+        return pidToPoseXController.atSetpoint() && pidToPoseYController.atSetpoint() && isAngularDriveAtSetpoint();
     }
 
     /**
@@ -529,7 +529,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         logger.addDouble("thetaAutoError", () -> PoseEstimation.getAutoTargetPoseError().getRotation().getDegrees(),
                 SwerveLogging.Auto);
 
-        logger.addBoolean("isAtAngularDriveSetpoint", () -> isAtAngularDriveSetpoint(), SwerveLogging.PidPose);
+        logger.addBoolean("isAtAngularDriveSetpoint", () -> isAngularDriveAtSetpoint(), SwerveLogging.PidPose);
         logger.addDouble("angularDriveSetpoint", () -> angularDrivePID.getSetpoint(), SwerveLogging.PidPose);
         logger.addDouble("angularDrivePositionError", () -> angularDrivePID.getPositionError(), SwerveLogging.PidPose);
         logger.addDouble("angularDriveVelocityError", () -> angularDrivePID.getVelocityError(), SwerveLogging.PidPose);

@@ -66,7 +66,7 @@ public class Constants {
 
                 // The stator current at which the wheels start to slip;
                 // This needs to be tuned to your individual robot
-                private static final double kSlipCurrentA = 65; // TODO Get a test value
+                private static final double kSlipCurrentA = 65; 
 
                 // Theoretical free speed (m/s) at 12v applied output;
                 // This needs to be tuned to your individual robot
@@ -250,8 +250,8 @@ public class Constants {
 
         public static final class ShooterConstants {
 
-                public static final int shooterMotorLeftID = 16; // TODO Set these
-                public static final int shooterMotorRightID = 17; // TODO Set these
+                public static final int shooterMotorLeftID = 16; 
+                public static final int shooterMotorRightID = 17;
                 public static final String shooterMotorCANBus = "";
 
                 public static final double shooterGearRatio = 0.5; // Sensor to Mechanism Ratio
@@ -284,10 +284,10 @@ public class Constants {
         }
 
         public static final class IntakeConstants {
-                public static final int intakeMotorID = 18; // TODO Set these
+                public static final int intakeMotorID = 18;
                 public static final String intakeMotorCANBus = "";
 
-                public static final int intakeSensorID = 26; // TODO Set these
+                public static final int intakeSensorID = 26;
                 public static final RangingMode intakeSensorRange = RangingMode.Short;
                 public static final double intakeSampleTime = 24;
 
@@ -315,10 +315,10 @@ public class Constants {
         }
 
         public static final class IndexerConstants {
-                public static final int indexerMotorID = 19; // TODO Set these
+                public static final int indexerMotorID = 19; 
                 public static final String indexerMotorCANBus = "";
 
-                public static final int indexerSensorID = 27; // TODO Set these
+                public static final int indexerSensorID = 27; 
                 public static final RangingMode indexerSensorRange = RangingMode.Short;
                 public static final double indexerSampleTime = 24;
 
@@ -348,15 +348,15 @@ public class Constants {
         }
 
         public static final class WristConstants {
-                public static final int wristLeaderMotorID = 20; // TODO Set these
-                public static final int wristFollowerMotorID = 21; // TODO Set these
+                public static final int wristLeaderMotorID = 20; 
+                public static final int wristFollowerMotorID = 21; 
                 public static final String wristMotorCANBus = "";
 
                 public static final double wristGearRatio = 15 * 2; // Sensor to Mechanism Ratio
                 public static final double timeBeforeEncoderReset = 1.5; // Seconds before the motor is initialized to
                 // the through bore;
 
-                public static final int wristEncoderPort = 0; // TODO Set these
+                public static final int wristEncoderPort = 0; 
                 public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees(105); // 0 Should be
                                                                                                     // straight forward
                                                                                                     // towards the
@@ -415,7 +415,7 @@ public class Constants {
         }
 
         public static final class ElevatorConstants {
-                public static final int elevatorLeaderMotorID = 22; // TODO Set these
+                public static final int elevatorLeaderMotorID = 22; 
                 public static final int elevatorFollowerMotorID = 23;
                 public static final String elevatorMotorCANBus = "";
 
@@ -444,7 +444,7 @@ public class Constants {
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(elevatorGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
-                                                .withMotionMagicCruiseVelocity(6) // TODO Tune
+                                                .withMotionMagicCruiseVelocity(6)
                                                 .withMotionMagicAcceleration(18)
                                                 .withMotionMagicJerk(0))
                                 .withHardwareLimitSwitch(new HardwareLimitSwitchConfigs()
@@ -505,14 +505,14 @@ public class Constants {
 
                 public static final double scoreAmpOffset = 0.4;
 
-                public static final double indexingTargetPercent = 0.2;
+                public static final double indexingTargetPercent = 0.4;
                 // public static final double indexingTargetPercentSlow = 0.1;
 
-                public static final double indexingTargetVolts = 3;
-                public static final double indexingTargetVoltsSlow = 1;
+                public static final double indexingTargetVolts = 5; 
+                public static final double indexingTargetVoltsSlow = 1.5;
                 public static final double indexerScoringVoltage = 5;
 
-                public static final double intakingTargetVoltage = 10;
+                public static final double intakingTargetVoltage = 12;
                 public static final double outtakingTargetVoltage = -6;
 
                 public static final double kAccelCompFactor = 0; // Seconds
@@ -553,26 +553,21 @@ public class Constants {
                 public static final String limelightCenterName = "limelight-center";
                 public static final String limelightRightName = "limelight-right";
 
-                public static final Translation3d limelightLeftOffset = new Translation3d(
-                                Units.inchesToMeters(-11.384098),
-                                Units.inchesToMeters(-8.607840), Units.inchesToMeters(14.617002));
-                public static final Translation3d limelightCenterOffset = new Translation3d(
-                                Units.inchesToMeters(-9.877464),
-                                Units.inchesToMeters(0), Units.inchesToMeters(10.493215));
-                public static final Translation3d limelightRightOffset = new Translation3d(
-                                Units.inchesToMeters(-11.384098),
-                                Units.inchesToMeters(8.607840), Units.inchesToMeters(14.617002));
+                // public static final Translation3d limelightLeftOffset = new Translation3d(
+                //                 Units.inchesToMeters(-11.384098),
+                //                 Units.inchesToMeters(-8.607840), Units.inchesToMeters(14.617002));
+                // public static final Translation3d limelightCenterOffset = new Translation3d(
+                //                 Units.inchesToMeters(-9.877464),
+                //                 Units.inchesToMeters(0), Units.inchesToMeters(10.493215));
+                // public static final Translation3d limelightRightOffset = new Translation3d(
+                //                 Units.inchesToMeters(-11.384098),
+                //                 Units.inchesToMeters(8.607840), Units.inchesToMeters(14.617002));
 
-                // Old mounts
-                public static final Translation3d newLimelightLeftOffset = new Translation3d(
-                                Units.inchesToMeters(-11.879500),
-                                Units.inchesToMeters(-8.607840), Units.inchesToMeters(14.684656));
-                public static final Translation3d newLimelightCenterOffset = new Translation3d(
-                                Units.inchesToMeters(-11.377464),
-                                Units.inchesToMeters(0), Units.inchesToMeters(11.618215));
-                public static final Translation3d newLimelightRightOffset = new Translation3d(
-                                Units.inchesToMeters(-11.879500),
-                                Units.inchesToMeters(8.607840), Units.inchesToMeters(14.684656));
+                
+    
+                // New Mounts with correctly rotated limelight:
+
+                // Angled: X: 0.3013935806 Y: 0.2255540828 Z: 0.3013935806
 
                 // Limelight left rotation: Pitch: 10 Roll: 0 Yaw: 40.5
                 // Limelight center rotation: Pitch:24 Roll: Yaw:

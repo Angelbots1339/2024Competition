@@ -69,7 +69,7 @@ public class TalonFXFactory {
      * @return The newly created TalonFX
      */
     public static TalonFX createTalon(int id, String canBus, TalonFXConfiguration config) {
-        TalonFX talon = new TalonFX(id, canBus); // TODO Use LazyTalonFX here once it's fixed
+        TalonFX talon = new TalonFX(id, canBus);
 
         TalonFXConfiguration motorConfig = new TalonFXConfiguration();
 

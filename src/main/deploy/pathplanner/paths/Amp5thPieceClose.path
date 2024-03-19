@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.4498454634617217,
-        "y": 5.062170262972689
+        "x": 2.4502603857333405,
+        "y": 5.3326995840683
       },
       "prevControl": {
-        "x": 1.6772547053172429,
-        "y": 5.128205691339843
+        "x": 1.3402247599319597,
+        "y": 5.294230362028193
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Vision",
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {
@@ -51,7 +51,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 6.21,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 6.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

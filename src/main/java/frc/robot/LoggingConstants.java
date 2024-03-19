@@ -22,7 +22,7 @@ public final class LoggingConstants {
 
         public class RobotContainerLogging {
                 public static LoggingLevel StickValues = LoggingLevel.ONBOARD_ONLY;
-                public static LoggingLevel ShootingCalculations = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Shooting = LoggingLevel.SHUFFLEBOARD;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
@@ -42,13 +42,13 @@ public final class LoggingConstants {
         }
 
         public class IntakeLogging {
-                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel Main = LoggingLevel.SHUFFLEBOARD;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
         public class IndexerLogging {
-                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel Main = LoggingLevel.SHUFFLEBOARD;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Default = LoggingLevel.NONE;
         }

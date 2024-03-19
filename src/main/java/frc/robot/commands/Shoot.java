@@ -99,7 +99,7 @@ public class Shoot extends Command {
         () -> true);
 
  
-    if ((shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAtAngularDriveSetpoint()) || overrideSetpoints.get()) {
+    if ((shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAngularDriveAtSetpoint()) || overrideSetpoints.get()) {
       indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
     } else {
       indexer.indexNoteToTarget();

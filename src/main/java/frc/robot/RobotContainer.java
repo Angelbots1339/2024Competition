@@ -43,7 +43,7 @@ import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootFromSubwoofer;
 import frc.robot.commands.SuperstructureToPosition;
 import frc.robot.commands.Auto.AutoShoot;
-import frc.robot.commands.Auto.AutoShootMoving;
+import frc.robot.commands.Auto.AutoSpinUp;
 import frc.robot.regressions.SpeakerShotRegression;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
@@ -186,14 +186,29 @@ public class RobotContainer {
     initializeLogging();
 
     NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
-        elevator, swerve, indexer, true));
+    elevator, swerve, indexer, true, true));
+    // NamedCommands.registerCommand("shoot", Commands.either(new AutoShoot(shooter, wrist,
+    //     elevator, swerve, indexer, true),
+    //     new IntakeNote(intake, indexer,
+    //         wrist, elevator, () -> true).andThen(new HandOffNote(intake, indexer, wrist, elevator))
+    //         .andThen(new AutoShoot(shooter, wrist,
+    //             elevator, swerve, indexer, true)),
+    //     () -> indexer.isNoteAtTarget()));
+    NamedCommands.registerCommand("shootNoAlign", new AutoShoot(shooter, wrist,
+        elevator, swerve, indexer, true, false));
     NamedCommands.registerCommand("shootNoVision", new AutoShoot(shooter, wrist,
+        elevator, swerve, indexer, false, false));
+    NamedCommands.registerCommand("spinUp", new AutoSpinUp(shooter, wrist,
+        elevator, swerve, indexer, true));
+    NamedCommands.registerCommand("spinUpNoVision", new AutoSpinUp(shooter, wrist,
         elevator, swerve, indexer, false));
-    NamedCommands.registerCommand("shootWhileMoving", new AutoShootMoving(shooter, wrist,
-        elevator, swerve, indexer));
     NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
         wrist, elevator, () -> true).andThen(new HandOffNote(intake, indexer, wrist, elevator)));
     NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNoHandoff(intake));
+    NamedCommands.registerCommand("finishIntaking", Commands.either(Commands.none(),
+        new IntakeNote(intake, indexer,
+            wrist, elevator, () -> true).andThen(new HandOffNote(intake, indexer, wrist, elevator)),
+        () -> indexer.isNoteAtTarget()));
     NamedCommands.registerCommand("vision", new RunCommand(() -> swerve.updateVision()));
 
     // autoChooser.addOption("Mobility", new PathPlannerAuto("Mobility"));
@@ -305,21 +320,27 @@ public class RobotContainer {
         .getDistance(FieldUtil.getAllianceSpeakerPosition());
 
     logger.addDouble("PolyRegressionAngle", () -> SpeakerShotRegression.wristRegression.predict(distance.get()),
-        RobotContainerLogging.ShootingCalculations);
+        RobotContainerLogging.Shooting);
     logger.addDouble("LinearRegressionAngle", () -> SpeakerShotRegression.wristExpoRegression(distance.get()),
-        RobotContainerLogging.ShootingCalculations);
+        RobotContainerLogging.Shooting);
     logger.addDouble("InterpolationAngle",
         () -> SpeakerShotRegression.wristInterpolation.getInterpolated(new InterpolatingDouble(distance.get())).value,
-        RobotContainerLogging.ShootingCalculations);
+        RobotContainerLogging.Shooting);
 
-    logger.addDouble("SpeakerDistance", () -> distance.get(), RobotContainerLogging.ShootingCalculations);
+    logger.addDouble("SpeakerDistance", () -> distance.get(), RobotContainerLogging.Shooting);
 
     Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
         Math.atan((PoseEstimation.getEstimatedPose().getY() - FieldUtil.getAllianceSpeakerPosition().getY())
             / (PoseEstimation.getEstimatedPose().getX() - FieldUtil.getAllianceSpeakerPosition().getX())));
 
     logger.addDouble("TargetRobotAngle", () -> robotAngle.get().getDegrees(),
-        RobotContainerLogging.ShootingCalculations);
+        RobotContainerLogging.Shooting);
+
+    logger.addBoolean("ShooterAtSetpoint", () -> shooter.isAtSetpoint(), RobotContainerLogging.Shooting);
+    logger.addBoolean("WristAtSetpoint", () -> wrist.isAtSetpoint(), RobotContainerLogging.Shooting);
+    logger.addBoolean("ElevatorAtSetpoint", () -> elevator.isAtSetpoint(), RobotContainerLogging.Shooting);
+    logger.addBoolean("AngularDriveAtSetpoint", () -> swerve.isAngularDriveAtSetpoint(),
+        RobotContainerLogging.Shooting);
 
   }
 

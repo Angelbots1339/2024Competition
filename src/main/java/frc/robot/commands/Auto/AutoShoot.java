@@ -35,18 +35,19 @@ public class AutoShoot extends Command {
   private Indexer indexer;
 
   private Timer finishShotTimer = new Timer();
-  private Timer startShotTimer = new Timer();
 
   private boolean useVision;
+  private boolean autoAlign;
 
   /** Creates a new AutoShoot. */
-  public AutoShoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer, boolean useVision) {
+  public AutoShoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer, boolean useVision, boolean autoAlign) {
     this.shooter = shooter;
     this.wrist = wrist;
     this.elevator = elevator;
     this.swerve = swerve;
     this.indexer = indexer;
     this.useVision = useVision;
+    this.autoAlign = autoAlign;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooter, wrist, elevator, indexer);
@@ -70,16 +71,18 @@ public class AutoShoot extends Command {
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
 
-    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-            / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
+    if(autoAlign){
 
-    swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+      Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+          Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+              / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
+  
+      swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+    }
 
     shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]);
 
     Leds.getInstance().shooting = true;
-    startShotTimer.start();
 
   }
 
@@ -94,12 +97,15 @@ public class AutoShoot extends Command {
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
 
-    Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-        Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-            / (PoseEstimation.getEstimatedPose().getX() - target.getX())))
-            .minus(Rotation2d.fromDegrees(3));
+        if(autoAlign){
 
-    swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+          Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+              Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+                  / (PoseEstimation.getEstimatedPose().getX() - target.getX())))
+                  .minus(Rotation2d.fromDegrees(3));
+      
+          swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+        }
     
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
@@ -130,11 +136,10 @@ public class AutoShoot extends Command {
     wrist.home();
     elevator.home();
 
+    swerve.setAutoOverrideRotation(false);
+
     finishShotTimer.stop();
     finishShotTimer.reset();
-
-    startShotTimer.stop();
-    startShotTimer.reset();
 
     Leds.getInstance().shooting = false;
 

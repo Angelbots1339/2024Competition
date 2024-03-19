@@ -13,7 +13,7 @@
     "Source"
   ],
   "defaultMaxVel": 6.21,
-  "defaultMaxAccel": 6.0,
+  "defaultMaxAccel": 6.5,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 4.5

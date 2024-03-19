@@ -71,7 +71,7 @@ public class Indexer extends SubsystemBase {
         setVoltage(ScoringConstants.indexingTargetVoltsSlow);
 
       } else if (indexerSensor.getRange() < IndexerConstants.isNotePresentTarget) {
-        setVoltage(-ScoringConstants.indexingTargetVoltsSlow * (2 / 3));
+        setVoltage(-ScoringConstants.indexingTargetVoltsSlow);
 
       }
     }

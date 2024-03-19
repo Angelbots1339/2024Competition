@@ -12,31 +12,13 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Amp1stPiece"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "intakeNote"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp2ndPiece"
+                  "pathName": "Amp1stPiece"
                 }
               }
             ]
@@ -49,15 +31,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Amp3rdPiece"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intakeNote"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp2ndPiece"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeNote"
+                }
+              }
+            ]
           }
         },
         {
@@ -71,11 +60,24 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "intakeNote"
+                  "pathName": "Amp3rdPiece"
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
               {
                 "type": "path",
                 "data": {
@@ -96,15 +98,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "intakeNote"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "Amp5thPieceClose"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeNote"
                 }
               }
             ]

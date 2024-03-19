@@ -90,7 +90,7 @@ public class PoseEstimation {
      */
     public static Translation2d calculateVirtualSpeakerOffset(Translation2d targetPosition) {
 
-        // TODO Do math here
+        // Do math here
 
         double virtualGoalX = targetPosition.getX()
                 - (estimatedPose.getTranslation().getDistance(targetPosition) / ScoringConstants.gamePieceVelocity)

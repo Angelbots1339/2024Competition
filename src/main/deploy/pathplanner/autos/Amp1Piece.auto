@@ -12,9 +12,16 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "Amp1stPiece"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp1stPiece"
+                }
+              }
+            ]
           }
         },
         {

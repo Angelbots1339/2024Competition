@@ -70,6 +70,9 @@ public class IntakeNote extends Command {
       // intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
       intake.setVoltage(ScoringConstants.intakingTargetVoltage);
 
+    } else if (indexer.isNoteAtTarget()) {
+      intake.disable();
+
     } else {
       intake.setVoltage(ScoringConstants.intakingTargetVoltage);
 
@@ -100,7 +103,7 @@ public class IntakeNote extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (endWhenNoteDetected.get() && indexer.isNoteAtTarget() && !intake.isNotePresent()) {
+    if (indexer.isNoteAtTarget()) {
       return true;
     }
     return false;

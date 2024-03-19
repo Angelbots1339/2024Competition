@@ -12,9 +12,16 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "Amp1stPiece"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp1stPiece"
+                }
+              }
+            ]
           }
         },
         {
@@ -28,18 +35,18 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "intakeNote"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "Amp2ndPiece"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "finishIntaking"
           }
         },
         {
