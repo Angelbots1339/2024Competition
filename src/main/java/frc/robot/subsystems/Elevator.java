@@ -126,8 +126,8 @@ public class Elevator extends SubsystemBase {
     // System.out.println(getBottomLimitSwitch());
 
     if(getBottomLimitSwitch() && !reverseLimitHit) {
-      elevatorLeaderMotor.setPosition(0, 0.01);
-      elevatorFollowerMotor.setPosition(0, 0.01);
+      elevatorLeaderMotor.setPosition(0, 0);
+      elevatorFollowerMotor.setPosition(0, 0);
 
       reverseLimitHit = true;
     } else if (reverseLimitHit && !getBottomLimitSwitch()) {
@@ -144,19 +144,19 @@ public class Elevator extends SubsystemBase {
     // TODO Figure out what status signals Follower control needs to work
 
     ErrorCheckUtil.checkError(
-        motor.getPosition().setUpdateFrequency(ElevatorConstants.kElevatorPositionUpdateFrequency,
+        motor.getPosition().setUpdateFrequency(ElevatorConstants.kElevatorMidUpdateFrequency,
             Constants.kConfigTimeoutSeconds),
         CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
     ErrorCheckUtil.checkError(
-        motor.getClosedLoopError().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
+        motor.getClosedLoopError().setUpdateFrequency(ElevatorConstants.kElevatorMidUpdateFrequency,
             Constants.kConfigTimeoutSeconds),
         CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
     ErrorCheckUtil.checkError(
-        motor.getStatorCurrent().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
+        motor.getStatorCurrent().setUpdateFrequency(ElevatorConstants.kElevatorMidUpdateFrequency,
             Constants.kConfigTimeoutSeconds),
         CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
     ErrorCheckUtil.checkError(
-        motor.getControlMode().setUpdateFrequency(ElevatorConstants.kElevatorErrorUpdateFrequency,
+        motor.getReverseLimit().setUpdateFrequency(ElevatorConstants.kElevatorFastUpdateFrequency,
             Constants.kConfigTimeoutSeconds),
         CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
 

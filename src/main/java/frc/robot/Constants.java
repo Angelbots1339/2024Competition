@@ -239,7 +239,7 @@ public class Constants {
                 public static final HolonomicPathFollowerConfig autoConfig = new HolonomicPathFollowerConfig(
                                 // HolonomicPathFollowerConfig, this should likely live in your Constants class
                                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants in Meters
-                                new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants in Radians
+                                new PIDConstants(5, 0.0, 0), // Rotation PID constants in Radians
                                 SwerveConstants.kSpeedAt12VoltsMps, // Max module speed, in m/s
                                 0.40451045104, // Drive base radius in meters. Distance from robot center to furthest
                                                // module.
@@ -473,8 +473,8 @@ public class Constants {
 
                 public static final double heightErrorTolerance = 0.005; // Meters
 
-                public static final double kElevatorPositionUpdateFrequency = 10; // Hertz
-                public static final double kElevatorErrorUpdateFrequency = 20; // Hertz
+                public static final double kElevatorFastUpdateFrequency = 10; // Hertz
+                public static final double kElevatorMidUpdateFrequency = 20; // Hertz
 
                 public static double elevatorMetersToRotations(double meters) {
 
@@ -503,24 +503,19 @@ public class Constants {
                 public static final double wristRegressionMaxClamp = 175;
                 public static final double wristRegressionMinClamp = 90;
 
-                public static final double scoreAmpOffset = 0.4;
+                public static final double scoreAmpOffset = 0.4; // Used for auto align
 
-                public static final double indexingTargetPercent = 0.4;
+                // public static final double indexingTargetPercent = 0.4;
                 // public static final double indexingTargetPercentSlow = 0.1;
 
-                public static final double indexingTargetVolts = 5; 
-                public static final double indexingTargetVoltsSlow = 1.5;
+                public static final double indexingTargetVolts = 3; 
+                public static final double indexingTargetVoltsSlow = 1;
                 public static final double indexerScoringVoltage = 5;
 
-                public static final double intakingTargetVoltage = 6;
+                public static final double intakingTargetVoltage = 9;
                 public static final double outtakingTargetVoltage = -6;
 
-                public static final double kAccelCompFactor = 0; // Seconds
-                public static final double gamePieceVelocity = 0; // Meters per second
-
                 public static final double shootingDriveScalar = 0.25;
-
-                public static final boolean shootWhileMoving = false;
 
                 public static final double autonomousFinishShotTime = 0.3;
 

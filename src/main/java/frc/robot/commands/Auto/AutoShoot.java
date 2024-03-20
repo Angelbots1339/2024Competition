@@ -116,7 +116,7 @@ public class AutoShoot extends Command {
 
     if (shooter.isAtSetpoint() && wrist.isAtSetpoint()) {
       finishShotTimer.start();
-      indexer.runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
+      indexer.setVoltage(ScoringConstants.indexingTargetVolts);
     } else {
       indexer.disable();
     }

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4205654568716546,
-      "y": 5.5786278563297875
+      "x": 1.3774492151572104,
+      "y": 3.4411874969775824
     },
     "rotation": 0
   },
@@ -12,14 +12,20 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Source1Piece"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "shootNoVision"
+            "name": "shoot"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Source",
   "choreoAuto": false
 }

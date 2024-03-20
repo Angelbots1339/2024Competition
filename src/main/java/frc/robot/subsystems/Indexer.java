@@ -63,7 +63,7 @@ public class Indexer extends SubsystemBase {
   public void indexNoteToTarget() {
 
     if (indexerSensor.getRange() > 250) {
-      runIndexerDutyCycle(ScoringConstants.indexingTargetPercent);
+      setVoltage(ScoringConstants.indexingTargetVolts);
     } else if (isNoteAtTarget()) {
       disable();
     } else {

@@ -82,25 +82,25 @@ public class PoseEstimation {
         return estimatedVelocity;
     }
 
-    /**
-     * Used for shooting while moving to make a virtual target offset based on the
-     * robot's current velocity
-     * 
-     * @return the translated target position
-     */
-    public static Translation2d calculateVirtualSpeakerOffset(Translation2d targetPosition) {
+    // /**
+    //  * Used for shooting while moving to make a virtual target offset based on the
+    //  * robot's current velocity
+    //  * 
+    //  * @return the translated target position
+    //  */
+    // public static Translation2d calculateVirtualSpeakerOffset(Translation2d targetPosition) {
 
-        // Do math here
+    //     // Do math here
 
-        double virtualGoalX = targetPosition.getX()
-                - (estimatedPose.getTranslation().getDistance(targetPosition) / ScoringConstants.gamePieceVelocity)
-                        * (estimatedVelocity.getX() + (estimatedAcceleration.getX() * ScoringConstants.kAccelCompFactor));
-        double virtualGoalY = targetPosition.getY()
-                - ScoringConstants.gamePieceVelocity
-                        * (estimatedVelocity.getY() + (estimatedAcceleration.getY() * ScoringConstants.kAccelCompFactor));
+    //     double virtualGoalX = targetPosition.getX()
+    //             - (estimatedPose.getTranslation().getDistance(targetPosition) / ScoringConstants.gamePieceVelocity)
+    //                     * (estimatedVelocity.getX() + (estimatedAcceleration.getX() * ScoringConstants.kAccelCompFactor));
+    //     double virtualGoalY = targetPosition.getY()
+    //             - ScoringConstants.gamePieceVelocity
+    //                     * (estimatedVelocity.getY() + (estimatedAcceleration.getY() * ScoringConstants.kAccelCompFactor));
 
-        return new Translation2d(virtualGoalX, virtualGoalY);
-    }
+    //     return new Translation2d(virtualGoalX, virtualGoalY);
+    // }
 
     /**
      * DO NOT CALL
@@ -109,7 +109,6 @@ public class PoseEstimation {
      * PathPlannerLogging.setLogTargetPoseCallback()
      */
     public static void updateTargetAutoPose(Pose2d pose) {
-
         targetAutoPose = pose;
     }
 
@@ -120,7 +119,6 @@ public class PoseEstimation {
      * @return Target robot pose
      */
     public static Pose2d getTargetAutoPose() {
-
         return targetAutoPose;
     }
 
@@ -130,7 +128,6 @@ public class PoseEstimation {
      * @return Target pose error
      */
     public static Pose2d getAutoTargetPoseError() {
-
         return new Pose2d().transformBy(targetAutoPose.minus(estimatedPose));
     }
 

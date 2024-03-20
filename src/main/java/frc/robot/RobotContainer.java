@@ -105,6 +105,9 @@ public class RobotContainer {
   private Trigger retractClimb = new Trigger(() -> driveController.getRightTriggerAxis() > 0.1 && climbMode);
 
   private Trigger extendToMax = new Trigger(() -> driveController.getAButton() && climbMode);
+  
+  private Trigger zeroWrist = new Trigger(() -> operatorController.getAButton());
+
 
   private void configDriverBindings() {
     resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyroAdjusted()));
@@ -175,6 +178,8 @@ public class RobotContainer {
       climbMode = !climbMode;
       Leds.getInstance().climbing = climbMode;
     }, elevator));
+
+    zeroWrist.onTrue(new InstantCommand(() -> wrist.resetToAbsolute()));
   }
 
   /***** Initialization *****/

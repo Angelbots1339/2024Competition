@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3734736450954386,
-      "y": 7.001715091393146
+      "x": 1.3774492151572104,
+      "y": 3.4411874969775824
     },
     "rotation": 0
   },
@@ -12,13 +12,25 @@
     "data": {
       "commands": [
         {
-          "type": "race",
+          "type": "path",
+          "data": {
+            "pathName": "Source1Piece"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Amp1stPiece"
+                  "pathName": "Source2Piece"
                 }
               }
             ]
@@ -33,6 +45,6 @@
       ]
     }
   },
-  "folder": "AmpSide",
+  "folder": "Source",
   "choreoAuto": false
 }

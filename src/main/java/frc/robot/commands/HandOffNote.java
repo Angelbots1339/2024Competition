@@ -81,10 +81,10 @@ public class HandOffNote extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (!noteDetected) {
+    if (!intake.isNotePresent() && !indexer.isNotePresent()) {
       return true;
     }
 
-    return indexer.isNoteAtTarget() && !intake.isNotePresent();
+    return indexer.isNoteAtTarget();
   }
 }
