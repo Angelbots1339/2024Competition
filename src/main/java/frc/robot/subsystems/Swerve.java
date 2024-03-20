@@ -15,6 +15,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.MathUtil;
@@ -302,15 +303,11 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      */
     public void setChassisSpeedsAuto(ChassisSpeeds speeds) {
         if (overrideAutoRotation) {
-
-            ChassisSpeeds newSpeeds = angularPIDCalc(() -> speeds.vxMetersPerSecond, () -> speeds.vyMetersPerSecond,
-                    autoRotation);
-
-            this.setControl(autoRequest.withSpeeds(newSpeeds));
+            PPHolonomicDriveController.setRotationTargetOverride(() -> Optional.of(autoRotation.get()));
         } else {
-            this.setControl(autoRequest.withSpeeds(speeds));
-
+            PPHolonomicDriveController.setRotationTargetOverride(() -> Optional.empty());
         }
+        this.setControl(autoRequest.withSpeeds(speeds));
 
     }
 

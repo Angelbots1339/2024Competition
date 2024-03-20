@@ -39,14 +39,14 @@
                 "data": {
                   "pathName": "Amp2ndPiece"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeNote"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "finishIntaking"
           }
         },
         {

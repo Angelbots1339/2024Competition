@@ -48,11 +48,11 @@ public class ManualClimb extends Command {
       elevator.holdPosition();
     }
 
-    if (Math.abs(wristRotation.get()) > 0.1) {
-      wrist.setVoltage(wristRotation.get() * 6);
-    } else {
-      wrist.holdPosition();
-    }
+    // if (Math.abs(wristRotation.get()) > 0.1) {
+    //   wrist.setVoltage(wristRotation.get() * 6);
+    // } else {
+    //   wrist.holdPosition();
+    // }
 
   }
 

@@ -99,7 +99,7 @@ public class RobotContainer {
   private Trigger alignScoreAmp = new Trigger(() -> driveController.getYButton() && !climbMode);
 
   private Trigger resetGyro = new Trigger(() -> driveController.getStartButton());
-  private Trigger toggleClimbMode = new Trigger(() -> driveController.getBackButton());
+  private Trigger toggleClimbMode = new Trigger(() -> operatorController.getBackButton());
 
   private Trigger extendClimb = new Trigger(() -> driveController.getLeftTriggerAxis() > 0.1 && climbMode);
   private Trigger retractClimb = new Trigger(() -> driveController.getRightTriggerAxis() > 0.1 && climbMode);
@@ -108,12 +108,7 @@ public class RobotContainer {
 
   private void configDriverBindings() {
     resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyroAdjusted()));
-    toggleClimbMode.onTrue(new InstantCommand(() -> {
-      climbMode = !climbMode;
-      Leds.getInstance().climbing = climbMode;
-    }).alongWith(climbMode ? new ManualClimb(elevator, wrist, () -> driveController.getLeftTriggerAxis(),
-        () -> driveController.getRightTriggerAxis(),
-        manualWristRotation) : new InstantCommand()));
+
 
     // toggleClimbMode.toggleOnTrue(new InstantCommand(() -> {
     // climbMode = !climbMode;
@@ -166,7 +161,7 @@ public class RobotContainer {
     // .whileTrue(new RunCommand(() ->
     // elevator.setVoltage(-driveController.getRightTriggerAxis() * 10), elevator));
 
-    extendToMax.onTrue(new RunCommand(() -> elevator.toHeight(ElevatorConstants.maxElevatorHeight - 0.01)));
+    // extendToMax.onTrue(new RunCommand(() -> elevator.toHeight(ElevatorConstants.maxElevatorHeight - 0.01), elevator));
 
     // subwooferShot.whileTrue(new SuperstructureToPosition(elevator, wrist, () ->
     // new WristElevatorState(Rotation2d.fromDegrees(wristAngle.getDouble(90)),
@@ -176,7 +171,10 @@ public class RobotContainer {
   }
 
   private void configOperatorBindings() {
-
+    toggleClimbMode.onTrue(new InstantCommand(() -> {
+      climbMode = !climbMode;
+      Leds.getInstance().climbing = climbMode;
+    }, elevator));
   }
 
   /***** Initialization *****/
@@ -237,12 +235,12 @@ public class RobotContainer {
 
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
     wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
-    elevator.setDefaultCommand(new InstantCommand(() -> {
-      elevator.home();
-    }, elevator));
-    intake.setDefaultCommand(new InstantCommand(() -> intake.disable(), intake));
-    indexer.setDefaultCommand(new InstantCommand(() -> indexer.disable(), indexer));
-    shooter.setDefaultCommand(new InstantCommand(() -> shooter.disable(), shooter));
+    elevator.setDefaultCommand(Commands.either(new ManualClimb(elevator, wrist, () -> driveController.getLeftTriggerAxis(),
+        () -> driveController.getRightTriggerAxis(),
+        manualWristRotation), new InstantCommand(elevator::home, elevator), () -> climbMode));
+    intake.setDefaultCommand(new InstantCommand(intake::disable, intake));
+    indexer.setDefaultCommand(new InstantCommand(indexer::disable, indexer));
+    shooter.setDefaultCommand(new InstantCommand(shooter::disable, shooter));
   }
 
   private void initializeEndgameAlerts() {

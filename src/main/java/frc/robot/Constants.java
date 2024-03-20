@@ -238,8 +238,8 @@ public class Constants {
 
                 public static final HolonomicPathFollowerConfig autoConfig = new HolonomicPathFollowerConfig(
                                 // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                                new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants in Meters
+                                new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants in Radians
                                 SwerveConstants.kSpeedAt12VoltsMps, // Max module speed, in m/s
                                 0.40451045104, // Drive base radius in meters. Distance from robot center to furthest
                                                // module.
@@ -512,7 +512,7 @@ public class Constants {
                 public static final double indexingTargetVoltsSlow = 1.5;
                 public static final double indexerScoringVoltage = 5;
 
-                public static final double intakingTargetVoltage = 12;
+                public static final double intakingTargetVoltage = 6;
                 public static final double outtakingTargetVoltage = -6;
 
                 public static final double kAccelCompFactor = 0; // Seconds
