@@ -383,10 +383,10 @@ public class Constants {
                                                 .withKA(0)
                                                 .withKP(55) // 40  || 55
                                                 .withKI(0)
-                                                .withKD(5) // 0.5 || 5
+                                                .withKD(2) // 0.5 || 5
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
                                                 .withKG(-0.4) // Negative b/c of wrist direction & how CTRE uses it
-                                                .withKS(0.5)) // 0.2
+                                                .withKS(0)) // 0.5
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
@@ -407,10 +407,10 @@ public class Constants {
 
                 public static final Follower followerControl = new Follower(wristLeaderMotorID, true);
 
-                public static final double kWristPositionUpdateFrequency = 10; // Hertz
-                public static final double kWristErrorUpdateFrequency = 20; // Hertz
+                public static final double kWristPositionUpdateFrequency = 50; // Hertz
+                public static final double kWristErrorUpdateFrequency = 50; // Hertz
 
-                public static final Rotation2d angleErrorTolerance = Rotation2d.fromDegrees(0.5); // Degrees
+                public static final Rotation2d angleErrorTolerance = Rotation2d.fromDegrees(0.3); // Degrees
 
         }
 
@@ -473,8 +473,8 @@ public class Constants {
 
                 public static final double heightErrorTolerance = 0.005; // Meters
 
-                public static final double kElevatorFastUpdateFrequency = 10; // Hertz
-                public static final double kElevatorMidUpdateFrequency = 20; // Hertz
+                public static final double kElevatorFastUpdateFrequency = 50; // Hertz
+                public static final double kElevatorMidUpdateFrequency = 40; // Hertz
 
                 public static double elevatorMetersToRotations(double meters) {
 
@@ -492,7 +492,7 @@ public class Constants {
                 public static final WristElevatorState Handoff = new WristElevatorState(138, 0);
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(18, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
-                public static final WristElevatorState SubwooferShot = new WristElevatorState(127, 0);
+                public static final WristElevatorState SubwooferShot = new WristElevatorState(122, 0);
 
                 public static final double[] shooterSetpointClose = { 3750, 4750 }; // [Left, Right]
                 public static final double[] shooterSetpointFar = { 5000, 6000 }; // [Left, Right]

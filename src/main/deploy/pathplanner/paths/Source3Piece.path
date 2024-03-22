@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.287099332978703,
-        "y": 2.963671236954304
+        "x": 2.8649122992690432,
+        "y": 2.943267928202524
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.291292454119104,
-        "y": 0.22743667945746288
+        "x": 4.869105420409445,
+        "y": 0.20703337070568284
       },
       "isLocked": false,
       "linkedName": "Source2PieceEnd"
@@ -20,24 +20,40 @@
         "y": 2.355691559811956
       },
       "prevControl": {
-        "x": 8.433202444038903,
-        "y": 1.8011775810982316
+        "x": 8.398159916665445,
+        "y": 1.7708226117374612
       },
       "nextControl": {
-        "x": 7.610489154765086,
-        "y": 2.6939374489971435
+        "x": 7.73413437567616,
+        "y": 2.586783506900348
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.287099332978703,
-        "y": 2.963671236954304
+        "x": 4.82905060254565,
+        "y": 1.21809236211065
       },
       "prevControl": {
-        "x": 5.505688719325683,
-        "y": -0.07794611245414687
+        "x": 7.254946060368077,
+        "y": 1.0147848188476327
+      },
+      "nextControl": {
+        "x": 4.1920343794391295,
+        "y": 1.2714789179578365
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.2695574511519396,
+        "y": 2.943267928202524
+      },
+      "prevControl": {
+        "x": 3.475858780421265,
+        "y": 2.243423033142363
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +78,7 @@
       "name": "Intake",
       "waypointRelativePos": 0,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
@@ -77,7 +93,7 @@
     },
     {
       "name": "SpinUp",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 2.6,
       "command": {
         "type": "parallel",
         "data": {
@@ -85,7 +101,7 @@
             {
               "type": "named",
               "data": {
-                "name": "spinUp"
+                "name": "spinUpNoVision"
               }
             }
           ]
@@ -101,7 +117,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -40.0,
+    "rotation": -35.0,
     "rotateFast": true
   },
   "reversed": false,

@@ -23,38 +23,32 @@ public final class LoggingConstants {
         public class RobotContainerLogging {
                 public static LoggingLevel StickValues = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Shooting = LoggingLevel.SHUFFLEBOARD;
-                public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
         public class ElevatorLogging {
                 public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel MotionMagic = LoggingLevel.NONE;
-                public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
         public class WristLogging {
-                public static LoggingLevel Main = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
-                public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
         public class IntakeLogging {
                 public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
-                public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
         public class IndexerLogging {
                 public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
-                public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
         public class ShooterLogging {
                 public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
-                public static LoggingLevel Default = LoggingLevel.NONE;
         }
 
         public class GlobalLoggingConstants {

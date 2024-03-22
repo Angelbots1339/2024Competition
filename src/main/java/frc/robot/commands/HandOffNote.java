@@ -42,6 +42,9 @@ public class HandOffNote extends Command {
       noteDetected = true;
       Leds.getInstance().hasGamePiece = noteDetected;
     }
+
+    wrist.toAngle(ScoringConstants.Handoff.angle);
+    elevator.toHeight(ScoringConstants.Handoff.height);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -55,12 +58,15 @@ public class HandOffNote extends Command {
     wrist.toAngle(ScoringConstants.Handoff.angle);
     elevator.toHeight(ScoringConstants.Handoff.height);
 
-    if (wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
-      // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
-      intake.setVoltage(ScoringConstants.intakingTargetVoltage);
-    } else {
+    if (intake.isNotePresent() && !wrist.isAtSetpoint() && !elevator.isAtSetpoint()) {
       intake.disable();
-    }
+
+    } else if (wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
+      intake.setVoltage(ScoringConstants.intakingTargetVoltage);
+
+    } else if (indexer.isNoteAtTarget()) {
+      intake.disable();
+    } 
 
     indexer.indexNoteToTarget();
 

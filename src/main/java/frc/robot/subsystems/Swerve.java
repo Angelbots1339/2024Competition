@@ -63,7 +63,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
-    private LoggedSubsystem logger;
+    private LoggedSubsystem logger = new LoggedSubsystem("Swerve");
     private LoggedField field;
     private LoggedSweveModules loggedModules;
 
@@ -93,15 +93,16 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         CommandScheduler.getInstance().registerSubsystem(this);
 
-        // registerTelemetry(
-        //         (SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(pose.Pose, m_modulePositions, this));
+        registerTelemetry(
+                (SwerveDriveState pose) -> PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(),
+                        m_modulePositions, this));
 
         PathPlannerLogging.setLogTargetPoseCallback(PoseEstimation::updateTargetAutoPose);
 
         initializeLogging();
         // PoseEstimation.initNonVisionPoseEstimator(Rotation2d.fromDegrees(this.m_pigeon2.getYaw().getValue()),
-        //         m_kinematics,
-        //         this.m_modulePositions);
+        // m_kinematics,
+        // this.m_modulePositions);
 
         angularDrivePID.setTolerance(DriverConstants.angularDriveTolerance);
         angularDrivePID.enableContinuousInput(0, 360);
@@ -119,7 +120,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      * @param translationY  Meters/second
      * @param rotation      Rad/second
      * @param fieldOriented Use field oriented drive?
-     * @param skewReduction Use Skew Reduction? 
+     * @param skewReduction Use Skew Reduction?
      * @return
      */
     public Command drive(Supplier<Double> translationX, Supplier<Double> translationY, Supplier<Double> rotation,
@@ -174,7 +175,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
         return run(() -> {
 
-
             ChassisSpeeds speeds = angularPIDCalc(translationX, translationY, desiredRotation);
 
             if (skewReduction.get()) {
@@ -218,7 +218,6 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      */
     public void angularDriveRequest(Supplier<Double> translationX, Supplier<Double> translationY,
             Supplier<Rotation2d> desiredRotation, Supplier<Boolean> skewReduction) {
-
 
         ChassisSpeeds speeds = angularPIDCalc(translationX, translationY, desiredRotation);
 
@@ -336,9 +335,8 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     }
 
     public Rotation2d getAdjustedYaw() {
- 
 
-             double rawYaw = m_pigeon2.getYaw().getValue() + (FieldUtil.isAllianceBlue() ? 0 : 180);
+        double rawYaw = m_pigeon2.getYaw().getValue() + (FieldUtil.isAllianceBlue() ? 0 : 180);
         double yawWithRollover = rawYaw > 0 ? rawYaw % 360 : 360 - Math.abs(rawYaw % 360);
 
         return Rotation2d.fromDegrees(yawWithRollover);
@@ -360,13 +358,14 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
      * Will rotate the provided value by 180 if on red alliance
      */
     public void zeroGyroAdjusted(Rotation2d rot) {
-            setGyroYaw(FieldUtil.isAllianceBlue() ? rot : rot.plus(Rotation2d.fromDegrees(180)));
+        setGyroYaw(FieldUtil.isAllianceBlue() ? rot : rot.plus(Rotation2d.fromDegrees(180)));
     }
+
     /**
      * Will rotate the provided value by 180 if on red alliance
      */
     public void zeroGyroAdjusted() {
-            setGyroYaw(FieldUtil.isAllianceBlue() ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(180));
+        setGyroYaw(FieldUtil.isAllianceBlue() ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(180));
     }
 
     public void updateVision() {
@@ -437,12 +436,16 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         if (!DriverStation.isAutonomous()) {
             updateVision();
         }
-        PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(),
-        m_modulePositions, this);
+        // PoseEstimation.updateEstimatedPose(this.m_odometry.getEstimatedPosition(),
+        // m_modulePositions, this);
 
-        loggedModules.updateState(m_cachedState);
+        // loggedModules.updateState(m_cachedState);
 
-        // SmartDashboard.putNumber("2DTagDistance", Math.sqrt(Math.pow(LimelightHelpers.getTargetPose_RobotSpace(VisionConstants.limelightCenterName)[0], 2) + Math.pow(LimelightHelpers.getTargetPose_RobotSpace(VisionConstants.limelightCenterName)[2], 2)));
+        // SmartDashboard.putNumber("2DTagDistance",
+        // Math.sqrt(Math.pow(LimelightHelpers.getTargetPose_RobotSpace(VisionConstants.limelightCenterName)[0],
+        // 2) +
+        // Math.pow(LimelightHelpers.getTargetPose_RobotSpace(VisionConstants.limelightCenterName)[2],
+        // 2)));
     }
 
     public void resetPose(Pose2d pose) {
@@ -494,59 +497,66 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
     public void initializeLogging() {
 
-        logger = new LoggedSubsystem("Swerve");
+        
         field = new LoggedField("PoseEstimator", logger, SwerveLogging.Pose, true);
         loggedModules = new LoggedSweveModules("Modules", logger, this,
                 SwerveLogging.Modules);
 
         logger.add(field);
         field.addPose2d("PoseEstimation", () -> PoseEstimation.getEstimatedPose(), true);
-        logger.add(loggedModules);
-
+        // logger.add(loggedModules);
 
         // logger.add(new LoggedPigeon2("Gyro", logger, this.m_pigeon2,
-        //         SwerveLogging.Gyro));
+        // SwerveLogging.Gyro));
 
         logger.addDouble("PoseHeading", () -> PoseEstimation.getEstimatedPose().getRotation().getDegrees(),
                 SwerveLogging.Pose);
         logger.addDouble("RawGyro", () -> m_pigeon2.getYaw().getValue(),
                 SwerveLogging.Pose);
-        // logger.addDouble("x velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
-        // logger.addDouble("y velocity", () -> PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
 
-        logger.addString("Command", () -> {
-            Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
-                command = c.getName();
-            });
-            return command;
-        }, SwerveLogging.Main);
+        // logger.addDouble("x velocity", () ->
+        // PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
+        // logger.addDouble("y velocity", () ->
+        // PoseEstimation.getEstimatedVelocity().getX(), SwerveLogging.Pose);
 
-        logger.addDouble("xAutoError", () -> PoseEstimation.getAutoTargetPoseError().getX(), SwerveLogging.Auto);
-        logger.addDouble("yAutoError", () -> PoseEstimation.getAutoTargetPoseError().getY(), SwerveLogging.Auto);
-        logger.addDouble("thetaAutoError", () -> PoseEstimation.getAutoTargetPoseError().getRotation().getDegrees(),
-                SwerveLogging.Auto);
+        // logger.addString("Command", () -> {
+        //     Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+        //         command = c.getName();
+        //     });
+        //     return command;
+        // }, SwerveLogging.Main);
 
-        logger.addBoolean("isAtAngularDriveSetpoint", () -> isAngularDriveAtSetpoint(), SwerveLogging.PidPose);
-        logger.addDouble("angularDriveSetpoint", () -> angularDrivePID.getSetpoint(), SwerveLogging.PidPose);
-        logger.addDouble("angularDrivePositionError", () -> angularDrivePID.getPositionError(), SwerveLogging.PidPose);
-        logger.addDouble("angularDriveVelocityError", () -> angularDrivePID.getVelocityError(), SwerveLogging.PidPose);
+        // logger.addDouble("xAutoError", () -> PoseEstimation.getAutoTargetPoseError().getX(), SwerveLogging.Auto);
+        // logger.addDouble("yAutoError", () -> PoseEstimation.getAutoTargetPoseError().getY(), SwerveLogging.Auto);
+        // logger.addDouble("thetaAutoError", () -> PoseEstimation.getAutoTargetPoseError().getRotation().getDegrees(),
+        //         SwerveLogging.Auto);
 
-        if(SwerveLogging.PidPose == LoggingLevel.SHUFFLEBOARD){
-            Shuffleboard.getTab(logger.getName()).add(angularDrivePID);
-        }
+        // logger.addBoolean("isAtAngularDriveSetpoint", () -> isAngularDriveAtSetpoint(), SwerveLogging.PidPose);
+        // logger.addDouble("angularDriveSetpoint", () -> angularDrivePID.getSetpoint(), SwerveLogging.PidPose);
+        // logger.addDouble("angularDrivePositionError", () -> angularDrivePID.getPositionError(), SwerveLogging.PidPose);
+        // logger.addDouble("angularDriveVelocityError", () -> angularDrivePID.getVelocityError(), SwerveLogging.PidPose);
 
+        // if (SwerveLogging.PidPose == LoggingLevel.SHUFFLEBOARD) {
+        //     Shuffleboard.getTab(logger.getName()).add(angularDrivePID);
+        // }
 
-        logger.add(new LoggedFalcon("FrontLeftDrive", logger, getModule(0).getDriveMotor(), SwerveLogging.Motors, true));
-        logger.add(new LoggedFalcon("FrontLeftAngle", logger, getModule(0).getSteerMotor(), SwerveLogging.Motors, true));
-        
-        logger.add(new LoggedFalcon("FrontRightDrive", logger, getModule(1).getDriveMotor(), SwerveLogging.Motors, true));
-        logger.add(new LoggedFalcon("FrontRightAngle", logger, getModule(1).getSteerMotor(), SwerveLogging.Motors, true));
+        logger.add(
+                new LoggedFalcon("FrontLeftDrive", logger, getModule(0).getDriveMotor(), SwerveLogging.Motors, true));
+        logger.add(
+                new LoggedFalcon("FrontLeftAngle", logger, getModule(0).getSteerMotor(), SwerveLogging.Motors, true));
 
-        logger.add(new LoggedFalcon("BackLeftDrive", logger, getModule(2).getDriveMotor(), SwerveLogging.Motors, true));
-        logger.add(new LoggedFalcon("BackLeftAngle", logger, getModule(2).getSteerMotor(), SwerveLogging.Motors, true));
-        
-        logger.add(new LoggedFalcon("BackRightDrive", logger, getModule(3).getDriveMotor(), SwerveLogging.Motors, true));
-        logger.add(new LoggedFalcon("BackRightAngle", logger, getModule(3).getSteerMotor(), SwerveLogging.Motors, true));
+        // logger.add(
+        //         new LoggedFalcon("FrontRightDrive", logger, getModule(1).getDriveMotor(), SwerveLogging.Motors, true));
+        // logger.add(
+        //         new LoggedFalcon("FrontRightAngle", logger, getModule(1).getSteerMotor(), SwerveLogging.Motors, true));
+
+        // logger.add(new LoggedFalcon("BackLeftDrive", logger, getModule(2).getDriveMotor(), SwerveLogging.Motors, true));
+        // logger.add(new LoggedFalcon("BackLeftAngle", logger, getModule(2).getSteerMotor(), SwerveLogging.Motors, true));
+
+        // logger.add(
+        //         new LoggedFalcon("BackRightDrive", logger, getModule(3).getDriveMotor(), SwerveLogging.Motors, true));
+        // logger.add(
+        //         new LoggedFalcon("BackRightAngle", logger, getModule(3).getSteerMotor(), SwerveLogging.Motors, true));
 
     }
 

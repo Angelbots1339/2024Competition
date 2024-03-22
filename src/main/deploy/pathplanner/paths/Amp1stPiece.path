@@ -33,9 +33,9 @@
   "eventMarkers": [
     {
       "name": "SpinUp",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.7,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {

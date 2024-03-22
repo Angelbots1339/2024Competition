@@ -29,7 +29,7 @@ public class Intake extends SubsystemBase {
 
   private TimeOfFlight intakeSensor = new TimeOfFlight(IntakeConstants.intakeSensorID);
 
-  private LoggedSubsystem logger;
+  private LoggedSubsystem logger = new LoggedSubsystem("Intake");
 
   /** Creates a new intake. */
   public Intake() {
@@ -79,19 +79,19 @@ public class Intake extends SubsystemBase {
   private String command = "None";
   private void initializeLogging() {
 
-    logger = new LoggedSubsystem("Intake");
+    
 
 
-     logger.addString("Command", () -> {
-            Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
-                command = c.getName();
-            });
-            return command;
-        }, IntakeLogging.Main);
+    //  logger.addString("Command", () -> {
+    //         Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+    //             command = c.getName();
+    //         });
+    //         return command;
+    //     }, IntakeLogging.Main);
 
     logger.add(new LoggedFalcon("IntakeMotor", logger, intakeMotor, IntakeLogging.Motor, true));
 
-    logger.addBoolean("NotePresent", () -> isNotePresent(), IntakeLogging.Main);
+    // logger.addBoolean("NotePresent", () -> isNotePresent(), IntakeLogging.Main);
     logger.addDouble("TOFSensor", () -> intakeSensor.getRange(), IntakeLogging.Main);
 
     

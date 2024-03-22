@@ -59,7 +59,7 @@ public abstract class LoggedObject<T> implements Iloggable {
 
     public LoggedObject(String name, LoggedContainer subsystemLogger, T object, LoggingLevel logType, Boolean SeparateTab) {
         this(name, subsystemLogger, object, logType,
-                SeparateTab? subsystemLogger.getName() + ":" + logType
+                SeparateTab ? subsystemLogger.getName() + ":" + logType
                         : subsystemLogger.getName());
     }
 

@@ -36,7 +36,7 @@ public class Elevator extends SubsystemBase {
   private double targetHeight = 0;
   private boolean reverseLimitHit = false;
 
-  private LoggedSubsystem logger;
+  private LoggedSubsystem logger = new LoggedSubsystem("Elevator");
 
   /** Creates a new Elevator. */
   public Elevator() {
@@ -126,8 +126,8 @@ public class Elevator extends SubsystemBase {
     // System.out.println(getBottomLimitSwitch());
 
     if(getBottomLimitSwitch() && !reverseLimitHit) {
-      elevatorLeaderMotor.setPosition(0, 0);
-      elevatorFollowerMotor.setPosition(0, 0);
+      elevatorLeaderMotor.setPosition(0, 0.001);
+      elevatorFollowerMotor.setPosition(0, 0.001);
 
       reverseLimitHit = true;
     } else if (reverseLimitHit && !getBottomLimitSwitch()) {
@@ -170,26 +170,26 @@ public class Elevator extends SubsystemBase {
   private String command = "None";
   private void initializeLogging() {
 
-    logger = new LoggedSubsystem("Elevator");
+    
 
-         logger.addString("Command", () -> {
-            Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
-                command = c.getName();
-            });
-            return command;
-        }, ElevatorLogging.Main);
+        //  logger.addString("Command", () -> {
+        //     Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+        //         command = c.getName();
+        //     });
+        //     return command;
+        // }, ElevatorLogging.Main);
 
     logger.add(new LoggedFalcon("ElevatorLeader", logger, elevatorLeaderMotor, ElevatorLogging.Motor, true));
-    logger.add(new LoggedFalcon("ElevatorFollower", logger, elevatorFollowerMotor, ElevatorLogging.Motor, true));
+    // logger.add(new LoggedFalcon("ElevatorFollower", logger, elevatorFollowerMotor, ElevatorLogging.Motor, true));
 
     logger.addBoolean("ElevatorAtSetpoint", () -> isAtSetpoint(), ElevatorLogging.Main);
-    logger.addBoolean("ElevatorBottomLimit", () -> getBottomLimitSwitch(), ElevatorLogging.Main);
+    // logger.addBoolean("ElevatorBottomLimit", () -> getBottomLimitSwitch(), ElevatorLogging.Main);
 
-    logger.addDouble("ElevatorPosition", () -> ElevatorConstants.elevatorRotationsToMeters(getLeaderPosition()),
-        ElevatorLogging.Main);
-    logger.addDouble("ElevatorVelocity",
-        () -> ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getVelocity().getValue()),
-        ElevatorLogging.Main);
+    // logger.addDouble("ElevatorPosition", () -> ElevatorConstants.elevatorRotationsToMeters(getLeaderPosition()),
+    //     ElevatorLogging.Main);
+    // logger.addDouble("ElevatorVelocity",
+    //     () -> ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getVelocity().getValue()),
+    //     ElevatorLogging.Main);
 
 
   }

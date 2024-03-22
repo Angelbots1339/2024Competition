@@ -31,7 +31,7 @@ public class Shooter extends SubsystemBase {
               ? InvertedValue.CounterClockwise_Positive // Make motors spin opposite directions
               : InvertedValue.Clockwise_Positive))));
 
-  private LoggedSubsystem logger;
+  private LoggedSubsystem logger = new LoggedSubsystem("Shooter");
 
   private double leftTargetVelocity = 0;
   private double rightTargetVelocity = 0;
@@ -146,18 +146,18 @@ public class Shooter extends SubsystemBase {
 
   private void initializeLogging() {
 
-    logger = new LoggedSubsystem("Shooter");
+    
 
     logger.add(new LoggedFalcon("LeftShooterMotor", logger, shooterMotorLeft, ShooterLogging.Motor, true));
-    logger.add(new LoggedFalcon("RightShooterMotor", logger, shooterMotorRight, ShooterLogging.Motor, true));
+    // logger.add(new LoggedFalcon("RightShooterMotor", logger, shooterMotorRight, ShooterLogging.Motor, true));
 
     logger.addBoolean("ShooterAtSetpoint", () -> isAtSetpoint(), ShooterLogging.Main);
 
-    logger.addDouble("LeftShooterRPM", () -> getLeftVelocity() * 60, ShooterLogging.Main);
-    logger.addDouble("RightShooterRPM", () -> getRightVelocity() * 60, ShooterLogging.Main);
+    // logger.addDouble("LeftShooterRPM", () -> getLeftVelocity() * 60, ShooterLogging.Main);
+    // logger.addDouble("RightShooterRPM", () -> getRightVelocity() * 60, ShooterLogging.Main);
 
-    logger.addDouble("LeftShooterError", () -> shooterMotorLeft.getClosedLoopError().getValue() * 60, ShooterLogging.Main);
-    logger.addDouble("RightShooterError", () -> shooterMotorRight.getClosedLoopError().getValue() * 60, ShooterLogging.Main);
+    // logger.addDouble("LeftShooterError", () -> shooterMotorLeft.getClosedLoopError().getValue() * 60, ShooterLogging.Main);
+    // logger.addDouble("RightShooterError", () -> shooterMotorRight.getClosedLoopError().getValue() * 60, ShooterLogging.Main);
 
   }
 

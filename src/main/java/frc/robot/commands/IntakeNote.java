@@ -55,7 +55,7 @@ public class IntakeNote extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (intake.isNotePresent() || indexer.isNoteAtTarget()) {
+    if (intake.isNotePresent() || indexer.isNotePresent()) {
       noteDetected = true;
       Leds.getInstance().hasGamePiece = noteDetected;
     }
@@ -63,20 +63,39 @@ public class IntakeNote extends Command {
     wrist.toAngle(ScoringConstants.Handoff.angle);
     elevator.toHeight(ScoringConstants.Handoff.height);
 
-    if (noteDetected && !wrist.isAtSetpoint() && !elevator.isAtSetpoint()) {
-      intake.disable();
-    } else if (noteDetected && wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
-      // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
-      // intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
+    if (!intake.isNotePresent() && !indexer.isNoteAtTarget()) {
       intake.setVoltage(ScoringConstants.intakingTargetVoltage);
 
-    } else if (indexer.isNoteAtTarget()) {
+    } else if (intake.isNotePresent() && !wrist.isAtSetpoint() && !elevator.isAtSetpoint()) {
       intake.disable();
 
-    } else {
+    } else if (wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
       intake.setVoltage(ScoringConstants.intakingTargetVoltage);
+      
+    } 
+    else if (indexer.isNoteAtTarget()) {
+      intake.disable();
+    } 
+    // else {
+    //   intake.setVoltage(ScoringConstants.intakingTargetVoltage);
+    // }
 
-    }
+
+    // if (intake.isNotePresent() && !wrist.isAtSetpoint() &&
+    // !elevator.isAtSetpoint()) {
+    // intake.disable();
+    // } else if (wrist.isAtSetpoint() && elevator.isAtSetpoint()) {
+    // // intake.runIntakeTorqueControl(ScoringConstants.intakingTargetCurrent);
+    // // intake.runIntakeDutyCycle(ScoringConstants.intakingTargetPercent);
+    // intake.setVoltage(ScoringConstants.intakingTargetVoltage);
+
+    // } else if (indexer.isNoteAtTarget()) {
+    // intake.disable();
+
+    // } else {
+    // intake.setVoltage(ScoringConstants.intakingTargetVoltage);
+
+    // }
 
     indexer.indexNoteToTarget();
 

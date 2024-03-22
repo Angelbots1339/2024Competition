@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "SpinUp",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.45,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -40.0,
+    "rotation": -35.0,
     "rotateFast": false
   },
   "reversed": false,

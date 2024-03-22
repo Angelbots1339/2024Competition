@@ -39,6 +39,12 @@
                 "data": {
                   "pathName": "Amp2ndPiece"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeNote"
+                }
               }
             ]
           }
@@ -50,7 +56,7 @@
           }
         },
         {
-          "type": "race",
+          "type": "sequential",
           "data": {
             "commands": [
               {

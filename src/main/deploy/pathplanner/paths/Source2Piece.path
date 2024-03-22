@@ -8,36 +8,52 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.161674257729292,
-        "y": 1.7897375813235916
+        "x": 3.655318370821927,
+        "y": 1.027112202372553
       },
       "isLocked": false,
       "linkedName": "Source1PieceEnd"
     },
     {
       "anchor": {
-        "x": 8.118039341439125,
-        "y": 0.8636310710699059
+        "x": 8.146143190434529,
+        "y": 0.8487809151544238
       },
       "prevControl": {
-        "x": 8.186382967035803,
-        "y": 1.0514130362826348
+        "x": 8.078979458884843,
+        "y": 0.4990663129474414
       },
       "nextControl": {
-        "x": 8.021857895604775,
-        "y": 0.5993614956985052
+        "x": 8.199184556366129,
+        "y": 1.1249618205224117
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.287099332978703,
-        "y": 2.963671236954304
+        "x": 4.672335228929717,
+        "y": 1.6622875097602046
       },
       "prevControl": {
-        "x": 5.550263226219613,
-        "y": 1.2569773845647514
+        "x": 6.363780468301677,
+        "y": 0.7559631322966349
+      },
+      "nextControl": {
+        "x": 3.750775724857277,
+        "y": 2.1560852540692164
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.8649122992690432,
+        "y": 2.943267928202524
+      },
+      "prevControl": {
+        "x": 3.5632132005004755,
+        "y": 2.2531026867609296
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,8 +63,13 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.7,
-      "rotationDegrees": -20.0,
+      "rotationDegrees": -10.0,
       "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 2.05,
+      "rotationDegrees": -30.0,
+      "rotateFast": false
     }
   ],
   "constraintZones": [],
@@ -57,7 +78,7 @@
       "name": "Intake",
       "waypointRelativePos": 0.55,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
@@ -72,7 +93,7 @@
     },
     {
       "name": "SpinUp",
-      "waypointRelativePos": 1.85,
+      "waypointRelativePos": 2.5,
       "command": {
         "type": "parallel",
         "data": {
@@ -80,7 +101,7 @@
             {
               "type": "named",
               "data": {
-                "name": "spinUp"
+                "name": "spinUpNoVision"
               }
             }
           ]

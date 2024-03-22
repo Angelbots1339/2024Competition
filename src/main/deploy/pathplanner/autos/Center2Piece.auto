@@ -22,15 +22,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "intakeNote"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "Center2Piece"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeNote"
                 }
               }
             ]

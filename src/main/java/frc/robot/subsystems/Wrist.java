@@ -13,6 +13,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.ErrorCheckUtil;
@@ -37,7 +38,7 @@ public class Wrist extends SubsystemBase {
   private final Timer throughBoreTimer = new Timer();
   private double targetPosition = 0;
 
-  private LoggedSubsystem logger;
+  private LoggedSubsystem logger = new LoggedSubsystem("Wrist");
 
 
   /** Creates a new Wrist. */
@@ -131,6 +132,10 @@ public class Wrist extends SubsystemBase {
       throughBoreTimer.stop();
     }
 
+        // System.out.println(getSetpointError());
+    SmartDashboard.putNumber("WristError", getSetpointError().getDegrees());
+    SmartDashboard.putNumber("WristCurrentAngle", getAngle().getDegrees());
+
   }
 
   private TalonFX configWristMotor(TalonFX motor) {
@@ -157,7 +162,7 @@ public class Wrist extends SubsystemBase {
   private String command = "None";
     private void initializeLogging() {
 
-    logger = new LoggedSubsystem("Wrist");
+    
 
     logger.addString("Command", () -> {
             Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {

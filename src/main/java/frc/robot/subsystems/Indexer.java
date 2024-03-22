@@ -29,7 +29,7 @@ public class Indexer extends SubsystemBase {
 
   private TimeOfFlight indexerSensor = new TimeOfFlight(IndexerConstants.indexerSensorID);
 
-  private LoggedSubsystem logger;
+  private LoggedSubsystem logger = new LoggedSubsystem("Indexer");
 
   /** Creates a new Indexer. */
   public Indexer() {
@@ -101,18 +101,18 @@ public class Indexer extends SubsystemBase {
 
   private void initializeLogging() {
 
-    logger = new LoggedSubsystem("Indexer");
+    
 
-    logger.addString("Command", () -> {
-      Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
-        command = c.getName();
-      });
-      return command;
-    }, IndexerLogging.Main);
+    // logger.addString("Command", () -> {
+    //   Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+    //     command = c.getName();
+    //   });
+    //   return command;
+    // }, IndexerLogging.Main);
 
     logger.add(new LoggedFalcon("IndexerMotor", logger, indexerMotor, IndexerLogging.Motor, true));
 
-    logger.addBoolean("NotePresent", () -> isNoteAtTarget(), IndexerLogging.Main);
+    // logger.addBoolean("NotePresent", () -> isNoteAtTarget(), IndexerLogging.Main);
     logger.addDouble("TOFSensor", () -> indexerSensor.getRange(), IndexerLogging.Main);
 
   }
