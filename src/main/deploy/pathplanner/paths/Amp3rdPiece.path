@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6049868766404205,
-        "y": 6.932354137856424
+        "x": 2.704812016105514,
+        "y": 6.859845812284218
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5996158242316487,
-        "y": 7.215201930403861
+        "x": 3.699440963696742,
+        "y": 7.1426936048316545
       },
       "isLocked": false,
       "linkedName": "Amp2ndPieceEnd"
@@ -72,7 +72,7 @@
     },
     {
       "name": "SpinUp",
-      "waypointRelativePos": 1.8,
+      "waypointRelativePos": 1.9,
       "command": {
         "type": "parallel",
         "data": {

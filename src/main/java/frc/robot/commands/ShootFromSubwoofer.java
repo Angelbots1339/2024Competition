@@ -64,6 +64,10 @@ public class ShootFromSubwoofer extends Command {
   @Override
   public void execute() {
 
+    wrist.toAngle(ScoringConstants.SubwooferShot.angle);
+    elevator.toHeight(ScoringConstants.SubwooferShot.height);
+    shooter.shooterToRMP(ScoringConstants.shooterSetpointClose[0], ScoringConstants.shooterSetpointClose[1]);
+
     swerve.angularDriveRequest(() -> translationX.get(),
         () -> translationY.get(),
         () -> Rotation2d.fromDegrees(0), () -> true);
@@ -73,12 +77,6 @@ public class ShootFromSubwoofer extends Command {
     } else {
       indexer.disable();
     }
-
-    // if (actuallyShoot.get()) {
-    // indexer.runIndexerDutyCycle(ScoringConstants.indexerScoringPercent);
-    // } else {
-    // indexer.disable();
-    // }
 
   }
 
@@ -92,7 +90,6 @@ public class ShootFromSubwoofer extends Command {
     indexer.disable();
 
     Leds.getInstance().shooting = false;
-
 
     // shootTimer.stop();
     // shootTimer.reset();

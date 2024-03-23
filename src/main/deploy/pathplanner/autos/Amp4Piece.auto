@@ -25,9 +25,16 @@
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot"
+                }
+              }
+            ]
           }
         },
         {

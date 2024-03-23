@@ -178,6 +178,10 @@ public class Wrist extends SubsystemBase {
 
     logger.addDouble("WristPosition", () -> getAngle().getDegrees(),
         WristLogging.Main);
+    logger.addDouble("absEncoderPos", () -> wristEncoder.getAbsolutePosition() * 360,
+        WristLogging.Main);
+    logger.addDouble("absEncoderOffsetPos", () -> getAbsoluteEncoderPosition().getDegrees(),
+        WristLogging.Main);
 
     logger.addDouble("WristVelocity",
         () -> wristLeaderMotor.getVelocity().getValue(),

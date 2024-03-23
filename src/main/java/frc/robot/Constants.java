@@ -297,7 +297,7 @@ public class Constants {
 
                 public static final TalonFXConfiguration kIntakeConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
-                                                .withStatorCurrentLimit(80)
+                                                .withStatorCurrentLimit(40)
                                                 .withSupplyCurrentLimit(40)
                                                 .withStatorCurrentLimitEnable(false)
                                                 .withSupplyCurrentLimitEnable(false))
@@ -357,7 +357,7 @@ public class Constants {
                 // the through bore;
 
                 public static final int wristEncoderPort = 0; 
-                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees(105); // 0 Should be
+                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees( -15); // 105 - 17.5); // 0 Should be
                                                                                                     // straight forward
                                                                                                     // towards the
                                                                                                     // intake
@@ -383,10 +383,10 @@ public class Constants {
                                                 .withKA(0)
                                                 .withKP(55) // 40  || 55
                                                 .withKI(0)
-                                                .withKD(2) // 0.5 || 5
+                                                .withKD(3) // 0.5 || 5
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
                                                 .withKG(-0.4) // Negative b/c of wrist direction & how CTRE uses it
-                                                .withKS(0)) // 0.5
+                                                .withKS(0)) // 0.5`
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
@@ -512,7 +512,7 @@ public class Constants {
                 public static final double indexingTargetVoltsSlow = 1;
                 public static final double indexerScoringVoltage = 5;
 
-                public static final double intakingTargetVoltage = 9;
+                public static final double intakingTargetVoltage = 6;
                 public static final double outtakingTargetVoltage = -6;
 
                 public static final double shootingDriveScalar = 0.25;
