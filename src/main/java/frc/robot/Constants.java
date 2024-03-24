@@ -385,8 +385,8 @@ public class Constants {
                                                 .withKI(0)
                                                 .withKD(3) // 0.5 || 5
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
-                                                .withKG(-0.4) // Negative b/c of wrist direction & how CTRE uses it
-                                                .withKS(0)) // 0.5`
+                                                .withKG(-0.4) // -0.4 // Negative b/c of wrist direction & how CTRE uses it
+                                                .withKS(0)) // 0.5
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
@@ -410,7 +410,7 @@ public class Constants {
                 public static final double kWristPositionUpdateFrequency = 50; // Hertz
                 public static final double kWristErrorUpdateFrequency = 50; // Hertz
 
-                public static final Rotation2d angleErrorTolerance = Rotation2d.fromDegrees(0.3); // Degrees
+                public static final Rotation2d angleErrorTolerance = Rotation2d.fromDegrees(0.4); // Degrees
 
         }
 

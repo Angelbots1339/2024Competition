@@ -188,10 +188,8 @@ public class RobotContainer {
     Leds.getInstance();
     initializeLogging();
 
-    NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
-    elevator, swerve, indexer, true, true));
-
-
+    
+    
     // NamedCommands.registerCommand("shoot", Commands.either(new AutoShoot(shooter, wrist,
     //     elevator, swerve, indexer, true),
     //     new IntakeNote(intake, indexer,
@@ -199,8 +197,10 @@ public class RobotContainer {
     //         .andThen(new AutoShoot(shooter, wrist,
     //             elevator, swerve, indexer, true)),
     //     () -> indexer.isNoteAtTarget()));
-
-
+    
+    
+    NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
+    elevator, swerve, indexer, true, true));
     NamedCommands.registerCommand("shootNoAlign", new AutoShoot(shooter, wrist,
         elevator, swerve, indexer, true, false));
     NamedCommands.registerCommand("shootNoVision", new AutoShoot(shooter, wrist,

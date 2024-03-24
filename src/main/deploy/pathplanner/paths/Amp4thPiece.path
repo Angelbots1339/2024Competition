@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 8.51503894674456,
-        "y": 6.0168845661765396
+        "x": 8.496273483287707,
+        "y": 5.888258003367859
       },
       "prevControl": {
-        "x": 8.271759891394183,
-        "y": 5.379964197652661
+        "x": 8.25299442793733,
+        "y": 5.25133763484398
       },
       "nextControl": {
-        "x": 8.69057916819537,
-        "y": 6.476460267735351
+        "x": 8.671813704738517,
+        "y": 6.34783370492667
       },
       "isLocked": false,
       "linkedName": null
@@ -47,14 +47,14 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.95,
-      "rotationDegrees": -20.0,
+      "rotationDegrees": -10.0,
       "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "SpinUp",
+      "name": "Vision",
       "waypointRelativePos": 1.85,
       "command": {
         "type": "parallel",
@@ -63,24 +63,7 @@
             {
               "type": "named",
               "data": {
-                "name": "spinUpNoVision"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Intake",
-      "waypointRelativePos": 0.45,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "intakeNote"
+                "name": "vision"
               }
             }
           ]

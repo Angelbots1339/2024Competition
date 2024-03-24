@@ -57,7 +57,7 @@ public class AutoShoot extends Command {
   @Override
   public void initialize() {
 
-    indexer.disable();
+    indexer.indexNoteToTarget();
     // Set setpoints before indexer can even run
     if (useVision) {
       swerve.updateVision(); // Only use vision for targeting in auto
@@ -118,7 +118,7 @@ public class AutoShoot extends Command {
       finishShotTimer.start();
       indexer.setVoltage(ScoringConstants.indexingTargetVolts);
     } else {
-      indexer.disable();
+      indexer.indexNoteToTarget();    
     }
 
     // System.out.println("Shooter: " + shooter.isAtSetpoint());
