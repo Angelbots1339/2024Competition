@@ -24,27 +24,27 @@ public abstract class LoggedPrimitive<T> implements Iloggable {
     private T previousValue;
     private boolean isSupplied;
 
-    private LoggedPrimitive(String name, LoggingLevel level, String prefix) {
+    private LoggedPrimitive(String name, LoggingLevel level, String prefix, Object defaultValue) {
         this.level = level;
         isSupplied = false;
         if (level == LoggingLevel.SHUFFLEBOARD) {
-            shuffleboardEntry = Shuffleboard.getTab(prefix).add(name, 0).getEntry();
+            shuffleboardEntry = Shuffleboard.getTab(prefix).add(name, defaultValue).getEntry();
         } else if (level == LoggingLevel.ONBOARD_ONLY) {
             initializeOnboardLog(name, prefix);
         }
     }
 
-    private LoggedPrimitive(String name, LoggingLevel level, String prefix, Supplier<T> supplier) {
-        this(name, level, prefix);
+    private LoggedPrimitive(String name, LoggingLevel level, String prefix, Supplier<T> supplier, Object defaultValue) {
+        this(name, level, prefix, defaultValue);
         isSupplied = true;
         this.supplier = supplier;
     }
 
-    public LoggedPrimitive(String name, LoggingLevel level, LoggedContainer subsystem) {
-        this(name, level, subsystem.getName());
+    public LoggedPrimitive(String name, LoggingLevel level, LoggedContainer subsystem, Object defaultValue) {
+        this(name, level, subsystem.getName(), defaultValue);
     }
 
-    public LoggedPrimitive(String name, LoggingLevel level, LoggedContainer subsystem, Supplier<T> supplier) {
+    public LoggedPrimitive(String name, LoggingLevel level, LoggedContainer subsystem, Supplier<T> supplier, Object defaultValue) {
         this(name, level, subsystem.getName(), supplier);
 
     }

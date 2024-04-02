@@ -29,7 +29,7 @@ public class LoggedDoubleArray extends LoggedPrimitive<double[]>  {
   }
 
   public LoggedDoubleArray(String name, LoggingLevel level, LoggedContainer subsystem) {
-    super(name, level, subsystem);
+    super(name, level, subsystem, new double[0]);
   }
 
 

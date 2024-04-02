@@ -33,7 +33,7 @@ public class LoggedBoolean extends LoggedPrimitive<Boolean>{
     }
 
     public LoggedBoolean(String name, LoggingLevel level, LoggedContainer subsystem) {
-        super(name, level, subsystem);
+        super(name, level, subsystem, false);
     }
 
     public LoggedBoolean(String name, LoggingLevel level, LoggedContainer subsystem, Supplier<Boolean> supplier) {

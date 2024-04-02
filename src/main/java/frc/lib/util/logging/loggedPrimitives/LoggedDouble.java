@@ -31,7 +31,7 @@ public class LoggedDouble extends LoggedPrimitive<Double> {
     }
 
     public LoggedDouble(String name, LoggingLevel level, LoggedContainer subsystem) {
-        super(name, level, subsystem);
+        super(name, level, subsystem, 0.0);
     }
     public LoggedDouble(String name, LoggingLevel level, LoggedContainer subsystem, Supplier<Double> supplier) {
         super(name, level, subsystem, supplier);

@@ -385,7 +385,7 @@ public class Constants {
                                                 .withKI(0)
                                                 .withKD(3) // 0.5 || 5
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
-                                                .withKG(-0.4) // -0.4 // Negative b/c of wrist direction & how CTRE uses it
+                                                .withKG(-0.4) // -0.4 // Negative b/c of wrist direction
                                                 .withKS(0)) // 0.5
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
@@ -491,7 +491,7 @@ public class Constants {
 
                 public static final WristElevatorState Handoff = new WristElevatorState(138, 0);
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(18, 0.25);
-                public static final WristElevatorState Home = new WristElevatorState(90, 0);
+                public static final WristElevatorState Home = new WristElevatorState(Handoff.angle, 0);
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(122, 0);
 
                 public static final double[] shooterSetpointClose = { 3750, 4750 }; // [Left, Right]
