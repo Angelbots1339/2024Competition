@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.util.logging.LoggedContainer;
 import frc.lib.util.logging.Logger.LoggingLevel;
-import frc.lib.util.logging.loggedPrimitives.LoggedDouble;
 
 /** Add your docs here. */
 public class LoggedFalcon extends LoggedObject<TalonFX> {

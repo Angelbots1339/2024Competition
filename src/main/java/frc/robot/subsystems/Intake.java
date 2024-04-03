@@ -91,7 +91,7 @@ public class Intake extends SubsystemBase {
 
     logger.add(new LoggedFalcon("IntakeMotor", logger, intakeMotor, IntakeLogging.Motor, true));
 
-    // logger.addBoolean("NotePresent", () -> isNotePresent(), IntakeLogging.Main);
+    logger.addBoolean("NotePresent", () -> isNotePresent(), IntakeLogging.Main);
     logger.addDouble("TOFSensor", () -> intakeSensor.getRange(), IntakeLogging.Main);
 
     

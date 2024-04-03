@@ -9,15 +9,13 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.util.logging.Logger.LoggingLevel;
 import frc.lib.util.logging.loggedPrimitives.LoggedBoolean;
 import frc.lib.util.logging.loggedPrimitives.LoggedDouble;
 import frc.lib.util.logging.loggedPrimitives.LoggedInteger;
 import frc.lib.util.logging.loggedPrimitives.LoggedPrimitive;
 import frc.lib.util.logging.loggedPrimitives.LoggedString;
-import frc.robot.LoggingConstants;
-import frc.robot.LoggingConstants.GlobalLoggingConstants;
+
 
 /** Add your docs here. */
 public class LoggedContainer implements Iloggable {

@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.playingwithfusion.TimeOfFlight;
@@ -112,7 +110,8 @@ public class Indexer extends SubsystemBase {
 
     logger.add(new LoggedFalcon("IndexerMotor", logger, indexerMotor, IndexerLogging.Motor, true));
 
-    // logger.addBoolean("NotePresent", () -> isNoteAtTarget(), IndexerLogging.Main);
+    logger.addBoolean("NotePresent", () -> isNotePresent(), IndexerLogging.Main);
+    logger.addBoolean("NoteAtTarget", () -> isNoteAtTarget(), IndexerLogging.Main);
     logger.addDouble("TOFSensor", () -> indexerSensor.getRange(), IndexerLogging.Main);
 
   }

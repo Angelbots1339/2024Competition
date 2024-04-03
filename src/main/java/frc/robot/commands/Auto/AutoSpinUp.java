@@ -4,20 +4,12 @@
 
 package frc.robot.commands.Auto;
 
-import java.util.function.Supplier;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
 import frc.lib.util.PoseEstimation;
-import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.regressions.SpeakerShotRegression;
 import frc.robot.subsystems.Elevator;

@@ -6,7 +6,6 @@ package frc.lib.util;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -30,8 +29,6 @@ public class TalonFXFactory {
                     .withSupplyCurrentLimitEnable(true))
             .withMotorOutput(new MotorOutputConfigs()
                     .withNeutralMode(NeutralModeValue.Coast));
-
-    private static final TalonFXConfiguration kFollowerConfiguration = kDefaultConfiguration;
 
     /**
      * Create a CANTalon with a default configuration

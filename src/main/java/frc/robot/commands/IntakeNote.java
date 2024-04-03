@@ -4,13 +4,8 @@
 
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.util.Leds;
-import frc.robot.Constants.IndexerConstants;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Indexer;
@@ -23,19 +18,16 @@ public class IntakeNote extends Command {
   private Indexer indexer;
   private Wrist wrist;
   private Elevator elevator;
-  private Supplier<Boolean> endWhenNoteDetected;
 
   private boolean noteDetected = false;
 
   /** Creates a new IntakeNote. */
-  public IntakeNote(Intake intake, Indexer indexer, Wrist wrist, Elevator elevator,
-      Supplier<Boolean> endWhenNoteDetected) {
+  public IntakeNote(Intake intake, Indexer indexer, Wrist wrist, Elevator elevator) {
 
     this.intake = intake;
     this.indexer = indexer;
     this.wrist = wrist;
     this.elevator = elevator;
-    this.endWhenNoteDetected = endWhenNoteDetected;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intake, indexer, wrist, elevator);

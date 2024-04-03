@@ -70,16 +70,16 @@ public class Constants {
 
                 // Theoretical free speed (m/s) at 12v applied output;
                 // This needs to be tuned to your individual robot
-                public static final double kSpeedAt12VoltsMps = 6.21;
+                public static final double kSpeedAt12VoltsMps = 5.0292;
 
-                public static final double maxSpeed = 6; // Used for driving
+                public static final double maxSpeed = 5; // Used for driving
                 public static final double maxAngularRate = 7.334783440493933; // 2 * Math.PI;
 
                 // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
                 // This may need to be tuned to your individual robot
                 private static final double kCoupleRatio = 3;
 
-                private static final double kDriveGearRatio = 5.142857142857142;
+                private static final double kDriveGearRatio = 6.12;
                 private static final double kSteerGearRatio = 12.8;
                 public static final double kWheelRadiusInches = 2;
 
@@ -491,7 +491,7 @@ public class Constants {
 
                 public static final WristElevatorState Handoff = new WristElevatorState(138, 0);
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(18, 0.25);
-                public static final WristElevatorState Home = new WristElevatorState(Handoff.angle, 0);
+                public static final WristElevatorState Home = new WristElevatorState(90, 0);
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(122, 0);
 
                 public static final double[] shooterSetpointClose = { 3750, 4750 }; // [Left, Right]

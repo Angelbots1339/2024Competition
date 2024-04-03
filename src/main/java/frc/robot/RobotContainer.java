@@ -10,7 +10,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
@@ -25,13 +24,11 @@ import frc.lib.team254.math.InterpolatingDouble;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
 import frc.lib.util.PoseEstimation;
-import frc.lib.util.WristElevatorState;
 import frc.lib.util.logging.LoggedSubsystem;
 import frc.lib.util.tuning.GlobalVoltageTuning;
 import frc.lib.util.tuning.ShooterTuning;
 import frc.lib.util.tuning.SuperstructureTuning;
 import frc.robot.Constants.DriverConstants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.commands.HandOffNote;
 import frc.robot.commands.IntakeNoHandoff;
@@ -41,7 +38,6 @@ import frc.robot.commands.ManualClimb;
 import frc.robot.commands.ScoreAmp;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootFromSubwoofer;
-import frc.robot.commands.SuperstructureToPosition;
 import frc.robot.commands.Auto.AutoShoot;
 import frc.robot.commands.Auto.AutoSpinUp;
 import frc.robot.regressions.SpeakerShotRegression;
@@ -139,7 +135,7 @@ public class RobotContainer {
           intake.disable();
         })));
 
-    runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator, () -> false))
+    runIntake.whileTrue(new IntakeNote(intake, indexer, wrist, elevator))
         .onFalse(new HandOffNote(intake, indexer, wrist, elevator));
     runIntakeNoHandoff.whileTrue(new IntakeNoHandoff(intake));
 
@@ -210,11 +206,11 @@ public class RobotContainer {
     NamedCommands.registerCommand("spinUpNoVision", new AutoSpinUp(shooter, wrist,
         elevator, swerve, indexer, false));
     NamedCommands.registerCommand("intakeNote", new IntakeNote(intake, indexer,
-        wrist, elevator, () -> true).andThen(new HandOffNote(intake, indexer, wrist, elevator)));
+        wrist, elevator).andThen(new HandOffNote(intake, indexer, wrist, elevator)));
     NamedCommands.registerCommand("runIntakeNoHandoff", new IntakeNoHandoff(intake));
     NamedCommands.registerCommand("finishIntaking", Commands.either(Commands.none(),
         new IntakeNote(intake, indexer,
-            wrist, elevator, () -> true).andThen(new HandOffNote(intake, indexer, wrist, elevator)),
+            wrist, elevator).andThen(new HandOffNote(intake, indexer, wrist, elevator)),
         () -> indexer.isNoteAtTarget()));
     NamedCommands.registerCommand("vision", new RunCommand(() -> swerve.updateVision()));
 

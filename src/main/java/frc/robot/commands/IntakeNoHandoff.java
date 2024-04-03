@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.Leds;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ScoringConstants;
 import frc.robot.subsystems.Intake;
 

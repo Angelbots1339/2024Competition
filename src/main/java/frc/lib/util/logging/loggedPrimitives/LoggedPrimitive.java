@@ -4,7 +4,6 @@
 
 package frc.lib.util.logging.loggedPrimitives;
 
-import java.lang.reflect.Field;
 import java.util.function.Supplier;
 
 import edu.wpi.first.networktables.GenericEntry;

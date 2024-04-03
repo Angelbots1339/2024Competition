@@ -4,19 +4,16 @@
 
 package frc.lib.util.logging.loggedObjects;
 
-import java.util.Arrays;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
+
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.util.logging.LoggedContainer;
 import frc.lib.util.logging.Logger.LoggingLevel;
-import frc.lib.util.logging.loggedPrimitives.LoggedDouble;
-import frc.lib.util.logging.loggedPrimitives.LoggedDoubleArray;
+
 
 /** Add your docs here. */
 public class LoggedPigeon2 extends LoggedObject<Pigeon2> {

@@ -531,7 +531,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
         // logger.addDouble("thetaAutoError", () -> PoseEstimation.getAutoTargetPoseError().getRotation().getDegrees(),
         //         SwerveLogging.Auto);
 
-        // logger.addBoolean("isAtAngularDriveSetpoint", () -> isAngularDriveAtSetpoint(), SwerveLogging.PidPose);
+        logger.addBoolean("isAtAngularDriveSetpoint", () -> isAngularDriveAtSetpoint(), SwerveLogging.PidPose);
         // logger.addDouble("angularDriveSetpoint", () -> angularDrivePID.getSetpoint(), SwerveLogging.PidPose);
         // logger.addDouble("angularDrivePositionError", () -> angularDrivePID.getPositionError(), SwerveLogging.PidPose);
         // logger.addDouble("angularDriveVelocityError", () -> angularDrivePID.getVelocityError(), SwerveLogging.PidPose);

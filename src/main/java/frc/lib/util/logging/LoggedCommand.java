@@ -4,11 +4,9 @@
 
 package frc.lib.util.logging;
 
-import java.util.Map;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
-import frc.lib.util.logging.Logger.LoggingLevel;
 
 /** Add your docs here. */
 public class LoggedCommand extends LoggedContainer{

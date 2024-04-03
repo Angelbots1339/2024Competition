@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -52,9 +50,13 @@ public class Elevator extends SubsystemBase {
    */
   public void toHeight(double height) {
 
-     
+    if(isAtSetpoint() && height == 0) { // TODO Test this 
+      elevatorLeaderMotor.setControl(new DutyCycleOut(0));
+    } else {
       elevatorLeaderMotor.setControl(
           ElevatorConstants.elevatorPositionControl.withPosition(ElevatorConstants.elevatorMetersToRotations(height)));
+    }
+     
 
     elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
 
@@ -183,7 +185,7 @@ public class Elevator extends SubsystemBase {
     // logger.add(new LoggedFalcon("ElevatorFollower", logger, elevatorFollowerMotor, ElevatorLogging.Motor, true));
 
     logger.addBoolean("ElevatorAtSetpoint", () -> isAtSetpoint(), ElevatorLogging.Main);
-    // logger.addBoolean("ElevatorBottomLimit", () -> getBottomLimitSwitch(), ElevatorLogging.Main);
+    logger.addBoolean("ElevatorBottomLimit", () -> getBottomLimitSwitch(), ElevatorLogging.Main);
 
     // logger.addDouble("ElevatorPosition", () -> ElevatorConstants.elevatorRotationsToMeters(getLeaderPosition()),
     //     ElevatorLogging.Main);

@@ -7,9 +7,7 @@ package frc.lib.util.logging;
 import java.util.HashMap;
 import java.util.Map;
 
-import frc.lib.util.logging.Logger.LoggingLevel;
 import frc.lib.util.logging.loggedObjects.LoggedObject;
-import frc.robot.subsystems.Swerve;
 
 /** Add your docs here. */
 public class LoggedSubsystem extends LoggedContainer{
