@@ -123,7 +123,7 @@ public class Constants {
                 private static final int kFrontLeftDriveMotorId = 7;
                 private static final int kFrontLeftSteerMotorId = 9;
                 private static final int kFrontLeftEncoderId = 8;
-                private static final double kFrontLeftEncoderOffset = 0.398193;
+                private static final double kFrontLeftEncoderOffset = 0.284668;
 
                 private static final double kFrontLeftXPosInches = 10.25;
                 private static final double kFrontLeftYPosInches = 10.25;
@@ -132,7 +132,7 @@ public class Constants {
                 private static final int kFrontRightDriveMotorId = 10;
                 private static final int kFrontRightSteerMotorId = 12;
                 private static final int kFrontRightEncoderId = 11;
-                private static final double kFrontRightEncoderOffset = -0.252441;
+                private static final double kFrontRightEncoderOffset = -0.254150;
 
                 private static final double kFrontRightXPosInches = 10.25;
                 private static final double kFrontRightYPosInches = -10.25;
@@ -141,7 +141,7 @@ public class Constants {
                 private static final int kBackLeftDriveMotorId = 4;
                 private static final int kBackLeftSteerMotorId = 6;
                 private static final int kBackLeftEncoderId = 5;
-                private static final double kBackLeftEncoderOffset = -0.343750;
+                private static final double kBackLeftEncoderOffset = 0.269775;
 
                 private static final double kBackLeftXPosInches = -10.25;
                 private static final double kBackLeftYPosInches = 10.25;
@@ -150,7 +150,7 @@ public class Constants {
                 private static final int kBackRightDriveMotorId = 1;
                 private static final int kBackRightSteerMotorId = 3;
                 private static final int kBackRightEncoderId = 2;
-                private static final double kBackRightEncoderOffset = -0.253662;
+                private static final double kBackRightEncoderOffset = 0.410645 + 0.5;
 
                 private static final double kBackRightXPosInches = -10.25;
                 private static final double kBackRightYPosInches = -10.25;
@@ -523,22 +523,8 @@ public class Constants {
 
         public static final class VisionConstants {
 
-                // Desmos plots:
-                // \left[\left(110,.0088\right),\left(101.75,.01065\right),\left(94,.0088\right),\left(87.25,.0053\right),\left(78.75,.0028\right),\left(64,.0037\right),\left(49.5,.0036\right),\left(113.25,.0124\right),\left(136.75,.34\right),\left(153.5,.387\right),\left(160.5,.3342\right),\left(167,1.573\right),\left(121.25,.052\right)\right]
-                // Apriltag Height: 57 inches
-                // Horizontal offset 22.5 inches
-
-                // public static final double StdDevScalar = 0.002;
-
                 public static double calcStdDev(double metersFromTarget) {
 
-                        // double inches = Units.metersToInches(metersFromTarget); // Convert to inches
-                        // double hypotenuse = Math.sqrt(Math.pow(inches, 2) + Math.pow(57, 2)); //
-                        // Account for april tag being high off the ground
-                        // double calculated = StdDevScalar * Math.pow(Math.pow(hypotenuse, 19.5335),
-                        // -0.1/2); // Plug into Std Dev equation that we got experimentally
-
-                        // return MathUtil.clamp(0.01 * Math.pow(metersFromTarget, 3), 0, 1);
                         return 0.165 * Math.pow(metersFromTarget, 2);
                 }
 
@@ -547,17 +533,6 @@ public class Constants {
                 public static final String limelightLeftName = "limelight-left";
                 public static final String limelightCenterName = "limelight-center";
                 public static final String limelightRightName = "limelight-right";
-
-                // public static final Translation3d limelightLeftOffset = new Translation3d(
-                //                 Units.inchesToMeters(-11.384098),
-                //                 Units.inchesToMeters(-8.607840), Units.inchesToMeters(14.617002));
-                // public static final Translation3d limelightCenterOffset = new Translation3d(
-                //                 Units.inchesToMeters(-9.877464),
-                //                 Units.inchesToMeters(0), Units.inchesToMeters(10.493215));
-                // public static final Translation3d limelightRightOffset = new Translation3d(
-                //                 Units.inchesToMeters(-11.384098),
-                //                 Units.inchesToMeters(8.607840), Units.inchesToMeters(14.617002));
-
                 
     
                 // New Mounts with correctly rotated limelight:

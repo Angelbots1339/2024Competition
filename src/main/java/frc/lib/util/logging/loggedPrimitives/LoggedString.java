@@ -35,7 +35,7 @@ public class LoggedString extends LoggedPrimitive<String> {
     }
 
     public LoggedString(String name, LoggingLevel level, LoggedContainer subsystem, Supplier<String> supplier) {
-        super(name, level, subsystem, supplier);
+        super(name, level, subsystem, supplier, "");
     }
 
     @Override

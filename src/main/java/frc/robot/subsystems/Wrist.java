@@ -30,8 +30,7 @@ public class Wrist extends SubsystemBase {
 
   private TalonFX wristLeaderMotor = configWristMotor(TalonFXFactory.createTalon(WristConstants.wristLeaderMotorID,
       WristConstants.wristMotorCANBus, WristConstants.kWristConfiguration));
-  private TalonFX wristFollowerMotor = configWristMotor(TalonFXFactory.createTalon(WristConstants.wristFollowerMotorID,
-      WristConstants.wristMotorCANBus, WristConstants.kWristConfiguration));
+
 
   private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(WristConstants.wristEncoderPort);
 
@@ -43,8 +42,6 @@ public class Wrist extends SubsystemBase {
 
   /** Creates a new Wrist. */
   public Wrist() {
-
-    wristFollowerMotor.setControl(WristConstants.followerControl);
 
     wristEncoder.setDistancePerRotation(1);
     // wristEncoder.setPositionOffset(WristConstants.absoluteEncoderOffset.getRotations() % 1);
@@ -63,7 +60,6 @@ public class Wrist extends SubsystemBase {
   private void toAngle(double position) {
 
     wristLeaderMotor.setControl(WristConstants.wristPositionControl.withPosition(position));
-    wristFollowerMotor.setControl(WristConstants.followerControl);
 
     targetPosition = position;
   }
@@ -115,12 +111,10 @@ public class Wrist extends SubsystemBase {
 
   public void setVoltage(double volts) {
     wristLeaderMotor.setControl(new VoltageOut(volts));
-    wristFollowerMotor.setControl(WristConstants.followerControl);
   }
 
   public void resetToAbsolute() {
     wristLeaderMotor.setPosition(getAbsoluteEncoderPosition().getRotations());
-    wristFollowerMotor.setPosition(getAbsoluteEncoderPosition().getRotations());
   }
 
   @Override
@@ -172,7 +166,6 @@ public class Wrist extends SubsystemBase {
         }, WristLogging.Main);
 
     logger.add(new LoggedFalcon("WristLeader", logger, wristLeaderMotor, WristLogging.Motor, true));
-    logger.add(new LoggedFalcon("WristFollower", logger, wristFollowerMotor, WristLogging.Motor, true));
 
     logger.addBoolean("WristAtSetpoint", () -> isAtSetpoint(), WristLogging.Main);
 

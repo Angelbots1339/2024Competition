@@ -44,7 +44,7 @@ public abstract class LoggedPrimitive<T> implements Iloggable {
     }
 
     public LoggedPrimitive(String name, LoggingLevel level, LoggedContainer subsystem, Supplier<T> supplier, Object defaultValue) {
-        this(name, level, subsystem.getName(), supplier);
+        this(name, level, subsystem.getName(), supplier, defaultValue);
 
     }
 

@@ -25,7 +25,7 @@ public class LoggedDoubleArray extends LoggedPrimitive<double[]>  {
     super(object, name, supplier);
   }
   public LoggedDoubleArray(String name, LoggingLevel level, LoggedContainer subsystem, Supplier<double[]> supplier) {
-    super(name, level, subsystem, supplier);
+    super(name, level, subsystem, supplier, new double[0]);
   }
 
   public LoggedDoubleArray(String name, LoggingLevel level, LoggedContainer subsystem) {

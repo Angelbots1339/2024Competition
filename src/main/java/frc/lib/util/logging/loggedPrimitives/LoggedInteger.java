@@ -34,7 +34,7 @@ public class LoggedInteger extends LoggedPrimitive<Integer>{
         super(name, level, subsystem, 0);
     }
     public LoggedInteger(String name, LoggingLevel level, LoggedContainer subsystem, Supplier<Integer> supplier) {
-        super(name, level, subsystem, supplier);
+        super(name, level, subsystem, supplier, 0);
     }
 
     
