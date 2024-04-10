@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.WristElevatorState;
+import frc.robot.Constants.ScoringConstants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Wrist;
 
@@ -40,7 +41,7 @@ public class SuperstructureToPosition extends Command {
   public void execute() {
     elevator.toHeight(state.get().height);
 
-    if(state.get().angle.getDegrees() > 90 || elevator.getLeaderPosition() > 0.15){
+    if(state.get().angle.getDegrees() > 90 || elevator.getLeaderPosition() > ScoringConstants.limelightCrushMinHeight){
 
       wrist.toAngle(state.get().angle);
     }

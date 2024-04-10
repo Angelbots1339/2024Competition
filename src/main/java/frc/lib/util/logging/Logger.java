@@ -34,7 +34,7 @@ public class Logger implements Iloggable {
     }
 
     public enum LoggingLevel {
-        SHUFFLEBOARD,
+        NETWORK_TABLES,
         ONBOARD_ONLY,
         NONE
     }

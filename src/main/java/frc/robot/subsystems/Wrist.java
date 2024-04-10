@@ -31,7 +31,6 @@ public class Wrist extends SubsystemBase {
   private TalonFX wristLeaderMotor = configWristMotor(TalonFXFactory.createTalon(WristConstants.wristLeaderMotorID,
       WristConstants.wristMotorCANBus, WristConstants.kWristConfiguration));
 
-
   private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(WristConstants.wristEncoderPort);
 
   private final Timer throughBoreTimer = new Timer();
@@ -39,12 +38,12 @@ public class Wrist extends SubsystemBase {
 
   private LoggedSubsystem logger = new LoggedSubsystem("Wrist");
 
-
   /** Creates a new Wrist. */
   public Wrist() {
 
     wristEncoder.setDistancePerRotation(1);
-    // wristEncoder.setPositionOffset(WristConstants.absoluteEncoderOffset.getRotations() % 1);
+    // wristEncoder.setPositionOffset(WristConstants.absoluteEncoderOffset.getRotations()
+    // % 1);
 
     throughBoreTimer.start();
 
@@ -59,7 +58,15 @@ public class Wrist extends SubsystemBase {
    */
   private void toAngle(double position) {
 
-    wristLeaderMotor.setControl(WristConstants.wristPositionControl.withPosition(position));
+    // double gravityFeedForward = -0.4 * Math.cos(getAngle().getRadians());
+
+    // if (Math.abs(getSetpointError().getDegrees()) < 2) {
+    // wristLeaderMotor.setControl(WristConstants.wristPositionVoltageControl.withPosition(position));
+    //
+    // } else {
+    // wristLeaderMotor.setControl(WristConstants.wristMotionMagicControl.withPosition(position));
+    // }
+    wristLeaderMotor.setControl(WristConstants.wristMotionMagicControl.withPosition(position));
 
     targetPosition = position;
   }
@@ -102,7 +109,8 @@ public class Wrist extends SubsystemBase {
   }
 
   public Rotation2d getAbsoluteEncoderPosition() {
-    return Rotation2d.fromRotations(wristEncoder.getAbsolutePosition()).minus(Rotation2d.fromRotations(WristConstants.absoluteEncoderOffset.getRotations()));
+    return Rotation2d.fromRotations(wristEncoder.getAbsolutePosition())
+        .minus(Rotation2d.fromRotations(WristConstants.absoluteEncoderOffset.getRotations()));
   }
 
   public void disable() {
@@ -126,7 +134,7 @@ public class Wrist extends SubsystemBase {
       throughBoreTimer.stop();
     }
 
-        // System.out.println(getSetpointError());
+    // System.out.println(getSetpointError());
     SmartDashboard.putNumber("WristError", getSetpointError().getDegrees());
     SmartDashboard.putNumber("WristCurrentAngle", getAngle().getDegrees());
 
@@ -146,24 +154,22 @@ public class Wrist extends SubsystemBase {
         CommonErrorNames.UpdateFrequency(motor.getDeviceID()));
 
     // ErrorCheckUtil.checkError(
-    //     motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
-    //     CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
+    // motor.optimizeBusUtilization(Constants.kConfigTimeoutSeconds),
+    // CommonErrorNames.OptimizeBusUtilization(motor.getDeviceID()));
 
     return motor;
   }
 
-
   private String command = "None";
-    private void initializeLogging() {
 
-    
+  private void initializeLogging() {
 
     logger.addString("Command", () -> {
-            Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
-                command = c.getName();
-            });
-            return command;
-        }, WristLogging.Main);
+      Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+        command = c.getName();
+      });
+      return command;
+    }, WristLogging.Main);
 
     logger.add(new LoggedFalcon("WristLeader", logger, wristLeaderMotor, WristLogging.Motor, true));
 
@@ -182,10 +188,6 @@ public class Wrist extends SubsystemBase {
     logger.addDouble("WristError",
         () -> wristLeaderMotor.getClosedLoopError().getValue() * 360,
         WristLogging.Main);
-
-    
-   
-
 
   }
 }

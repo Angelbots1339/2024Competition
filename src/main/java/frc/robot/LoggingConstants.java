@@ -14,7 +14,7 @@ public final class LoggingConstants {
                 public static LoggingLevel Modules = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motors = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Gyro = LoggingLevel.ONBOARD_ONLY;
-                public static LoggingLevel Pose = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Pose = LoggingLevel.NETWORK_TABLES;
                 public static LoggingLevel PidPose = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Auto = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
@@ -22,17 +22,17 @@ public final class LoggingConstants {
 
         public class RobotContainerLogging {
                 public static LoggingLevel StickValues = LoggingLevel.ONBOARD_ONLY;
-                public static LoggingLevel Shooting = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Shooting = LoggingLevel.NETWORK_TABLES;
         }
 
         public class ElevatorLogging {
-                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel Main = LoggingLevel.NETWORK_TABLES;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel MotionMagic = LoggingLevel.NONE;
         }
 
         public class WristLogging {
-                public static LoggingLevel Main = LoggingLevel.SHUFFLEBOARD;
+                public static LoggingLevel Main = LoggingLevel.NETWORK_TABLES;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
         }
 
@@ -42,7 +42,7 @@ public final class LoggingConstants {
         }
 
         public class IndexerLogging {
-                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel Main = LoggingLevel.NETWORK_TABLES;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
         }
 

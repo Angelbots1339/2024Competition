@@ -81,7 +81,7 @@ public class SpeakerShotRegression {
 
             return Rotation2d.fromDegrees(MathUtil.clamp(wristInterpolation.getInterpolated(new InterpolatingDouble(targetDistance)).value,
         ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp))
-        .minus(Rotation2d.fromDegrees(1.1)); // I hate my life
+        .minus(Rotation2d.fromDegrees(27.85)); // I hate my life
         
         //     return Rotation2d.fromDegrees(MathUtil.clamp(wristExpoRegression(targetDistance),
         // ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp));

@@ -86,8 +86,8 @@ public class Leds extends SubsystemBase {
   private static final double autoFadeMaxTime = 5.0; // Return to normal
 
   // LED Lengths
-  private static final int length = 30;
-  private static final int bottomLength = 16;
+  private static final int length = 16;
+  private static final int bottomLength = 0;
 
   private static final int underglowLength = 24;
 

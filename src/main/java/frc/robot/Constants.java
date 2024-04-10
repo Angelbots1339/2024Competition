@@ -11,6 +11,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
@@ -23,6 +24,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.ReverseLimitSourceValue;
 import com.ctre.phoenix6.signals.ReverseLimitTypeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -322,7 +324,7 @@ public class Constants {
                 public static final RangingMode indexerSensorRange = RangingMode.Short;
                 public static final double indexerSampleTime = 24;
 
-                public static final double isNotePresentTarget = 70; // Milimeters
+                public static final double isNotePresentTarget = 65; // Milimeters
                 public static final double isNotePresentTolerance = 5; // Milimeters
 
                 private static final double indexerMaxDutyCycle = 0.5;
@@ -335,7 +337,7 @@ public class Constants {
                                                 .withSupplyCurrentLimitEnable(true))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
-                                                .withInverted(InvertedValue.CounterClockwise_Positive));
+                                                .withInverted(InvertedValue.Clockwise_Positive));
 
                 public static final DutyCycleOut indexerDutyCycle = new DutyCycleOut(0, true, false,
                                 false, false);
@@ -352,12 +354,16 @@ public class Constants {
                 public static final int wristFollowerMotorID = 21; 
                 public static final String wristMotorCANBus = "";
 
-                public static final double wristGearRatio = 15 * 2; // Sensor to Mechanism Ratio
+                public static final double wristGearRatio = 15 * (32 / 16); // Sensor to Mechanism Ratio
                 public static final double timeBeforeEncoderReset = 1.5; // Seconds before the motor is initialized to
                 // the through bore;
 
                 public static final int wristEncoderPort = 0; 
-                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees( -15); // 105 - 17.5); // 0 Should be
+
+                // To align:
+                // 1. Push wrist against limelight mounts
+                // 2. Change abs encoder offset so that it equals 81º
+                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees( -(47.15)); // -47.15 // 0 Should be
                                                                                                     // straight forward
                                                                                                     // towards the
                                                                                                     // intake
@@ -366,8 +372,8 @@ public class Constants {
                  * Wrist is counter-clockwise (from the left side of the robot with intake
                  * forward) with 0 being horizontal towards the intake
                  ****/
-                public static final Rotation2d wristMinAngle = Rotation2d.fromDegrees(-25);
-                public static final Rotation2d wristMaxAngle = Rotation2d.fromDegrees(180);
+                public static final Rotation2d wristMinAngle = Rotation2d.fromDegrees(-10);
+                public static final Rotation2d wristMaxAngle = Rotation2d.fromDegrees(160);
 
                 public static final TalonFXConfiguration kWristConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -377,21 +383,22 @@ public class Constants {
                                                 .withSupplyCurrentLimitEnable(true))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Brake)
-                                                .withInverted(InvertedValue.Clockwise_Positive))
+                                                .withInverted(InvertedValue.CounterClockwise_Positive))
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
-                                                .withKP(55) // 40  || 55
+                                                .withKP(32) // 40  || 55
                                                 .withKI(0)
-                                                .withKD(3) // 0.5 || 5
+                                                .withKD(0) // 0.5 || 5 || 3
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
-                                                .withKG(-0.4) // -0.4 // Negative b/c of wrist direction
-                                                .withKS(0)) // 0.5
+                                                .withKG(-0.52) // -0.64 || -0.52 // Negative b/c of wrist direction
+                                                .withKS(0.18)
+                                                .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)) 
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
-                                                .withMotionMagicCruiseVelocity(10) // Default 10
-                                                .withMotionMagicAcceleration(15) // Default 15
+                                                .withMotionMagicCruiseVelocity(5) // Default 10
+                                                .withMotionMagicAcceleration(10) // Default 15
                                                 .withMotionMagicJerk(0))
                                 .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
                                                 .withForwardSoftLimitEnable(true)
@@ -399,9 +406,11 @@ public class Constants {
                                                 .withForwardSoftLimitThreshold(wristMaxAngle.getRotations())
                                                 .withReverseSoftLimitThreshold(wristMinAngle.getRotations()));
 
-                public static final MotionMagicVoltage wristPositionControl = new MotionMagicVoltage(0, false, 0, 0,
+                public static final MotionMagicVoltage wristMotionMagicControl = new MotionMagicVoltage(0, true, 0, 0,
                                 false,
                                 false, false);
+
+                public static final PositionVoltage wristPositionVoltageControl = new PositionVoltage(0, 0, false, 0, 0, false, false, false);
                 // public static final PositionVoltage wristPositionControl = new
                 // PositionVoltage(0, 0, true, 0, 0, false, false, false);
 
@@ -420,9 +429,9 @@ public class Constants {
                 public static final String elevatorMotorCANBus = "";
 
                 public static final double elevatorGearRatio = 25; // Sensor to Mechanism Ratio
-                public static final double elevatorPinionRadius = Units.inchesToMeters(1); // Meters
+                public static final double elevatorPinionRadius = Units.inchesToMeters(1.751 / 2); // Meters
 
-                public static final double maxElevatorHeight = 0.46; // Meters
+                public static final double maxElevatorHeight = 0.4; // Meters
 
                 public static final TalonFXConfiguration kElevatorConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -440,7 +449,7 @@ public class Constants {
                                                 .withKI(0)
                                                 .withKD(0)
                                                 .withGravityType(GravityTypeValue.Elevator_Static)
-                                                .withKG(0.35))
+                                                .withKG(0.28))
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(elevatorGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
@@ -448,7 +457,7 @@ public class Constants {
                                                 .withMotionMagicAcceleration(18)
                                                 .withMotionMagicJerk(0))
                                 .withHardwareLimitSwitch(new HardwareLimitSwitchConfigs()
-                                                .withForwardLimitEnable(true)
+                                                .withForwardLimitEnable(false)
                                                 .withReverseLimitEnable(true)
                                                 .withForwardLimitAutosetPositionEnable(false)
                                                 .withReverseLimitAutosetPositionEnable(false)
@@ -460,7 +469,7 @@ public class Constants {
                                                 .withReverseLimitType(ReverseLimitTypeValue.NormallyOpen))
                                 .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
                                                 .withForwardSoftLimitEnable(true)
-                                                .withReverseSoftLimitEnable(false)
+                                                .withReverseSoftLimitEnable(true)
                                                 .withForwardSoftLimitThreshold(
                                                                 elevatorMetersToRotations(maxElevatorHeight))
                                                 .withReverseSoftLimitThreshold(0));
@@ -489,10 +498,11 @@ public class Constants {
 
         public static class ScoringConstants {
 
-                public static final WristElevatorState Handoff = new WristElevatorState(138, 0);
-                public static final WristElevatorState ScoreAmp = new WristElevatorState(18, 0.25);
+                public static final WristElevatorState Handoff = new WristElevatorState(130 - 27.85, 0);
+                public static final WristElevatorState ScoreAmp = new WristElevatorState(18 - 27.85, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
-                public static final WristElevatorState SubwooferShot = new WristElevatorState(122, 0);
+                public static final WristElevatorState SubwooferShot = new WristElevatorState(122 - 27.85, 0);
+                public static final WristElevatorState ShuttleShot = new WristElevatorState(122 - 27.85, 0);
 
                 public static final double[] shooterSetpointClose = { 3750, 4750 }; // [Left, Right]
                 public static final double[] shooterSetpointFar = { 5000, 6000 }; // [Left, Right]
@@ -508,16 +518,17 @@ public class Constants {
                 // public static final double indexingTargetPercent = 0.4;
                 // public static final double indexingTargetPercentSlow = 0.1;
 
-                public static final double indexingTargetVolts = 3; 
-                public static final double indexingTargetVoltsSlow = 1;
-                public static final double indexerScoringVoltage = 5;
+                public static final double indexingTargetVolts = 6; 
+                public static final double indexingTargetVoltsSlow = 1.5;
+                public static final double indexerScoringVoltage = 7;
 
-                public static final double intakingTargetVoltage = 6;
+                public static final double intakingTargetVoltage = 10;
                 public static final double outtakingTargetVoltage = -6;
 
                 public static final double shootingDriveScalar = 0.25;
 
                 public static final double autonomousFinishShotTime = 0.3;
+                public static final double limelightCrushMinHeight = 0.2;
 
         }
 
@@ -535,14 +546,12 @@ public class Constants {
                 public static final String limelightRightName = "limelight-right";
                 
     
-                // New Mounts with correctly rotated limelight:
+                // Angled: Right: 0.1997202 Up: 0.3641810344 Forward: -0.2132951284
+                // Angled: Pitch: 10º, Roll: 7.64º, Yaw: 40.5º
 
-                // Angled: X: 0.3013935806 Y: 0.2255540828 Z: 0.3013935806
-
-                // Limelight left rotation: Pitch: 10 Roll: 0 Yaw: 40.5
-                // Limelight center rotation: Pitch:24 Roll: Yaw:
-                // Limelight right rotation: Pitch:10 Roll: Yaw: -40.5
-
+               
+                // Center: Right: 0 Up: 0.3641810344 Forward: -0.2110201774
+                // Center: Pitch: 24.5º, Roll: 0º, Yaw: 0º
         }
 
 }

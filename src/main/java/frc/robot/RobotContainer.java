@@ -52,7 +52,7 @@ public class RobotContainer {
 
   private final LoggedSubsystem logger = new LoggedSubsystem("RobotContainer");
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-  private TuningMode tuningMode = TuningMode.SHOOTER;
+  private TuningMode tuningMode = TuningMode.SUPERSTRUCTURE;
 
   // private GenericEntry wristAngle =
   // Shuffleboard.getTab("Tune").add("WristAngle", 90)
@@ -92,7 +92,7 @@ public class RobotContainer {
   private Trigger actuallyShoot = new Trigger(() -> driveController.getRightTriggerAxis() > 0.1 && !climbMode);
   private Trigger shootWithRegression = new Trigger(() -> driveController.getXButton() && !climbMode);
   private Trigger scoreAmp = new Trigger(() -> driveController.getBButton() && !climbMode);
-  private Trigger alignScoreAmp = new Trigger(() -> driveController.getYButton() && !climbMode);
+  private Trigger shootAcrossField = new Trigger(() -> driveController.getYButton() && !climbMode);
 
   private Trigger resetGyro = new Trigger(() -> driveController.getStartButton());
   private Trigger toggleClimbMode = new Trigger(() -> operatorController.getBackButton());
@@ -150,6 +150,25 @@ public class RobotContainer {
     shootWithRegression.whileTrue(
         new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, actuallyShoot::getAsBoolean));
 
+
+    shootAcrossField.whileTrue(new RunCommand(() -> {
+
+      wrist.toAngle(ScoringConstants.ShuttleShot.angle);
+      elevator.toHeight(ScoringConstants.ShuttleShot.height);
+      shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]);
+
+      swerve.angularDriveRequest(() -> translationX.get(),
+      () -> translationY.get(),
+      () -> Rotation2d.fromDegrees(FieldUtil.isAllianceBlue() ? -15 : 15), () -> true);
+
+      if(actuallyShoot.getAsBoolean()) {
+        indexer.setVoltage(ScoringConstants.indexingTargetVolts);
+      } else {
+        indexer.disable();
+      }
+
+
+    }, shooter, wrist, elevator, swerve, indexer));
     // subwooferShot.whileTrue(swerve.angularDrive(translationX, translationY, () ->
     // Rotation2d.fromDegrees(90), () -> true, () -> true));
 
@@ -239,7 +258,7 @@ public class RobotContainer {
     // () -> true, () -> true));
 
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
-    wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
+    // wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
     elevator.setDefaultCommand(Commands.either(new ManualClimb(elevator, wrist, () -> driveController.getLeftTriggerAxis(),
         () -> driveController.getRightTriggerAxis(),
         manualWristRotation), new InstantCommand(elevator::home, elevator), () -> climbMode));

@@ -50,13 +50,15 @@ public class Elevator extends SubsystemBase {
    */
   public void toHeight(double height) {
 
-    if(isAtSetpoint() && height == 0) { // TODO Test this 
-      elevatorLeaderMotor.setControl(new DutyCycleOut(0));
-    } else {
-      elevatorLeaderMotor.setControl(
+    // if (isAtSetpoint() && height == 0) { // TODO Test this
+    //   elevatorLeaderMotor.setControl(new DutyCycleOut(0));
+    // } else {
+    //   elevatorLeaderMotor.setControl(
+    //       ElevatorConstants.elevatorPositionControl.withPosition(ElevatorConstants.elevatorMetersToRotations(height)));
+    // }
+
+    elevatorLeaderMotor.setControl(
           ElevatorConstants.elevatorPositionControl.withPosition(ElevatorConstants.elevatorMetersToRotations(height)));
-    }
-     
 
     elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
 
@@ -92,7 +94,7 @@ public class Elevator extends SubsystemBase {
 
     elevatorLeaderMotor.setControl(new VoltageOut(volts));
     // elevatorFollowerMotor.setControl(new VoltageOut(volts));
-    // elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
+    elevatorFollowerMotor.setControl(ElevatorConstants.followerControl);
 
   }
 
@@ -116,10 +118,10 @@ public class Elevator extends SubsystemBase {
   public boolean isAtSetpoint() {
     return Math.abs(getSetpointError()) < ElevatorConstants.heightErrorTolerance;
   }
+
   public boolean getBottomLimitSwitch() {
     return elevatorLeaderMotor.getReverseLimit().getValue() == ReverseLimitValue.ClosedToGround;
   }
-
 
   @Override
   public void periodic() {
@@ -127,7 +129,7 @@ public class Elevator extends SubsystemBase {
 
     // System.out.println(getBottomLimitSwitch());
 
-    if(getBottomLimitSwitch() && !reverseLimitHit) {
+    if (getBottomLimitSwitch() && !reverseLimitHit) {
       elevatorLeaderMotor.setPosition(0, 0.001);
       elevatorFollowerMotor.setPosition(0, 0.001);
 
@@ -170,29 +172,30 @@ public class Elevator extends SubsystemBase {
   }
 
   private String command = "None";
+
   private void initializeLogging() {
 
-    
-
-        //  logger.addString("Command", () -> {
-        //     Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
-        //         command = c.getName();
-        //     });
-        //     return command;
-        // }, ElevatorLogging.Main);
+    // logger.addString("Command", () -> {
+    // Optional.ofNullable(this.getCurrentCommand()).ifPresent((Command c) -> {
+    // command = c.getName();
+    // });
+    // return command;
+    // }, ElevatorLogging.Main);
 
     logger.add(new LoggedFalcon("ElevatorLeader", logger, elevatorLeaderMotor, ElevatorLogging.Motor, true));
-    // logger.add(new LoggedFalcon("ElevatorFollower", logger, elevatorFollowerMotor, ElevatorLogging.Motor, true));
+    // logger.add(new LoggedFalcon("ElevatorFollower", logger,
+    // elevatorFollowerMotor, ElevatorLogging.Motor, true));
 
     logger.addBoolean("ElevatorAtSetpoint", () -> isAtSetpoint(), ElevatorLogging.Main);
     logger.addBoolean("ElevatorBottomLimit", () -> getBottomLimitSwitch(), ElevatorLogging.Main);
 
-    // logger.addDouble("ElevatorPosition", () -> ElevatorConstants.elevatorRotationsToMeters(getLeaderPosition()),
-    //     ElevatorLogging.Main);
+    // logger.addDouble("ElevatorPosition", () ->
+    // ElevatorConstants.elevatorRotationsToMeters(getLeaderPosition()),
+    // ElevatorLogging.Main);
     // logger.addDouble("ElevatorVelocity",
-    //     () -> ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getVelocity().getValue()),
-    //     ElevatorLogging.Main);
-
+    // () ->
+    // ElevatorConstants.elevatorRotationsToMeters(elevatorLeaderMotor.getVelocity().getValue()),
+    // ElevatorLogging.Main);
 
   }
 }

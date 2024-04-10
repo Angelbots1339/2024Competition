@@ -28,7 +28,7 @@ public class LoggedField extends LoggedObject<Field2d> {
     public LoggedField(String name, LoggedContainer subsystemLogger, LoggingLevel logType, Boolean separateTab) {
         super(name, subsystemLogger, logType, name);
         object = new Field2d();
-        if (level == LoggingLevel.SHUFFLEBOARD)
+        if (level == LoggingLevel.NETWORK_TABLES)
             initializeShuffleboard();
         else if (level == LoggingLevel.ONBOARD_ONLY)
             initializeDataLog();
@@ -46,7 +46,7 @@ public class LoggedField extends LoggedObject<Field2d> {
     }
 
     public void addPose2d(String name, Supplier<Pose2d> pose2d, Boolean showOnShuffleboardWidget) {
-        if (level == LoggingLevel.SHUFFLEBOARD) {
+        if (level == LoggingLevel.NETWORK_TABLES) {
 
             getTab().addDoubleArray(name,
                     () -> {
@@ -73,7 +73,7 @@ public class LoggedField extends LoggedObject<Field2d> {
     }
 
     public void setTrajectory(String name, Trajectory trajectory, Boolean showOnShuffleboardWidget) {
-        if (level == LoggingLevel.SHUFFLEBOARD) {
+        if (level == LoggingLevel.NETWORK_TABLES) {
             if (showOnShuffleboardWidget)
                 object.getObject(name).setTrajectory(trajectory);
             else {

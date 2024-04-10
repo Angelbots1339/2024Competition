@@ -26,7 +26,7 @@ public abstract class LoggedPrimitive<T> implements Iloggable {
     private LoggedPrimitive(String name, LoggingLevel level, String prefix, Object defaultValue) {
         this.level = level;
         isSupplied = false;
-        if (level == LoggingLevel.SHUFFLEBOARD) {
+        if (level == LoggingLevel.NETWORK_TABLES) {
             shuffleboardEntry = Shuffleboard.getTab(prefix).add(name, defaultValue).getEntry();
         } else if (level == LoggingLevel.ONBOARD_ONLY) {
             initializeOnboardLog(name, prefix);
@@ -70,11 +70,11 @@ public abstract class LoggedPrimitive<T> implements Iloggable {
      */
     // TODO and this
     public LoggedPrimitive(LoggedObject<?> object, Supplier<T> supplier, GenericEntry entry) {
-        if (LoggingLevel.SHUFFLEBOARD != object.getLevel()) {
+        if (LoggingLevel.NETWORK_TABLES != object.getLevel()) {
             throw new IllegalArgumentException(
                     "LoggedPrimitive constructor called with an object that is not a shuffleboard log");
         }
-        this.level = LoggingLevel.SHUFFLEBOARD;
+        this.level = LoggingLevel.NETWORK_TABLES;
         isSupplied = true;
         this.supplier = supplier;
         this.shuffleboardEntry = entry;
@@ -90,7 +90,7 @@ public abstract class LoggedPrimitive<T> implements Iloggable {
     public void log(long timestamp, T value) {
         if (previousValue == value)
             return;
-        if (level == LoggingLevel.SHUFFLEBOARD) {
+        if (level == LoggingLevel.NETWORK_TABLES) {
             logShuffleboard(value);
         } else if (level == LoggingLevel.ONBOARD_ONLY) {
             logOnboard(timestamp, value);

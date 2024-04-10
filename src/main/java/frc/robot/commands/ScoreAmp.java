@@ -56,7 +56,7 @@ public class ScoreAmp extends Command {
   public void execute() {
     elevator.toHeight(ScoringConstants.ScoreAmp.height);
 
-    if (ScoringConstants.ScoreAmp.angle.getDegrees() > 90 || elevator.getLeaderPosition() > 0.15) {
+    if (ScoringConstants.ScoreAmp.angle.getDegrees() > 90 || elevator.getLeaderPosition() > ScoringConstants.limelightCrushMinHeight) {
 
       wrist.toAngle(ScoringConstants.ScoreAmp.angle);
     }
