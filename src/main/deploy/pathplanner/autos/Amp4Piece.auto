@@ -54,18 +54,25 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "intakeNote"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intakeNote"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shoot"
+                      }
+                    }
+                  ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
           }
         },
         {
@@ -76,12 +83,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "Amp3rdPiece"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakeNote"
                 }
               }
             ]
@@ -101,12 +102,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "Amp4thPiece"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakeNote"
                 }
               }
             ]

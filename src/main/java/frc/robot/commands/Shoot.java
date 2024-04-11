@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.Leds;
@@ -33,6 +34,8 @@ public class Shoot extends Command {
   private Supplier<Boolean> overrideSetpoints;
 
 
+  private Timer shotTimer = new Timer();
+
 
   /** Creates a new Shoot. */
   public Shoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer,
@@ -57,6 +60,7 @@ public class Shoot extends Command {
   public void initialize() {
     Leds.getInstance().shooting = true;
 
+    shotTimer.start();
   }
 
 
@@ -79,7 +83,7 @@ public class Shoot extends Command {
     Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to
     Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
         / (PoseEstimation.getEstimatedPose().getX() - target.getX())))
-        .minus(Rotation2d.fromDegrees(3));
+        .minus(Rotation2d.fromDegrees(3 / targetDistance)); // Compensate for note spin (maybe)
 
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
@@ -94,7 +98,7 @@ public class Shoot extends Command {
         () -> true);
 
  
-    if ((shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAngularDriveAtSetpoint()) || overrideSetpoints.get()) {
+    if ((shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAngularDriveAtSetpoint()) && shotTimer.get() > 0.1) {
       indexer.setVoltage(ScoringConstants.indexingTargetVolts);
     } else {
       indexer.indexNoteToTarget();

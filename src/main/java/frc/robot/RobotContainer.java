@@ -155,7 +155,7 @@ public class RobotContainer {
 
       wrist.toAngle(ScoringConstants.ShuttleShot.angle);
       elevator.toHeight(ScoringConstants.ShuttleShot.height);
-      shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]);
+      shooter.shooterToRMP(4000, 5000);
 
       swerve.angularDriveRequest(() -> translationX.get(),
       () -> translationY.get(),

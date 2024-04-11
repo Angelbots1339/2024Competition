@@ -387,9 +387,9 @@ public class Constants {
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
-                                                .withKP(32) // 40  || 55
+                                                .withKP(25) // 40  || 55
                                                 .withKI(0)
-                                                .withKD(0) // 0.5 || 5 || 3
+                                                .withKD(1) // 0.5 || 5 || 3
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
                                                 .withKG(-0.52) // -0.64 || -0.52 // Negative b/c of wrist direction
                                                 .withKS(0.18)
@@ -398,7 +398,7 @@ public class Constants {
                                                 .withSensorToMechanismRatio(wristGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
                                                 .withMotionMagicCruiseVelocity(5) // Default 10
-                                                .withMotionMagicAcceleration(10) // Default 15
+                                                .withMotionMagicAcceleration(15) // Default 15
                                                 .withMotionMagicJerk(0))
                                 .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
                                                 .withForwardSoftLimitEnable(true)
@@ -419,7 +419,7 @@ public class Constants {
                 public static final double kWristPositionUpdateFrequency = 50; // Hertz
                 public static final double kWristErrorUpdateFrequency = 50; // Hertz
 
-                public static final Rotation2d angleErrorTolerance = Rotation2d.fromDegrees(0.4); // Degrees
+                public static final Rotation2d angleErrorTolerance = Rotation2d.fromDegrees(0.1); // Degrees
 
         }
 
@@ -502,7 +502,7 @@ public class Constants {
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(18 - 27.85, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(122 - 27.85, 0);
-                public static final WristElevatorState ShuttleShot = new WristElevatorState(122 - 27.85, 0);
+                public static final WristElevatorState ShuttleShot = new WristElevatorState(135 - 27.85, 0);
 
                 public static final double[] shooterSetpointClose = { 3750, 4750 }; // [Left, Right]
                 public static final double[] shooterSetpointFar = { 5000, 6000 }; // [Left, Right]
@@ -539,7 +539,7 @@ public class Constants {
                         return 0.165 * Math.pow(metersFromTarget, 2);
                 }
 
-                public static final double maxUsableDistance = 5.25; // Meters
+                public static final double maxUsableDistance = 6; // Meters
 
                 public static final String limelightLeftName = "limelight-left";
                 public static final String limelightCenterName = "limelight-center";
