@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.189177461688257,
-        "y": 6.606155749348536
+        "x": 2.282589088326325,
+        "y": 6.655088476843622
       },
       "prevControl": {
-        "x": 1.941069530287209,
-        "y": 6.6679748868757
+        "x": 2.034481156925277,
+        "y": 6.716907614370785
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Shoot",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.6,
       "command": {
         "type": "parallel",
         "data": {
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "shoot"
+                "name": "spinUp"
               }
             }
           ]
@@ -50,8 +50,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 6.21,
-    "maxAcceleration": 6.5,
+    "maxVelocity": 5.03,
+    "maxAcceleration": 8.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

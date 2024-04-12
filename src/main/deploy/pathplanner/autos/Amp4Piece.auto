@@ -58,9 +58,22 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "race",
                       "data": {
-                        "name": "intakeNote"
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "intakeNote"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "runShooter"
+                            }
+                          }
+                        ]
                       }
                     },
                     {

@@ -127,8 +127,8 @@ public class Constants {
                 private static final int kFrontLeftEncoderId = 8;
                 private static final double kFrontLeftEncoderOffset = 0.284668;
 
-                private static final double kFrontLeftXPosInches = 10.25;
-                private static final double kFrontLeftYPosInches = 10.25;
+                private static final double kFrontLeftXPosInches = 9.7;
+                private static final double kFrontLeftYPosInches = 9.75;
 
                 // Front Right
                 private static final int kFrontRightDriveMotorId = 10;
@@ -136,8 +136,8 @@ public class Constants {
                 private static final int kFrontRightEncoderId = 11;
                 private static final double kFrontRightEncoderOffset = -0.254150;
 
-                private static final double kFrontRightXPosInches = 10.25;
-                private static final double kFrontRightYPosInches = -10.25;
+                private static final double kFrontRightXPosInches = 9.7;
+                private static final double kFrontRightYPosInches = -9.75;
 
                 // Back Left
                 private static final int kBackLeftDriveMotorId = 4;
@@ -145,8 +145,8 @@ public class Constants {
                 private static final int kBackLeftEncoderId = 5;
                 private static final double kBackLeftEncoderOffset = 0.269775;
 
-                private static final double kBackLeftXPosInches = -10.25;
-                private static final double kBackLeftYPosInches = 10.25;
+                private static final double kBackLeftXPosInches = -9.7;
+                private static final double kBackLeftYPosInches = 9.75;
 
                 // Back Right
                 private static final int kBackRightDriveMotorId = 1;
@@ -154,8 +154,8 @@ public class Constants {
                 private static final int kBackRightEncoderId = 2;
                 private static final double kBackRightEncoderOffset = 0.410645 + 0.5;
 
-                private static final double kBackRightXPosInches = -10.25;
-                private static final double kBackRightYPosInches = -10.25;
+                private static final double kBackRightXPosInches = -9.7;
+                private static final double kBackRightYPosInches = -9.75;
 
                 private static final SwerveModuleConstants FrontLeft = ConstantCreator.createModuleConstants(
                                 kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId,
@@ -243,7 +243,7 @@ public class Constants {
                                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants in Meters
                                 new PIDConstants(5, 0.0, 0), // Rotation PID constants in Radians
                                 SwerveConstants.kSpeedAt12VoltsMps, // Max module speed, in m/s
-                                0.40451045104, // Drive base radius in meters. Distance from robot center to furthest
+                                0.34933311738266, // Drive base radius in meters. Distance from robot center to furthest
                                                // module.
                                 new ReplanningConfig() // Default path replanning config. See the API for the options
                                                        // here
@@ -262,7 +262,7 @@ public class Constants {
 
                 public static final TalonFXConfiguration kShooterConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
-                                                .withStatorCurrentLimit(120)
+                                                .withStatorCurrentLimit(80)
                                                 .withSupplyCurrentLimit(40)
                                                 .withStatorCurrentLimitEnable(true)
                                                 .withSupplyCurrentLimitEnable(false))
@@ -271,7 +271,7 @@ public class Constants {
                                                 .withInverted(InvertedValue.CounterClockwise_Positive))
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0.071) // 0.075
-                                                .withKP(0.5) // 0.125
+                                                .withKP(0.15) // 0.125
                                                 .withKI(0)
                                                 .withKD(0))
                                 .withFeedback(new FeedbackConfigs()
@@ -498,7 +498,7 @@ public class Constants {
 
         public static class ScoringConstants {
 
-                public static final WristElevatorState Handoff = new WristElevatorState(130 - 27.85, 0);
+                public static final WristElevatorState Handoff = new WristElevatorState(131 - 27.85, 0);
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(18 - 27.85, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(122 - 27.85, 0);
@@ -546,7 +546,7 @@ public class Constants {
                 public static final String limelightRightName = "limelight-right";
                 
     
-                // Angled: Right: 0.1997202 Up: 0.3641810344 Forward: -0.2132951284
+                // Angled: Right: 0.195926583 Up: 0.3624923662 Forward: -0.1996369642
                 // Angled: Pitch: 10º, Roll: 7.64º, Yaw: 40.5º
 
                

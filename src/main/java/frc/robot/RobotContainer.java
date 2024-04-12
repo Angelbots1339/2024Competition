@@ -101,13 +101,11 @@ public class RobotContainer {
   private Trigger retractClimb = new Trigger(() -> driveController.getRightTriggerAxis() > 0.1 && climbMode);
 
   private Trigger extendToMax = new Trigger(() -> driveController.getAButton() && climbMode);
-  
-  private Trigger zeroWrist = new Trigger(() -> operatorController.getAButton());
 
+  private Trigger zeroWrist = new Trigger(() -> operatorController.getAButton());
 
   private void configDriverBindings() {
     resetGyro.onTrue(new InstantCommand(() -> swerve.zeroGyroAdjusted()));
-
 
     // toggleClimbMode.toggleOnTrue(new InstantCommand(() -> {
     // climbMode = !climbMode;
@@ -150,23 +148,21 @@ public class RobotContainer {
     shootWithRegression.whileTrue(
         new Shoot(shooter, wrist, elevator, swerve, indexer, translationX, translationY, actuallyShoot::getAsBoolean));
 
-
     shootAcrossField.whileTrue(new RunCommand(() -> {
 
       wrist.toAngle(ScoringConstants.ShuttleShot.angle);
       elevator.toHeight(ScoringConstants.ShuttleShot.height);
-      shooter.shooterToRMP(4000, 5000);
+      shooter.shooterToRMP(3500, 4500);
 
       swerve.angularDriveRequest(() -> translationX.get(),
-      () -> translationY.get(),
-      () -> Rotation2d.fromDegrees(FieldUtil.isAllianceBlue() ? -15 : 15), () -> true);
+          () -> translationY.get(),
+          () -> Rotation2d.fromDegrees(FieldUtil.isAllianceBlue() ? -25 : 25), () -> true);
 
-      if(actuallyShoot.getAsBoolean()) {
+      if (actuallyShoot.getAsBoolean()) {
         indexer.setVoltage(ScoringConstants.indexingTargetVolts);
       } else {
         indexer.disable();
       }
-
 
     }, shooter, wrist, elevator, swerve, indexer));
     // subwooferShot.whileTrue(swerve.angularDrive(translationX, translationY, () ->
@@ -179,7 +175,8 @@ public class RobotContainer {
     // .whileTrue(new RunCommand(() ->
     // elevator.setVoltage(-driveController.getRightTriggerAxis() * 10), elevator));
 
-    // extendToMax.onTrue(new RunCommand(() -> elevator.toHeight(ElevatorConstants.maxElevatorHeight - 0.01), elevator));
+    // extendToMax.onTrue(new RunCommand(() ->
+    // elevator.toHeight(ElevatorConstants.maxElevatorHeight - 0.01), elevator));
 
     // subwooferShot.whileTrue(new SuperstructureToPosition(elevator, wrist, () ->
     // new WristElevatorState(Rotation2d.fromDegrees(wristAngle.getDouble(90)),
@@ -203,19 +200,18 @@ public class RobotContainer {
     Leds.getInstance();
     initializeLogging();
 
-    
-    
-    // NamedCommands.registerCommand("shoot", Commands.either(new AutoShoot(shooter, wrist,
-    //     elevator, swerve, indexer, true),
-    //     new IntakeNote(intake, indexer,
-    //         wrist, elevator, () -> true).andThen(new HandOffNote(intake, indexer, wrist, elevator))
-    //         .andThen(new AutoShoot(shooter, wrist,
-    //             elevator, swerve, indexer, true)),
-    //     () -> indexer.isNoteAtTarget()));
-    
-    
+    // NamedCommands.registerCommand("shoot", Commands.either(new AutoShoot(shooter,
+    // wrist,
+    // elevator, swerve, indexer, true),
+    // new IntakeNote(intake, indexer,
+    // wrist, elevator, () -> true).andThen(new HandOffNote(intake, indexer, wrist,
+    // elevator))
+    // .andThen(new AutoShoot(shooter, wrist,
+    // elevator, swerve, indexer, true)),
+    // () -> indexer.isNoteAtTarget()));
+
     NamedCommands.registerCommand("shoot", new AutoShoot(shooter, wrist,
-    elevator, swerve, indexer, true, true));
+        elevator, swerve, indexer, true, true));
     NamedCommands.registerCommand("shootNoAlign", new AutoShoot(shooter, wrist,
         elevator, swerve, indexer, true, false));
     NamedCommands.registerCommand("shootNoVision", new AutoShoot(shooter, wrist,
@@ -232,6 +228,8 @@ public class RobotContainer {
             wrist, elevator).andThen(new HandOffNote(intake, indexer, wrist, elevator)),
         () -> indexer.isNoteAtTarget()));
     NamedCommands.registerCommand("vision", new RunCommand(() -> swerve.updateVision()));
+    NamedCommands.registerCommand("runShooter", new RunCommand(
+        () -> shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]), shooter));
 
     // autoChooser.addOption("Mobility", new PathPlannerAuto("Mobility"));
     // autoChooser.addOption("Shoot1Center", new PathPlannerAuto("Shoot1Center"));
@@ -258,10 +256,11 @@ public class RobotContainer {
     // () -> true, () -> true));
 
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
-    // wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
-    elevator.setDefaultCommand(Commands.either(new ManualClimb(elevator, wrist, () -> driveController.getLeftTriggerAxis(),
-        () -> driveController.getRightTriggerAxis(),
-        manualWristRotation), new InstantCommand(elevator::home, elevator), () -> climbMode));
+    wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
+    elevator
+        .setDefaultCommand(Commands.either(new ManualClimb(elevator, wrist, () -> driveController.getLeftTriggerAxis(),
+            () -> driveController.getRightTriggerAxis(),
+            manualWristRotation), new InstantCommand(elevator::home, elevator), () -> climbMode));
     intake.setDefaultCommand(new InstantCommand(intake::disable, intake));
     indexer.setDefaultCommand(new InstantCommand(indexer::disable, indexer));
     shooter.setDefaultCommand(new InstantCommand(shooter::disable, shooter));

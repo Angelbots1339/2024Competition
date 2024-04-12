@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.8849313022700125,
-        "y": 6.529787439204508
+        "x": 4.749356767232054,
+        "y": 6.536794795811814
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.745978325289984,
-        "y": 7.011157207499601
+        "x": 6.610403790252026,
+        "y": 7.0181645641069075
       },
       "isLocked": false,
       "linkedName": "Amp3PieceEnd"
     },
     {
       "anchor": {
-        "x": 8.496273483287707,
-        "y": 5.888258003367859
+        "x": 8.50904112456373,
+        "y": 6.1535874043970304
       },
       "prevControl": {
-        "x": 8.25299442793733,
-        "y": 5.25133763484398
+        "x": 8.265762069213352,
+        "y": 5.5166670358731515
       },
       "nextControl": {
-        "x": 8.671813704738517,
-        "y": 6.34783370492667
+        "x": 8.68458134601454,
+        "y": 6.613163105955842
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.8849313022700125,
-        "y": 6.529787439204508
+        "x": 4.749356767232054,
+        "y": 6.536794795811814
       },
       "prevControl": {
-        "x": 7.115269228009612,
-        "y": 7.237737110443631
+        "x": 6.979694692971653,
+        "y": 7.244744467050937
       },
       "nextControl": null,
       "isLocked": false,
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "SpinUp",
-      "waypointRelativePos": 1.85,
+      "waypointRelativePos": 1.9,
       "command": {
         "type": "parallel",
         "data": {
@@ -72,7 +72,7 @@
     },
     {
       "name": "Intake",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.1,
       "command": {
         "type": "parallel",
         "data": {
@@ -89,8 +89,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 6.21,
-    "maxAcceleration": 6.5,
+    "maxVelocity": 5.03,
+    "maxAcceleration": 8.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
