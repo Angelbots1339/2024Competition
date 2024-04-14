@@ -32,37 +32,42 @@
     },
     {
       "anchor": {
-        "x": 8.29395090734626,
-        "y": 7.3505389279297075
+        "x": 8.274888521999266,
+        "y": 7.519843789687579
       },
       "prevControl": {
-        "x": 8.304695095227427,
-        "y": 8.051865791872743
+        "x": 8.285632709880433,
+        "y": 8.221170653630612
       },
       "nextControl": {
-        "x": 8.286824781982896,
-        "y": 6.885381094836263
+        "x": 8.267762396635902,
+        "y": 7.054685956594135
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.393736653214047,
-        "y": 6.590003198524917
+        "x": 4.425177447577117,
+        "y": 6.482220552404068
       },
       "prevControl": {
-        "x": 5.796837591732623,
-        "y": 6.509293517136532
+        "x": 4.828278386095692,
+        "y": 6.401510871015684
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Amp3PieceEnd"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 1.0,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.25,
       "rotationDegrees": 0,
       "rotateFast": false
     }
@@ -88,7 +93,7 @@
     },
     {
       "name": "SpinUp",
-      "waypointRelativePos": 2.6,
+      "waypointRelativePos": 2.8499999999999996,
       "command": {
         "type": "parallel",
         "data": {
@@ -102,11 +107,28 @@
           ]
         }
       }
+    },
+    {
+      "name": "Bloop",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "bloop"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 5.03,
-    "maxAcceleration": 8.0,
+    "maxAcceleration": 8.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

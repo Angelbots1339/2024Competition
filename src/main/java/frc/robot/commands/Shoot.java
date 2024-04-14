@@ -98,7 +98,7 @@ public class Shoot extends Command {
         () -> true);
 
  
-    if ((shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAngularDriveAtSetpoint()) && shotTimer.get() > 0.1) {
+    if ((shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAngularDriveAtSetpoint()) && shotTimer.get() > 0.25) {
       indexer.setVoltage(ScoringConstants.indexingTargetVolts);
     } else {
       indexer.indexNoteToTarget();

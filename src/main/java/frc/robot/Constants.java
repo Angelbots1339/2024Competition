@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -68,7 +69,7 @@ public class Constants {
 
                 // The stator current at which the wheels start to slip;
                 // This needs to be tuned to your individual robot
-                private static final double kSlipCurrentA = 65; 
+                private static final double kSlipCurrentA = 65;
 
                 // Theoretical free speed (m/s) at 12v applied output;
                 // This needs to be tuned to your individual robot
@@ -190,7 +191,8 @@ public class Constants {
                 public static final Boolean skewReduction = true;
                 public static final Boolean openLoopDrive = true;
 
-                public static final double looper_dt = 0.02; // loop time in seconds (used for 254's solution to swerve skew)
+                public static final double looper_dt = 0.02; // loop time in seconds (used for 254's solution to swerve
+                                                             // skew)
                 public static final double FudgeFactorKp = 0.1; // used for the CD fudge factor solution to swerve skew
                 public static final double FudgeFactorSimpleKp = 0.1; // used for the CD fudge factor solution to swerve
                                                                       // skew
@@ -199,7 +201,7 @@ public class Constants {
                 public static final double angularDriveKI = 0;
                 public static final double angularDriveKD = 0.005;
                 public static final double angularDriveKS = 0.4; // radians per sec
-                public static final double angularDriveTolerance = 2; // Degrees
+                public static final double angularDriveTolerance = 1.5; // Degrees
 
                 public static final double pidToPoseKP = 2.5;
                 public static final double pidToPoseKD = 0;
@@ -240,11 +242,11 @@ public class Constants {
 
                 public static final HolonomicPathFollowerConfig autoConfig = new HolonomicPathFollowerConfig(
                                 // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants in Meters
-                                new PIDConstants(5, 0.0, 0), // Rotation PID constants in Radians
+                                new PIDConstants(4.285, 0.0, 0.0), // Translation PID constants in Meters
+                                new PIDConstants(5, 0.0, 0.2857), // Rotation PID constants in Radians
                                 SwerveConstants.kSpeedAt12VoltsMps, // Max module speed, in m/s
                                 0.34933311738266, // Drive base radius in meters. Distance from robot center to furthest
-                                               // module.
+                                                  // module.
                                 new ReplanningConfig() // Default path replanning config. See the API for the options
                                                        // here
                 );
@@ -252,7 +254,7 @@ public class Constants {
 
         public static final class ShooterConstants {
 
-                public static final int shooterMotorLeftID = 16; 
+                public static final int shooterMotorLeftID = 16;
                 public static final int shooterMotorRightID = 17;
                 public static final String shooterMotorCANBus = "";
 
@@ -262,7 +264,7 @@ public class Constants {
 
                 public static final TalonFXConfiguration kShooterConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
-                                                .withStatorCurrentLimit(80)
+                                                .withStatorCurrentLimit(120)
                                                 .withSupplyCurrentLimit(40)
                                                 .withStatorCurrentLimitEnable(true)
                                                 .withSupplyCurrentLimitEnable(false))
@@ -299,13 +301,15 @@ public class Constants {
 
                 public static final TalonFXConfiguration kIntakeConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
-                                                .withStatorCurrentLimit(40)
+                                                .withStatorCurrentLimit(60)
                                                 .withSupplyCurrentLimit(40)
-                                                .withStatorCurrentLimitEnable(false)
+                                                .withStatorCurrentLimitEnable(true)
                                                 .withSupplyCurrentLimitEnable(false))
                                 .withMotorOutput(new MotorOutputConfigs()
                                                 .withNeutralMode(NeutralModeValue.Coast)
-                                                .withInverted(InvertedValue.Clockwise_Positive));
+                                                .withInverted(InvertedValue.Clockwise_Positive))
+                                .withOpenLoopRamps(new OpenLoopRampsConfigs()
+                                                .withVoltageOpenLoopRampPeriod(0));
 
                 public static final DutyCycleOut intakeDutyCycle = new DutyCycleOut(0, true, false,
                                 false, false);
@@ -317,10 +321,10 @@ public class Constants {
         }
 
         public static final class IndexerConstants {
-                public static final int indexerMotorID = 19; 
+                public static final int indexerMotorID = 19;
                 public static final String indexerMotorCANBus = "";
 
-                public static final int indexerSensorID = 27; 
+                public static final int indexerSensorID = 27;
                 public static final RangingMode indexerSensorRange = RangingMode.Short;
                 public static final double indexerSampleTime = 24;
 
@@ -350,23 +354,25 @@ public class Constants {
         }
 
         public static final class WristConstants {
-                public static final int wristLeaderMotorID = 20; 
-                public static final int wristFollowerMotorID = 21; 
+                public static final int wristLeaderMotorID = 20;
+                public static final int wristFollowerMotorID = 21;
                 public static final String wristMotorCANBus = "";
 
                 public static final double wristGearRatio = 15 * (32 / 16); // Sensor to Mechanism Ratio
                 public static final double timeBeforeEncoderReset = 1.5; // Seconds before the motor is initialized to
                 // the through bore;
 
-                public static final int wristEncoderPort = 0; 
+                public static final int wristEncoderPort = 0;
 
                 // To align:
                 // 1. Push wrist against limelight mounts
-                // 2. Change abs encoder offset so that it equals 81º
-                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees( -(47.15)); // -47.15 // 0 Should be
-                                                                                                    // straight forward
-                                                                                                    // towards the
-                                                                                                    // intake
+                // 2. Change abs encoder offset so that it equals 52.76º
+                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees(-(47.15)); // -47.15 // 0
+                                                                                                         // Should be
+                                                                                                         // straight
+                                                                                                         // forward
+                                                                                                         // towards the
+                                                                                                         // intake
 
                 /****
                  * Wrist is counter-clockwise (from the left side of the robot with intake
@@ -387,13 +393,14 @@ public class Constants {
                                 .withSlot0(new Slot0Configs()
                                                 .withKV(0)
                                                 .withKA(0)
-                                                .withKP(25) // 40  || 55
+                                                .withKP(25) // 40 || 55
                                                 .withKI(0)
-                                                .withKD(1) // 0.5 || 5 || 3
+                                                .withKD(0) // 0.5 || 5 || 3
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
                                                 .withKG(-0.52) // -0.64 || -0.52 // Negative b/c of wrist direction
                                                 .withKS(0.18)
-                                                .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)) 
+                                                .withStaticFeedforwardSign(
+                                                                StaticFeedforwardSignValue.UseClosedLoopSign))
                                 .withFeedback(new FeedbackConfigs()
                                                 .withSensorToMechanismRatio(wristGearRatio))
                                 .withMotionMagic(new MotionMagicConfigs()
@@ -410,7 +417,8 @@ public class Constants {
                                 false,
                                 false, false);
 
-                public static final PositionVoltage wristPositionVoltageControl = new PositionVoltage(0, 0, false, 0, 0, false, false, false);
+                public static final PositionVoltage wristPositionVoltageControl = new PositionVoltage(0, 0, false, 0, 0,
+                                false, false, false);
                 // public static final PositionVoltage wristPositionControl = new
                 // PositionVoltage(0, 0, true, 0, 0, false, false, false);
 
@@ -424,7 +432,7 @@ public class Constants {
         }
 
         public static final class ElevatorConstants {
-                public static final int elevatorLeaderMotorID = 22; 
+                public static final int elevatorLeaderMotorID = 22;
                 public static final int elevatorFollowerMotorID = 23;
                 public static final String elevatorMotorCANBus = "";
 
@@ -498,11 +506,14 @@ public class Constants {
 
         public static class ScoringConstants {
 
-                public static final WristElevatorState Handoff = new WristElevatorState(131 - 27.85, 0);
+                public static final WristElevatorState Handoff = new WristElevatorState(133 - 27.85, 0);
                 public static final WristElevatorState ScoreAmp = new WristElevatorState(18 - 27.85, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
+                // public static final WristElevatorState Home = new
+                // WristElevatorState(Handoff.angle, 0);
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(122 - 27.85, 0);
                 public static final WristElevatorState ShuttleShot = new WristElevatorState(135 - 27.85, 0);
+                public static final WristElevatorState WristClimbPos = new WristElevatorState(56, 0);
 
                 public static final double[] shooterSetpointClose = { 3750, 4750 }; // [Left, Right]
                 public static final double[] shooterSetpointFar = { 5000, 6000 }; // [Left, Right]
@@ -518,7 +529,7 @@ public class Constants {
                 // public static final double indexingTargetPercent = 0.4;
                 // public static final double indexingTargetPercentSlow = 0.1;
 
-                public static final double indexingTargetVolts = 6; 
+                public static final double indexingTargetVolts = 6;
                 public static final double indexingTargetVoltsSlow = 1.5;
                 public static final double indexerScoringVoltage = 7;
 
@@ -536,20 +547,18 @@ public class Constants {
 
                 public static double calcStdDev(double metersFromTarget) {
 
-                        return 0.165 * Math.pow(metersFromTarget, 2);
+                        return 0.08 * Math.pow(metersFromTarget, 2);
                 }
 
-                public static final double maxUsableDistance = 6; // Meters
+                public static final double maxUsableDistance = 7; // Meters
 
                 public static final String limelightLeftName = "limelight-left";
                 public static final String limelightCenterName = "limelight-center";
                 public static final String limelightRightName = "limelight-right";
-                
-    
+
                 // Angled: Right: 0.195926583 Up: 0.3624923662 Forward: -0.1996369642
                 // Angled: Pitch: 10º, Roll: 7.64º, Yaw: 40.5º
 
-               
                 // Center: Right: 0 Up: 0.3641810344 Forward: -0.2110201774
                 // Center: Pitch: 24.5º, Roll: 0º, Yaw: 0º
         }

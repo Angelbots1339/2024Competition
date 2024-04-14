@@ -66,12 +66,6 @@
                             "data": {
                               "name": "intakeNote"
                             }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "runShooter"
-                            }
                           }
                         ]
                       }
@@ -102,15 +96,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
           }
         },
         {

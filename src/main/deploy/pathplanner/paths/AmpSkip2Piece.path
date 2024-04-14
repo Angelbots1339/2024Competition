@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.704812016105514,
-        "y": 6.859845812284218
+        "x": 4.191084229390682,
+        "y": 6.482220552404068
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.699440963696742,
-        "y": 7.1426936048316545
+        "x": 5.191084229390682,
+        "y": 6.482220552404068
       },
       "isLocked": false,
-      "linkedName": "Amp2ndPieceEnd"
+      "linkedName": "AmpSkip1PieceEnd"
     },
     {
       "anchor": {
-        "x": 8.364737085955653,
-        "y": 7.483441165956406
+        "x": 8.251431692678201,
+        "y": 7.368769931984309
       },
       "prevControl": {
-        "x": 8.415207880089252,
-        "y": 8.053687993587616
+        "x": 8.247987398752578,
+        "y": 7.865995329212882
       },
       "nextControl": {
-        "x": 8.323761865116321,
-        "y": 7.020480554849999
+        "x": 8.255418685208397,
+        "y": 6.7931994413750525
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 6.482220552404068
       },
       "prevControl": {
-        "x": 6.5025617597531475,
-        "y": 6.740661365581991
+        "x": 6.410232281112711,
+        "y": 7.029922670956453
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,30 +46,13 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.4,
-      "rotationDegrees": 0,
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": 0.0,
       "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
-    {
-      "name": "SpinUp",
-      "waypointRelativePos": 1.95,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "spinUp"
-              }
-            }
-          ]
-        }
-      }
-    },
     {
       "name": "Intake",
       "waypointRelativePos": 0.3,
@@ -81,6 +64,23 @@
               "type": "named",
               "data": {
                 "name": "intakeNote"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SpinUp",
+      "waypointRelativePos": 1.85,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "spinUp"
               }
             }
           ]
@@ -100,7 +100,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "AmpSide",
+  "folder": null,
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

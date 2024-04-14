@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.749356767232054,
-        "y": 6.536794795811814
+        "x": 4.425177447577117,
+        "y": 6.482220552404068
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0235658472189817,
-        "y": 6.796133290031351
+        "x": 1.6993865275640454,
+        "y": 6.741559046623605
       },
       "isLocked": false,
       "linkedName": "Amp4thPieceEnd"
@@ -51,7 +51,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 5.03,
-    "maxAcceleration": 8.0,
+    "maxAcceleration": 8.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

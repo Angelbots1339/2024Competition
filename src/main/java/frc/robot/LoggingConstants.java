@@ -26,7 +26,7 @@ public final class LoggingConstants {
         }
 
         public class ElevatorLogging {
-                public static LoggingLevel Main = LoggingLevel.NETWORK_TABLES;
+                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel MotionMagic = LoggingLevel.NONE;
         }
@@ -37,12 +37,12 @@ public final class LoggingConstants {
         }
 
         public class IntakeLogging {
-                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
+                public static LoggingLevel Main = LoggingLevel.NETWORK_TABLES;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
         }
 
         public class IndexerLogging {
-                public static LoggingLevel Main = LoggingLevel.NETWORK_TABLES;
+                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
         }
 

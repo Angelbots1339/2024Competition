@@ -188,6 +188,12 @@ public class RobotContainer {
   private void configOperatorBindings() {
     toggleClimbMode.onTrue(new InstantCommand(() -> {
       climbMode = !climbMode;
+
+      if(climbMode) {
+        wrist.toAngle(ScoringConstants.WristClimbPos.angle);
+      } else {
+        wrist.home();
+      }
       Leds.getInstance().climbing = climbMode;
     }, elevator));
 
@@ -227,9 +233,14 @@ public class RobotContainer {
         new IntakeNote(intake, indexer,
             wrist, elevator).andThen(new HandOffNote(intake, indexer, wrist, elevator)),
         () -> indexer.isNoteAtTarget()));
-    NamedCommands.registerCommand("vision", new RunCommand(() -> swerve.updateVision()));
+    NamedCommands.registerCommand("visi on", new RunCommand(() -> swerve.updateVision()));
     NamedCommands.registerCommand("runShooter", new RunCommand(
-        () -> shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]), shooter));
+        () -> shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]),
+        shooter));
+    NamedCommands.registerCommand("bloop", new RunCommand(() -> {
+      shooter.shooterToRMP(1000);
+      indexer.setVoltage(ScoringConstants.indexingTargetVolts);
+    }).until(() -> !indexer.isNotePresent()));
 
     // autoChooser.addOption("Mobility", new PathPlannerAuto("Mobility"));
     // autoChooser.addOption("Shoot1Center", new PathPlannerAuto("Shoot1Center"));
@@ -256,7 +267,8 @@ public class RobotContainer {
     // () -> true, () -> true));
 
     swerve.setDefaultCommand(swerve.drive(translationX, translationY, rotation, () -> true, () -> true));
-    wrist.setDefaultCommand(new InstantCommand(wrist::home, wrist));
+    wrist.setDefaultCommand(Commands.either(new InstantCommand(() -> wrist.toAngle(ScoringConstants.WristClimbPos.angle), wrist),
+        new InstantCommand(wrist::home, wrist), () -> climbMode));
     elevator
         .setDefaultCommand(Commands.either(new ManualClimb(elevator, wrist, () -> driveController.getLeftTriggerAxis(),
             () -> driveController.getRightTriggerAxis(),

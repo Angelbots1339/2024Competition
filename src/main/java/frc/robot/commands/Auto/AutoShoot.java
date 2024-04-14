@@ -35,7 +35,8 @@ public class AutoShoot extends Command {
   private boolean autoAlign;
 
   /** Creates a new AutoShoot. */
-  public AutoShoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer, boolean useVision, boolean autoAlign) {
+  public AutoShoot(Shooter shooter, Wrist wrist, Elevator elevator, Swerve swerve, Indexer indexer, boolean useVision,
+      boolean autoAlign) {
     this.shooter = shooter;
     this.wrist = wrist;
     this.elevator = elevator;
@@ -66,12 +67,12 @@ public class AutoShoot extends Command {
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
 
-    if(autoAlign){
+    if (autoAlign) {
 
       Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
           Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
               / (PoseEstimation.getEstimatedPose().getX() - target.getX())));
-  
+
       swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
     }
 
@@ -92,28 +93,30 @@ public class AutoShoot extends Command {
     double targetDistance = PoseEstimation.getEstimatedPose().getTranslation()
         .getDistance(target);
 
-        if(autoAlign){
+    if (autoAlign) {
 
-          Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
-              Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
-                  / (PoseEstimation.getEstimatedPose().getX() - target.getX())))
-                  .minus(Rotation2d.fromDegrees(2));
-      
-          swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
-        }
-    
+      Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians( // Find the angle to turn the robot to
+          Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
+              / (PoseEstimation.getEstimatedPose().getX() - target.getX())))
+          .minus(Rotation2d.fromDegrees(2));
+
+      swerve.angularDriveRequest(() -> 0.0, () -> 0.0, robotAngle, () -> true);
+    }
+
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
 
+    shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]);
 
-      shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]);
-
-
-    if (shooter.isAtSetpoint() && wrist.isAtSetpoint()) {
+    if (!autoAlign && !useVision && shooter.isAtSetpoint()) {
+      finishShotTimer.start();
+      indexer.setVoltage(ScoringConstants.indexingTargetVolts);
+    }
+    else if (shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAngularDriveAtSetpoint()) {
       finishShotTimer.start();
       indexer.setVoltage(ScoringConstants.indexingTargetVolts);
     } else {
-      indexer.indexNoteToTarget();    
+      indexer.indexNoteToTarget();
     }
 
     // System.out.println("Shooter: " + shooter.isAtSetpoint());
