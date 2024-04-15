@@ -37,7 +37,7 @@ public final class LoggingConstants {
         }
 
         public class IntakeLogging {
-                public static LoggingLevel Main = LoggingLevel.NETWORK_TABLES;
+                public static LoggingLevel Main = LoggingLevel.ONBOARD_ONLY;
                 public static LoggingLevel Motor = LoggingLevel.ONBOARD_ONLY;
         }
 

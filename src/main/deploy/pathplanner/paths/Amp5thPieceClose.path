@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 4.425177447577117,
-        "y": 6.482220552404068
+        "y": 6.65900784579347
       },
       "prevControl": null,
       "nextControl": {
         "x": 1.6993865275640454,
-        "y": 6.741559046623605
+        "y": 6.918346340013007
       },
       "isLocked": false,
       "linkedName": "Amp4thPieceEnd"

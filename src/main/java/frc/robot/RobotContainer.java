@@ -233,7 +233,7 @@ public class RobotContainer {
         new IntakeNote(intake, indexer,
             wrist, elevator).andThen(new HandOffNote(intake, indexer, wrist, elevator)),
         () -> indexer.isNoteAtTarget()));
-    NamedCommands.registerCommand("visi on", new RunCommand(() -> swerve.updateVision()));
+    NamedCommands.registerCommand("vision", new RunCommand(() -> swerve.updateVision()));
     NamedCommands.registerCommand("runShooter", new RunCommand(
         () -> shooter.shooterToRMP(ScoringConstants.shooterSetpointFar[0], ScoringConstants.shooterSetpointFar[1]),
         shooter));
