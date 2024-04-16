@@ -1,0 +1,147 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.3963491825740313,
+        "y": 7.666369204852086
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2502121558417185,
+        "y": 7.660559450781424
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.1093722578208927,
+        "y": 7.666369204852086
+      },
+      "prevControl": {
+        "x": 2.2794629221166116,
+        "y": 7.731674196826902
+      },
+      "nextControl": {
+        "x": 5.252658884536242,
+        "y": 7.497715461683144
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.243201313223231,
+        "y": 7.37354620801604
+      },
+      "prevControl": {
+        "x": 8.267579496970717,
+        "y": 7.913967253334152
+      },
+      "nextControl": {
+        "x": 8.222237080584163,
+        "y": 6.908806396615361
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.425177447577117,
+        "y": 6.482220552404068
+      },
+      "prevControl": {
+        "x": 4.828278386095692,
+        "y": 6.401510871015684
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Amp3PieceEnd"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.25,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 1.4,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intakeNote"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SpinUp",
+      "waypointRelativePos": 2.8499999999999996,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "spinUp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Bloop",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "bloop"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.03,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 12.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "AmpSide",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

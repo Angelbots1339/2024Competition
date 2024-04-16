@@ -506,15 +506,15 @@ public class Constants {
 
         public static class ScoringConstants {
 
-                public static final WristElevatorState Handoff = new WristElevatorState(133 - 27.85, 0);
-                public static final WristElevatorState ScoreAmp = new WristElevatorState(18 - 27.85, 0.25);
+                public static final WristElevatorState Handoff = new WristElevatorState(105.15, 0);
+                public static final WristElevatorState ScoreAmp = new WristElevatorState(-9.85, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
                 // public static final WristElevatorState Home = new
                 // WristElevatorState(Handoff.angle, 0);
-                public static final WristElevatorState SubwooferShot = new WristElevatorState(122 - 27.85, 0);
+                public static final WristElevatorState SubwooferShot = new WristElevatorState(90, 0);
                 public static final WristElevatorState WristClimbPos = new WristElevatorState(56, 0);
-                public static final WristElevatorState SourceShuttleShot = new WristElevatorState(135 - 27.85, 0);
-                public static final WristElevatorState LowShuttleShot = new WristElevatorState(150, 0);
+                public static final WristElevatorState SourceShuttleShot = new WristElevatorState(107.15, 0);
+                public static final WristElevatorState LowShuttleShot = new WristElevatorState(140, 0);
 
                 public static final double[] shooterSetpointClose = { 3750, 4750 }; // [Left, Right]
                 public static final double[] shooterSetpointFar = { 5000, 6000 }; // [Left, Right]
