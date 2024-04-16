@@ -512,16 +512,16 @@ public class Constants {
                 // public static final WristElevatorState Home = new
                 // WristElevatorState(Handoff.angle, 0);
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(122 - 27.85, 0);
-                public static final WristElevatorState ShuttleShot = new WristElevatorState(135 - 27.85, 0);
                 public static final WristElevatorState WristClimbPos = new WristElevatorState(56, 0);
+                public static final WristElevatorState SourceShuttleShot = new WristElevatorState(135 - 27.85, 0);
+                public static final WristElevatorState LowShuttleShot = new WristElevatorState(150, 0);
 
                 public static final double[] shooterSetpointClose = { 3750, 4750 }; // [Left, Right]
                 public static final double[] shooterSetpointFar = { 5000, 6000 }; // [Left, Right]
-                public static final double flywheelDistanceCutoff = 2.75; // 2.9
                 public static final double shootingWaitTime = 0.2; // Seconds to wait before shooting to make shooting
                                                                    // predictable & consistent
 
-                public static final double wristRegressionMaxClamp = 175;
+                public static final double wristRegressionMaxClamp = 160;
                 public static final double wristRegressionMinClamp = 90;
 
                 public static final double scoreAmpOffset = 0.4; // Used for auto align
