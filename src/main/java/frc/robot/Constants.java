@@ -439,7 +439,7 @@ public class Constants {
                 public static final double elevatorGearRatio = 25; // Sensor to Mechanism Ratio
                 public static final double elevatorPinionRadius = Units.inchesToMeters(1.751 / 2); // Meters
 
-                public static final double maxElevatorHeight = 0.4; // Meters
+                public static final double maxElevatorHeight = 0.385; // Meters
 
                 public static final TalonFXConfiguration kElevatorConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
