@@ -83,7 +83,7 @@ public class Shoot extends Command {
     Supplier<Rotation2d> robotAngle = () -> Rotation2d.fromRadians(  // Find the angle to turn the robot to
     Math.atan((PoseEstimation.getEstimatedPose().getY() - target.getY())
         / (PoseEstimation.getEstimatedPose().getX() - target.getX())))
-        .minus(Rotation2d.fromDegrees(3 / targetDistance)); // Compensate for note spin (maybe)
+        .minus(Rotation2d.fromDegrees(1.5 / targetDistance)); // Compensate for note spin (maybe)
 
     wrist.toAngle(SpeakerShotRegression.calculateWristAngle(targetDistance));
     elevator.home();
@@ -98,7 +98,7 @@ public class Shoot extends Command {
         () -> true);
 
  
-    if ((shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAngularDriveAtSetpoint()) && shotTimer.get() > 0.25) {
+    if ((shooter.isAtSetpoint() && wrist.isAtSetpoint() && swerve.isAngularDriveAtSetpoint()) && shotTimer.get() > 0.35) {
       indexer.setVoltage(ScoringConstants.indexingTargetVolts);
     } else {
       indexer.indexNoteToTarget();

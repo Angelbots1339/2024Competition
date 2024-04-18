@@ -22,18 +22,19 @@ public class SpeakerShotRegression {
             { 3.159, 148.5 },
             { 3.35, 150 }, 
             { 3.516, 150.5 }, 
-            { 3.755, 151.5 }, // Good
+            { 3.755, 151.5 }, 
             { 3.963, 152.6 }, 
             { 4.147, 153.2 }, 
             { 4.352, 153.5 }, 
             { 4.567, 154.3 }, 
-            { 4.76, 154.82 },
+            { 4.76, 154.8 },
             { 4.91, 155 },
-            { 5.35, 155.8 },
-            { 5.5, 156.2},
-            { 5.75, 156.5 },
-            { 6, 156.3 },
+            { 5.35, 155.5 }, 
+                { 5.5, 156},
+                { 5.75, 156.3 }, // 5.6 barely high enough
+                { 6, 156.4 },
             { 6.25, 156.6}, // lower means higher number
+            
             { 6.5, 156.95 },
             { 6.75, 157.21},
             { 7, 157.45 },
@@ -59,7 +60,7 @@ public class SpeakerShotRegression {
 
             return Rotation2d.fromDegrees(MathUtil.clamp(wristInterpolation.getInterpolated(new InterpolatingDouble(targetDistance)).value,
         ScoringConstants.wristRegressionMinClamp, ScoringConstants.wristRegressionMaxClamp))
-        .minus(Rotation2d.fromDegrees(32.2)); // I hate my life
+        .minus(Rotation2d.fromDegrees(33)); // I hate my life
 
         
         //     return Rotation2d.fromDegrees(MathUtil.clamp(wristExpoRegression(targetDistance),

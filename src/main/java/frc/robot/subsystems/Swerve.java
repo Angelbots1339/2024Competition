@@ -371,16 +371,20 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
 
             lastYaw = yaw;
 
-            LimelightHelpers.PoseEstimate leftPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.limelightLeftName);
+            LimelightHelpers.PoseEstimate leftPose = LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.limelightLeftName);
             LimelightHelpers.PoseEstimate centerPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.limelightCenterName);
-            LimelightHelpers.PoseEstimate rightPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.limelightRightName);
+            LimelightHelpers.PoseEstimate rightPose = LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.limelightRightName);
+
+            // LimelightHelpers.PoseEstimate leftPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.limelightLeftName);
+            // LimelightHelpers.PoseEstimate centerPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.limelightCenterName);
+            // LimelightHelpers.PoseEstimate rightPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.limelightRightName);
 
             // System.out.println(centerPose.rawFiducials.length);
 
             if (leftPose.rawFiducials.length > 0) {
-                if (leftPose.avgTagDist < VisionConstants.maxUsableDistance) {
+                if (leftPose.avgTagDist < 4) {
 
-                    double xyStdDev2 = VisionConstants.calcStdDev(leftPose.avgTagDist);
+                    double xyStdDev2 = VisionConstants.calcStdDev(leftPose.avgTagDist) * 3;
 
                     double timestamp = Timer.getFPGATimestamp()
                             - (leftPose.latency) / 1000;
@@ -409,9 +413,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
             }
 
              if (rightPose.rawFiducials.length > 0) {
-                if (rightPose.avgTagDist < VisionConstants.maxUsableDistance) {
+                if (rightPose.avgTagDist < 4) {
 
-                    double xyStdDev2 = VisionConstants.calcStdDev(rightPose.avgTagDist);
+                    double xyStdDev2 = VisionConstants.calcStdDev(rightPose.avgTagDist) * 3;
 
                     double timestamp = Timer.getFPGATimestamp()
                             - (rightPose.latency) / 1000;

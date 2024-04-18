@@ -135,11 +135,11 @@ public class RobotContainer {
 
       wrist.toAngle(ScoringConstants.SourceShuttleShot.angle);
       elevator.toHeight(ScoringConstants.SourceShuttleShot.height);
-      shooter.shooterToRMP(3500, 4500);
+      shooter.shooterToRMP(3600, 4600);
 
       swerve.angularDriveRequest(() -> translationX.get(),
           () -> translationY.get(),
-          () -> Rotation2d.fromDegrees(FieldUtil.isAllianceBlue() ? -25 : 25), () -> true);
+          () -> Rotation2d.fromDegrees(FieldUtil.isAllianceBlue() ? -29 : 29), () -> true);
 
       if (actuallyShoot.getAsBoolean()) {
         indexer.setVoltage(ScoringConstants.indexingTargetVolts);
@@ -153,7 +153,7 @@ public class RobotContainer {
 
       wrist.toAngle(ScoringConstants.LowShuttleShot.angle);
       elevator.toHeight(ScoringConstants.SourceShuttleShot.height);
-      shooter.shooterToRMP(2500, 3500);
+      shooter.shooterToRMP(5000, 6000);
 
       swerve.angularDriveRequest(() -> translationX.get(),
           () -> translationY.get(),

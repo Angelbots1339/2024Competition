@@ -395,7 +395,7 @@ public class Constants {
                                                 .withKA(0)
                                                 .withKP(25) // 40 || 55
                                                 .withKI(0)
-                                                .withKD(0) // 0.5 || 5 || 3
+                                                .withKD(0.5) // 0.5 || 5 || 3
                                                 .withGravityType(GravityTypeValue.Arm_Cosine)
                                                 .withKG(-0.52) // -0.64 || -0.52 // Negative b/c of wrist direction
                                                 .withKS(0.18)
@@ -507,14 +507,15 @@ public class Constants {
         public static class ScoringConstants {
 
                 public static final WristElevatorState Handoff = new WristElevatorState(105.15, 0);
-                public static final WristElevatorState ScoreAmp = new WristElevatorState(-9.85, 0.25);
+                public static final WristElevatorState ScoreAmp = new WristElevatorState(-4, 0.3);
+                // public static final WristElevatorState ScoreAmp = new WristElevatorState(-9.85, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
                 // public static final WristElevatorState Home = new
                 // WristElevatorState(Handoff.angle, 0);
                 public static final WristElevatorState SubwooferShot = new WristElevatorState(90, 0);
                 public static final WristElevatorState WristClimbPos = new WristElevatorState(56, 0);
                 public static final WristElevatorState SourceShuttleShot = new WristElevatorState(107.15, 0);
-                public static final WristElevatorState LowShuttleShot = new WristElevatorState(140, 0);
+                public static final WristElevatorState LowShuttleShot = new WristElevatorState(132.5, 0);
 
                 public static final double[] shooterSetpointClose = { 3750, 4750 }; // [Left, Right]
                 public static final double[] shooterSetpointFar = { 5000, 6000 }; // [Left, Right]
@@ -556,11 +557,11 @@ public class Constants {
                 public static final String limelightCenterName = "limelight-center";
                 public static final String limelightRightName = "limelight-right";
 
-                // Angled: Right: 0.195926583 Up: 0.3624923662 Forward: -0.1996369642
+                // Angled: Right: 0.201951 Up: 0.363209 Forward: -0.197699
                 // Angled: Pitch: 10º, Roll: 7.64º, Yaw: 40.5º
 
-                // Center: Right: 0 Up: 0.3641810344 Forward: -0.2110201774
-                // Center: Pitch: 24.5º, Roll: 0º, Yaw: 0º
+                // Center: Right: 0 Up: 0.367821 Forward: -0.213700
+                // Center: Pitch: 24.45º, Roll: 0º, Yaw: 0º
         }
 
 }
