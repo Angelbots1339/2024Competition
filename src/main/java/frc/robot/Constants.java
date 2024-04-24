@@ -301,7 +301,7 @@ public class Constants {
 
                 public static final TalonFXConfiguration kIntakeConfiguration = new TalonFXConfiguration()
                                 .withCurrentLimits(new CurrentLimitsConfigs()
-                                                .withStatorCurrentLimit(60)
+                                                .withStatorCurrentLimit(65)
                                                 .withSupplyCurrentLimit(40)
                                                 .withStatorCurrentLimitEnable(true)
                                                 .withSupplyCurrentLimitEnable(false))
@@ -367,7 +367,9 @@ public class Constants {
                 // To align:
                 // 1. Push wrist against limelight mounts
                 // 2. Change abs encoder offset so that it equals 52.76º
-                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees(-(47.15)); // -47.15 // 0
+
+                // Through bore: Opposite direction of wrist. Increase the value below to rotate in the opposite direction of the wrist
+                public static final Rotation2d absoluteEncoderOffset = Rotation2d.fromDegrees(-(47.15 + 2.45)); // -47.15 // 0
                                                                                                          // Should be
                                                                                                          // straight
                                                                                                          // forward
@@ -465,7 +467,7 @@ public class Constants {
                                                 .withMotionMagicAcceleration(18)
                                                 .withMotionMagicJerk(0))
                                 .withHardwareLimitSwitch(new HardwareLimitSwitchConfigs()
-                                                .withForwardLimitEnable(false)
+                                                .withForwardLimitEnable(true)
                                                 .withReverseLimitEnable(true)
                                                 .withForwardLimitAutosetPositionEnable(false)
                                                 .withReverseLimitAutosetPositionEnable(false)
@@ -507,7 +509,7 @@ public class Constants {
         public static class ScoringConstants {
 
                 public static final WristElevatorState Handoff = new WristElevatorState(105.15, 0);
-                public static final WristElevatorState ScoreAmp = new WristElevatorState(-4, 0.3);
+                public static final WristElevatorState ScoreAmp = new WristElevatorState(-9.85, 0.28);
                 // public static final WristElevatorState ScoreAmp = new WristElevatorState(-9.85, 0.25);
                 public static final WristElevatorState Home = new WristElevatorState(90, 0);
                 // public static final WristElevatorState Home = new

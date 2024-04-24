@@ -18,29 +18,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Amp1stPiece"
-                }
-              }
-            ]
+            "pathName": "Amp1stPiece"
           }
         },
         {
-          "type": "sequential",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "shoot"
-                }
-              }
-            ]
+            "name": "shoot"
           }
         },
         {
@@ -83,16 +69,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Amp3rdPiece"
-                }
-              }
-            ]
+            "pathName": "Amp3rdPiece"
           }
         },
         {
@@ -102,16 +81,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Amp4thPiece"
-                }
-              }
-            ]
+            "pathName": "Amp4thPiece"
           }
         },
         {

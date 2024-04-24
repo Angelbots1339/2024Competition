@@ -430,7 +430,9 @@ public class Swerve extends SwerveDrivetrain implements Subsystem {
     }
 
     public void periodic() {
-        if (!DriverStation.isAutonomous()) {
+        if(DriverStation.isDisabled()){
+            updateVision();
+        } else if (!DriverStation.isAutonomous()) {
             updateVision();
         }
 

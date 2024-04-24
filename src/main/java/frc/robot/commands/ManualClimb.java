@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.Leds;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Wrist;
 
@@ -42,16 +43,20 @@ public class ManualClimb extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Math.abs(extend.get() - retract.get()) > 0.1) {
-      elevator.setVoltage((extend.get() - retract.get()) * 10);
+    double output = extend.get() - retract.get();
+
+    if (elevator.getLeaderPosition() <= ElevatorConstants.heightErrorTolerance && output < 0) {
+      elevator.disable();
+    } else if (Math.abs(output) > 0.1) {
+      elevator.setVoltage((output) * 10);
     } else {
       elevator.holdPosition();
     }
 
     // if (Math.abs(wristRotation.get()) > 0.1) {
-    //   wrist.setVoltage(wristRotation.get() * 6);
+    // wrist.setVoltage(wristRotation.get() * 6);
     // } else {
-    //   wrist.holdPosition();
+    // wrist.holdPosition();
     // }
 
   }

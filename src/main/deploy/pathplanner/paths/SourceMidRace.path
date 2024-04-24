@@ -3,50 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.945318747118976,
-        "y": 7.032891889857853
+        "x": 1.3721078044007942,
+        "y": 2.0877171939529067
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.939947694710204,
-        "y": 7.31573968240529
-      },
-      "isLocked": false,
-      "linkedName": "Amp2ndPieceEnd"
-    },
-    {
-      "anchor": {
-        "x": 8.364737085955653,
-        "y": 7.483441165956406
-      },
-      "prevControl": {
-        "x": 8.415207880089252,
-        "y": 8.053687993587616
-      },
-      "nextControl": {
-        "x": 8.323761865116321,
-        "y": 7.020480554849999
+        "x": 3.2173585828653137,
+        "y": 1.3264094676337506
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.425177447577117,
-        "y": 6.482220552404068
+        "x": 8.227856094601078,
+        "y": 0.977526246719161
       },
       "prevControl": {
-        "x": 6.5025617597531475,
-        "y": 6.740661365581991
+        "x": 8.186643336249634,
+        "y": 0.33379958889547484
+      },
+      "nextControl": {
+        "x": 8.270331614008327,
+        "y": 1.6409767227632241
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.238202499553147,
+        "y": 3.139889603853282
+      },
+      "prevControl": {
+        "x": 4.196963282815455,
+        "y": 0.22298833949519833
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp3PieceEnd"
+      "linkedName": "Source2PieceEnd"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.4,
+      "waypointRelativePos": 1.3,
       "rotationDegrees": 0,
       "rotateFast": true
     }
@@ -54,8 +54,35 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "SpinUp",
-      "waypointRelativePos": 1.95,
+      "name": "Intake",
+      "waypointRelativePos": 0.6,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": []
+        }
+      }
+    },
+    {
+      "name": "Bloop",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "bloop"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Spin Up",
+      "waypointRelativePos": 1.85,
       "command": {
         "type": "parallel",
         "data": {
@@ -64,23 +91,6 @@
               "type": "named",
               "data": {
                 "name": "spinUp"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Intake",
-      "waypointRelativePos": 0.3,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "intakeNote"
               }
             }
           ]
@@ -96,11 +106,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 12.0,
-    "rotateFast": true
+    "rotation": -35.0,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "AmpSide",
+  "folder": "Source",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
